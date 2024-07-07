@@ -2,8 +2,8 @@ from django.db import models
 from user.models import User
 
 class ArtExhibit(models.Model):
-    title = models.CharField(max_length=20)
-    description = models.CharField(max_length=200)
+    title = models.CharField(max_length=50)
+    description = models.TextField()
     start_date = models.DateField()
     end_date = models.DateField()
     address = models.CharField(max_length=50)

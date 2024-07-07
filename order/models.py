@@ -8,15 +8,15 @@ class OrderStatus(models.Model):
 
 class OrderItem(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)  # 금액은 DecimalField로 처리
-    art_work = models.ForeignKey(ArtWork, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    art_work = models.ForeignKey(ArtWork, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
-    order_status = models.ForeignKey(OrderStatus, on_delete=models.CASCADE)
+    order_status = models.ForeignKey(OrderStatus, on_delete=models.DO_NOTHING)
 
 class RefundRequest(models.Model):
     reason = models.CharField(max_length=500)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    order_item = models.ForeignKey(OrderItem, on_delete=models.DO_NOTHING)
 
 class RefundImg(models.Model):
     img = models.ImageField(upload_to='refund_images/')

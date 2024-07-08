@@ -14,8 +14,8 @@ class PostImage(models.Model):
     image_order = models.IntegerField()
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
-class PostComment(models.Model):
-    comment_content = models.TextField()
-    comment_timestamp = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+# class PostComment(models.Model):
+#     comment_content = models.TextField()
+#     comment_timestamp = models.DateTimeField(auto_now_add=True)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     post = models.ForeignKey(Post, on_delete=models.CASCADE)

@@ -13,5 +13,5 @@ class ArtExhibitPoster(models.Model):
     exhibit = models.ForeignKey(ArtExhibit, on_delete=models.CASCADE)
 
 class ExhibitBookmark(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    exhibit = models.ForeignKey(ArtExhibit, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    exhibit = models.ForeignKey(ArtExhibit, on_delete=models.CASCADE, null=False)

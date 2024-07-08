@@ -47,10 +47,9 @@ INSTALLED_APPS = [
     'exhibit',
     'order',
     'payment',
-
 ]
 
-
+AUTH_USER_MODEL = 'user.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

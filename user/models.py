@@ -26,35 +26,6 @@ class User(AbstractUser):
         verbose_name=('user permissions'),
     )
 
-class ShippingAddress(models.Model):
-    recipient = models.CharField(max_length=20)
-    phone_number = models.CharField(max_length=15)
-    destination = models.CharField(max_length=50)
-    postal_code = models.CharField(max_length=5)
-    address = models.CharField(max_length=50)
-    detail_address = models.CharField(max_length=50)
-    is_default = models.BooleanField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-class UserPreferArt(models.Model):
-    created_at = models.DateField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    art_work = models.ForeignKey('artwork.ArtWork', on_delete=models.CASCADE)  # 문자열 기반 참조
-
-class University(models.Model):
-    name = models.CharField(max_length=255)
-    email_domain = models.CharField(max_length=255)
-
-class Department(models.Model):
-    name = models.CharField(max_length=20)
-    exhibit = models.ForeignKey('exhibit.ArtExhibit', on_delete=models.CASCADE, related_name='department_exhibits')  # 문자열 기반 참조
-    university = models.ForeignKey(University, on_delete=models.CASCADE)
-
-class Seller(User):
-    bank = models.CharField(max_length=20)
-    bank_user = models.CharField(max_length=20)
-    account = models.CharField(max_length=20)  # 계좌번호는 문자열로 처리
-    department = models.ForeignKey('Department')
 
 class ShippingAddress(models.Model):
     recipient = models.CharField(max_length=20, null=True)
@@ -69,7 +40,7 @@ class ShippingAddress(models.Model):
 class UserPreferArt(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    art_work = models.ForeignKey(ArtWork, on_delete=models.CASCADE)
+    art_work = models.ForeignKey('artwork.ArtWork', on_delete=models.CASCADE)
 
 class University(models.Model):
     name = models.CharField(max_length=50)
@@ -78,3 +49,9 @@ class University(models.Model):
 class Department(models.Model):
     name = models.CharField(max_length=20)
     university = models.ForeignKey(University, on_delete=models.CASCADE)
+
+class Seller(User):
+    bank = models.CharField(max_length=20)
+    bank_user = models.CharField(max_length=20)
+    account = models.CharField(max_length=20)  # 계좌번호는 문자열로 처리
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board-create</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/a47086679e.js" crossorigin="anonymous"></script>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  
+    <!-- Plugin -->
+    <link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css" />
+    <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
+
+    <style>
+        body {
+        background: #EEE;
+        font-family: 'Roboto', sans-serif;
+        }
+        .container {
+            background: #fff;
+        }
+
+        .dropzone {
+        width: 98%;
+        margin: 1%;
+        border: 2px dashed #3498db !important;
+        border-radius: 5px;
+        -webkit-transition: .2s;
+        transition: .2s;
+        }
+
+        .dropzone.dz-drag-hover {
+        border: 2px solid #3498db !important;
+        }
+
+        .dz-message.needsclick img {
+        width: 50px;
+        display: block;
+        margin: auto;
+        opacity: .6;
+        margin-bottom: 15px;
+        }
+
+        span.plus {
+        display: none;
+        }
+
+        .dropzone.dz-started .dz-message {
+            display: inline-block !important;
+            width: 120px;
+            float: right;
+            border: 1px solid rgba(238, 238, 238, 0.36);
+            border-radius: 30px;
+            height: 120px;
+            margin: 16px;
+            -webkit-transition: .2s;
+            transition: .2s;
+        }
+
+        .dropzone.dz-started .dz-message span.text {
+        display: none;
+        }
+
+        .dropzone.dz-started .dz-message span.plus {
+        display: block;
+        font-size: 70px;
+        color: #AAA;
+        line-height: 110px;
+        }        
+
+        /* 미리보기 */
+        .preview-container {
+            margin-top: 20px;
+        }
+
+        .preview-image {
+            display: none;
+            max-width: 70%; /* 수정된 부분 */
+            height: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .dz-remove {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 25px;
+            height: 25px;
+            background: #373634;
+            color: white;
+            border-radius: 50%;
+            line-height: 25px;
+            text-align: center;
+            cursor: pointer;
+            z-index: 1000;
+            opacity: 0.8;
+        }
+
+        .dz-remove:hover {
+            background-color: rgb(90, 129, 151);
+        }
+
+        .dz-remove:before, .dz-remove:after {
+            content: ' ';
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background-color: #fff;
+        }
+
+        .dz-remove:before {
+            transform: rotate(45deg);
+            left: 11px;
+            top: 2px;
+        }
+
+        .dz-remove:after {
+            transform: rotate(-45deg);
+            left: 11px;
+            top: 2px;
+        }
+
+         
+    
+    </style>
+    
+</head>
+<body>
+    <div class="container">
+        <h1>새 포스트 생성</h1>
+
+        <div id="dropzone">
+            <form action="https://httpbin.org/post" id="demo-upload" class="dropzone needsclick" >
+                <div class="dz-message needsclick">
+                    <span class="text">
+                    <img src="http://www.freeiconspng.com/uploads/------------------------------iconpngm--22.png" alt="Camera" />
+                    👉  여기에 파일을 끌어다 놓거나 클릭하여 업로드하세요. 👈
+                    </span>
+                    <span class="plus">+</span>
+                </div>
+            </form>
+        </div>
+
+        <div class="preview-container">
+            <h1>미리보기</h1>
+            <div id="preview-container" class="preview-image-container">
+                <img id="preview-image" class="preview-image" src="" alt="Preview">
+                
+            </div>
+        </div>
+    </div>
+
+  
+    
+    <script>
+        Dropzone.options.demoUpload = {
+            init: function() {
+                var _this = this;
+
+                 // Dropzone 컨테이너에 이벤트 리스너 추가
+                this.element.addEventListener("click", function(e) {
+                    if (e.target.classList.contains('dz-remove')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        var fileElement = e.target.closest('.dz-preview');
+                        if (fileElement) {
+                            var file = fileElement.file;
+                            if (file) {
+                                console.log("Removing file:", file.name);
+                                _this.removeFile(file);
+                            } else {
+                                console.error("File not found");
+                            }
+                        } else {
+                            console.error("File element not found");
+                        }
+                    }
+                });
+
+                this.on("addedfile", function(file) { // "thumbnail" 이벤트에서 "addedfile" 이벤트로 변경
+                    console.log("File added:", file.name);
+                    var removeButton = Dropzone.createElement("<button class='dz-remove'></button>");
+                    removeButton.setAttribute('data-dz-remove', '');
+                    file.previewElement.appendChild(removeButton);
+
+                    // 파일 객체를 previewElement에 직접 연결
+                    file.previewElement.file = file;
+                    
+                    var reader = new FileReader();
+                    reader.onload = function(event) {
+                        file.previewElement.addEventListener("click", function(e) {
+                            // 이벤트 버블링 방지
+                            if (e.target.classList.contains('dz-remove')) return;
+
+                            var previewImage = document.getElementById('preview-image');
+                            previewImage.src = event.target.result;
+                            previewImage.style.display = 'block';
+                        });
+                    };
+                    reader.readAsDataURL(file);
+            });
+          
+            }
+        };
+           
+    </script>
+</body>
+</html>

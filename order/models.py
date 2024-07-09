@@ -16,7 +16,7 @@ class RefundRequest(models.Model):
     order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
 
 class RefundImg(models.Model):
-    image_url = models.URLField()
+    image_url = models.ImageField() # !이미지필드 경로추가
     refund_request = models.ForeignKey(RefundRequest, on_delete=models.CASCADE, related_name='images')
 
 class Reservation(models.Model):

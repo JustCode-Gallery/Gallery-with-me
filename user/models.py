@@ -5,7 +5,7 @@ class User(AbstractUser):
     # 기본 사용자 모델에는 username, password, email, first_name, last_name 등 기본적인 필드들이 포함.
     # username은 식별자
     nickname = models.CharField(max_length=50)
-    photo_url = models.URLField(null=True)
+    photo_url = models.ImageField()     # !이미지필드 경로추가
     phone_number = models.CharField(max_length=15)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True) 

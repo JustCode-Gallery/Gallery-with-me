@@ -9,7 +9,7 @@ class ArtExhibit(models.Model):
     department = models.ForeignKey('user.Department', on_delete=models.PROTECT, related_name='exhibit_departments')  # 문자열 기반 참조
 
 class ArtExhibitPoster(models.Model):
-    poster_url = models.URLField()
+    poster_url = models.ImageField() # !이미지필드 경로추가
     exhibit = models.ForeignKey(ArtExhibit, on_delete=models.CASCADE, related_name='images')
 
 class ExhibitBookmark(models.Model):

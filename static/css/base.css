@@ -33,17 +33,42 @@
     transform: translateX(0);
 }
 
+.list-unstyled a {
+    font-family: "Bona Nova SC", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.logo {
+    font-size: 1rem;
+    font-family: "Bona Nova SC", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
 #MainCarousel{
     position: relative;
     top: 0px;
 }
 
 .carousel-caption{
-    top: 60%;
+    top: 40%;
 }
 
 .carousel-title{
-    color: black;
+    color: white;
+    font-size: 5rem;
+    font-family: "Bona Nova SC", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.carousel-title-description{
+    color: white;
+    font-size: 2rem;
+    font-weight: 400;
+    font-family: "Bona Nova SC", serif;
+    font-style: normal;
 }
 
 .breadcrumb {
@@ -67,8 +92,12 @@
     height: 100%;
 }
 
+.card:hover {
+    background-color: #f0ba32;
+}
+
 .card:hover .card-img {
-    opacity: 0.5;
+    opacity: 0;
 }
 
 .card-title {
@@ -76,19 +105,63 @@
     font-size: 1.2rem;
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
-}
-
-.card-text {
-    color: black;
-    font-size: 0.9rem;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    font-weight: 400;
+    font-family: "Bona Nova SC", serif;
+    font-style: normal;
 }
 
 .card:hover .card-title {
     opacity: 1;
 }
 
-.card:hover .card-text {
-    opacity: 1;
+.container-rcmd {
+    background-color: white;
+    padding-top: 5rem;
+    padding-inline: 10rem;
+}
+
+.rcmd-title {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: "Bona Nova SC", serif;
+    font-style: normal;
+}
+
+.rcmd-content {
+    display: flex;
+    align-items: center;
+}
+
+.rcmd-text h2,
+.rcmd-text h3,
+.rcmd-text p,
+.rcmd-text a {
+    margin-left: 2rem;
+    font-family: "Bona Nova SC", serif;
+    font-style: normal;
+}
+
+.rcmd-text h2 {
+    /* margin-left: 1rem; */
+    font-weight: 700;
+}
+
+.rcmd-text h3 {
+    /* margin-left: 1rem; */
+    font-size: 28px;
+    font-weight: 400;
+    color: black;
+}
+
+.rcmd-text p {
+    margin-top: 2rem;
+    font-size: 21px;
+    font-weight: 400;
+}
+
+.rcmd-text a {
+    /* margin-left: 1rem; */
+    font-size: 21px;
+    font-weight: 400;
+    color: black;
 }

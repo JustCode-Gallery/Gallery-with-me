@@ -16,6 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include 
+from config.views import HomeView
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +29,5 @@ urlpatterns = [
     path('order/', include('order.urls')),
     path('payment/', include('payment.urls')),
     path('user/', include('user.urls')),
-]
+    path('', HomeView.as_view(),name='home'), # 홈화면
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

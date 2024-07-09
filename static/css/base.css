@@ -1,0 +1,94 @@
+﻿.header {
+    background-color: transparent;
+    transition: background-color 0.3s ease-out;
+}
+.header.fixed {
+    background-color: white;
+}
+
+/* 기본 사이드바 스타일 */
+.sidebar {
+    width: 280px;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1;
+}
+
+/* 작은 화면에서 활성화된 사이드바 스타일 */
+@media (max-width: 576px) {
+    .sidebar {
+        width: 100%;
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+}
+.sidebar.active {
+    transform: translateX(0);
+}
+
+#MainCarousel{
+    position: relative;
+    top: 0px;
+}
+
+.carousel-caption{
+    top: 60%;
+}
+
+.carousel-title{
+    color: black;
+}
+
+.breadcrumb {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.breadcrumb .breadcrumb-item a {
+    color: black; /* 글자 색상 설정 */
+    text-decoration: none; /* 밑줄 제거 */
+}
+
+.card {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img {
+    transition: opacity 0.3s ease-in-out;
+    height: 100%;
+}
+
+.card:hover .card-img {
+    opacity: 0.5;
+}
+
+.card-title {
+    color: black;
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.card-text {
+    color: black;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.card:hover .card-title {
+    opacity: 1;
+}
+
+.card:hover .card-text {
+    opacity: 1;
+}

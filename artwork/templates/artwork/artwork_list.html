@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Art Work List</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'path_to_your_css_file.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <!-- 작품들 -->
+    <div class="container-fluid works" id="artwork-container">
+        <div class="row">
+            {% for artwork in artwork_list %}
+                <div class="col-4 card p-0 border-0 rounded-0">
+                    <img src="{{ artwork.artimage_set.first.image_url }}" class="card-img rounded-0" alt="...">
+                    <div class="card-img-overlay d-flex flex-column justify-content-center text-center">
+                        <h5 class="card-title">{{ artwork.title }}</h5>
+                        <h6 class="card-text">{{ artwork.price }}</h6>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- 작품들end -->
+
+    <script>
+        var page = 2;
+        var loading = false;
+
+        function loadMoreArtworks() {
+            if (loading) return;
+            loading = true;
+
+            $.ajax({
+                url: "{% url 'artwork:load_more_artworks' %}",
+                data: {
+                    'page': page,
+                },
+                success: function(data) {
+                    if (data.artworks.length > 0) {
+                        data.artworks.forEach(function(artwork) {
+                            var cardHtml = `
+                                <div class="col-4 card p-0 border-0 rounded-0">
+                                    <img src="${artwork.image_url}" class="card-img rounded-0" alt="...">
+                                    <div class="card-img-overlay d-flex flex-column justify-content-center text-center">
+                                        <h5 class="card-title">${artwork.title}</h5>
+                                        <h6 class="card-text">${artwork.price}</h6>
+                                    </div>
+                                </div>`;
+                            $('#artwork-container .row').append(cardHtml);
+                        });
+                        page++;
+                    }
+                    loading = false;
+                },
+                error: function() {
+                    loading = false;
+                }
+            });
+        }
+
+        $(window).scroll(function() {
+            if ($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+                loadMoreArtworks();
+            }
+        });
+    </script>
+</body>
+</html>

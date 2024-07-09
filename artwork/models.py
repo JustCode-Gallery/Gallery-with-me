@@ -13,7 +13,7 @@ class ArtWork(models.Model):
     is_sold = models.BooleanField()  # 판매 여부 체크
 
 class ArtImage(models.Model):
-    image_url = models.URLField()
+    image_url = models.ImageField()     # !이미지필드 경로추가
     artwork = models.ForeignKey(ArtWork, on_delete=models.CASCADE)
 
 class Material(models.Model):

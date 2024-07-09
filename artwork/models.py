@@ -11,6 +11,7 @@ class ArtWork(models.Model):
     seller = models.ForeignKey('user.Seller', on_delete=models.CASCADE)  # 문자열 기반 참조
     exhibit = models.ForeignKey('exhibit.ArtExhibit', on_delete=models.SET_NULL, null=True)  # 전시 삭제시 or 전시 없는 경우, NULL로 설정
     is_sold = models.BooleanField()  # 판매 여부 체크
+    is_reservable = models.BooleanField(default=False) # 예약 여부 체크
 
 class ArtImage(models.Model):
     image_url = models.ImageField()     # !이미지필드 경로추가

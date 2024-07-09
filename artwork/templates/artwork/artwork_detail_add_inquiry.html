@@ -1,0 +1,32 @@
+<!-- add_inquiry.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>작가에게 문의하기</title>
+    <link rel="stylesheet" href="{% static 'path_to_your_css_file.css' %}">
+</head>
+<body>
+    <h1>{{ artwork.title }} - 작가에게 문의하기</h1>
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <form method="post" id="inquiry-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">문의 보내기</button>
+        <button type="button" class="btn btn-secondary" id="close-button">닫기</button>
+    </form>
+
+    <script>
+        document.getElementById('close-button').addEventListener('click', function() {
+            window.location.href = '{% url "artwork_detail" artwork.id %}';
+        });
+    </script>
+</body>
+</html>

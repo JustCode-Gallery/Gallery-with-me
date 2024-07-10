@@ -31,12 +31,21 @@ function hideCarouselIndicators() {
 
 
 document.addEventListener("DOMContentLoaded", function() {
-    const hamburgerIcon = document.getElementById('Sidebar-control');
-    const sidebar = document.querySelector('.sidebar');
+    const sidebarMenuIcon = document.getElementById('Sidebar-menu');
+    const sidebarProfileIcon = document.getElementById('Sidebar-profile');
+    const sidebarMenu = document.querySelector('.sidebar-menu');
+    const sidebarProfile = document.querySelector('.sidebar-profile');
 
-    hamburgerIcon.addEventListener('click', function(e) {
+    sidebarMenuIcon.addEventListener('click', function(e) {
         e.preventDefault();
-        sidebar.classList.toggle('active');
+        sidebarMenu.classList.toggle('active');
+        sidebarProfile.classList.remove('active');
+    });
+
+    sidebarProfileIcon.addEventListener('click', function(e) {
+        e.preventDefault();
+        sidebarProfile.classList.toggle('active');
+        sidebarMenu.classList.remove('active');
     });
 });
 

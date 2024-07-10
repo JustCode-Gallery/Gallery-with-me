@@ -20,23 +20,18 @@
     z-index: 1;
 }
 
-/* 작은 화면에서 활성화된 사이드바 스타일 */
-@media (max-width: 576px) {
-    .sidebar {
-        width: 100%;
-    }
-    .sidebar.active {
-        transform: translateX(0);
-    }
-}
 .sidebar.active {
     transform: translateX(0);
 }
 
-.list-unstyled a {
-    font-family: "Bona Nova SC", serif;
-    font-weight: 400;
-    font-style: normal;
+.sidebar,
+.list-unstyled,
+.btn-toggle,
+.link-body-emphasis,
+.btn-toggle-nav a {
+  font-weight: 400;
+  font-family: "Bona Nova SC", serif;
+  font-style: normal;
 }
 
 .logo {
@@ -120,6 +115,17 @@
     padding-inline: 10rem;
 }
 
+.rcmd-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.rcmd-head svg {
+    margin-left: auto;
+}
+
 .rcmd-title {
     font-size: 2rem;
     font-weight: 700;
@@ -129,28 +135,36 @@
 
 .rcmd-content {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     align-items: center;
 }
 
-.rcmd-text h2,
-.rcmd-text h3,
-.rcmd-text p,
-.rcmd-text a {
+.rcmd-img {
+    flex-basis: 40%;
+    max-width: 40%;
+}
+
+.rcmd-img img {
+    width: 100%;
+    height: auto;
+}
+
+.rcmd-text {
     margin-left: 2rem;
     font-family: "Bona Nova SC", serif;
     font-style: normal;
+    flex-basis: 55%;
+    max-width: 55%;
 }
 
 .rcmd-text h2 {
-    /* margin-left: 1rem; */
     font-weight: 700;
 }
 
 .rcmd-text h3 {
-    /* margin-left: 1rem; */
     font-size: 28px;
     font-weight: 400;
-    color: black;
 }
 
 .rcmd-text p {
@@ -164,4 +178,35 @@
     font-size: 21px;
     font-weight: 400;
     color: black;
+}
+
+.footer-text {
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+@media (max-width: 991px) {
+    .sidebar {
+        width: 100%;
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .carousel-title {
+        font-size: 3rem;
+    }
+
+    .rcmd-content {
+        flex-direction: column;
+    }
+    .rcmd-img,
+    .rcmd-text {
+        flex-basis: auto;
+        max-width: 100%;
+    }
+    .rcmd-text p,
+    .rcmd-text a {
+        font-size: 1rem;
+    }
 }

@@ -1,18 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends 'base.html' %}
+{% load static %}
+    
     <title>Board-detail</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    {% block extra-style %}
+
     <script src="https://kit.fontawesome.com/a47086679e.js" crossorigin="anonymous"></script>
 
     <style>
-         .img-container {
+        .img-container {
             position: relative;
             overflow: hidden;
+            width: 100%; /* 원하는 고정 너비로 설정 */
+            height: 600px; /* 원하는 고정 높이로 설정 */
+            background-color: #000;
+        }
+        .img-container img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
         }
         .overlay {
             position: absolute;
@@ -32,23 +42,61 @@
             background-color: #373634;
             color: #fff;
         }
+        
+        .post-content {
+            background-color: #fff; /* 흰색 배경 */
+            padding: 20px; /* 내부 여백 */
+            border: 1px solid #ddd; /* 테두리 */
+            border-radius: 5px; /* 모서리 둥글게 */
+            font-family: 'Arial', sans-serif; /* 글꼴 설정 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+        }
+
+        .post-content h2 {
+            font-size: 24px; /* 제목 크기 */
+            margin-bottom: 10px; /* 아래 여백 */
+            color: #333; /* 제목 색상 */
+        }
+
+        .post-content p {
+            font-size: 14px; /* 본문 크기 */
+            color: #666; /* 본문 색상 */
+            margin-bottom: 10px; /* 아래 여백 */
+        }
+
+        .post-content li.h5 {
+            font-size: 18px; /* 리스트 아이템 크기 */
+            color: #333; /* 리스트 아이템 색상 */
+            margin-bottom: 5px; /* 아래 여백 */
+        }
+
+        .post-content a {
+            color: #007bff; /* 링크 색상 */
+            text-decoration: none; /* 밑줄 제거 */
+        }
+
+        .post-content a:hover {
+            text-decoration: underline; /* 링크에 호버 시 밑줄 추가 */
+        }
+        li{
+            list-style: none;
+        }
+
             
-    
     </style>
+    {% endblock %}
     
-</head>
-<body>
-    <div class="container">
-        <h2 class="mt-5">포스트 제목</h2>
-        <p>2024-07-09</p>
+    {% block content %}
+    <div class="container mt-5">
+        
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-8 post-img" >
                 <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
                       <div class="carousel-item active">
                         <div class="img-container">
                             <!-- seed 뒤 포스트 id 부여 seed/{{post.id}} -->
-                            <img src="https://picsum.photos/seed/11/1080/700" class="img-fluid" alt="random_img11">
+                            <img src="{% static 'sample_images/예원예술대_융합조형디자인_포스터.png' %}" class="img-fluid" alt="random_img11">
                                 <div class="overlay">
                                     <!-- #373634 -->
                                     <span class="carousel-cap">1/3</span>
@@ -57,7 +105,7 @@
                       </div>
                       <div class="carousel-item">
                         <div class="img-container">
-                            <img src="https://picsum.photos/seed/12/1080/700" class="img-fluid" alt="random_img11">
+                            <img src="{% static 'sample_images/융합디자인1.png' %}" class="img-fluid" alt="random_img11">
                                 <div class="overlay">
                                     <!-- #373634 -->
                                     <span class="carousel-cap">2/3</span>
@@ -66,7 +114,7 @@
                       </div>
                       <div class="carousel-item">
                         <div class="img-container">
-                            <img src="https://picsum.photos/seed/13/1080/700" class="img-fluid" alt="random_img11">
+                            <img src="{% static 'sample_images/융합디자인2.png' %}" class="img-fluid" alt="random_img11">
                                 <div class="overlay">
                                     <!-- #373634 -->
                                     <span class="carousel-cap">3/3</span>
@@ -85,15 +133,48 @@
                   </div>
             </div>
 
-            <ul class="col-md-3 mt-3 offset-md-1 post-content">
-                <li class="h5">설명</li>
+            <ul class="col-md-4 post-content">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                    <h5 class="mb-3"><i class="fa-solid fa-circle-user"></i>&nbsp;관리자</h5>
+                    <p>2024-07-09</p>
+                </div>
+                <h2 class="">2023 예원예술대학교 졸업전 리뷰</h2>
+                
                 <p>
-                    It is a long established fact that a reader will be distracted 
+                    전북특별자치도 임실군 신평면 창인로 117에 위치한 예원예대 학교가 너무 멀다 
+                    전시자체는 작년에 비해 동선이 개선되어서 보기에 한결 편해졌다.
+                    아주 적게 걷고 콤펙트 하게 전시를 감상했다
                 </p>
                 
                 <li class="h5">전시</li>
-                <p><a href="">홍익대</a></p>
+                <p><a href="">예원예술대 융합디자인</a></p>
+                <div>
+                    <br>
+                    <hr>
+                    <div id="disqus_thread"></div>
+                    <script>
+                        /**
+                        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+                        /*
+                        var disqus_config = function () {
+                        this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                        this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                        };
+                        */
+                        (function() { // DON'T EDIT BELOW THIS LINE
+                        var d = document, s = d.createElement('script');
+                        s.src = 'https://gallery-with-me.disqus.com/embed.js';
+                        s.setAttribute('data-timestamp', +new Date());
+                        (d.head || d.body).appendChild(s);
+                        })();
+                    </script>
+                    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        
+                </div>
             </ul>
         </div>
+
+       
     </div>
-</body>
+{% endblock %}

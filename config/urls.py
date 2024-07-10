@@ -23,7 +23,7 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
       # 앱별 urls연결
-    path('artword/', include('artwork.urls')),
+    path('artwork/', include('artwork.urls')),
     path('board/', include('board.urls')),
     path('exhibit/', include('exhibit.urls')),
     path('order/', include('order.urls')),

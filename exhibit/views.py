@@ -18,8 +18,10 @@ def exhibit_map(request, exhibit_id):
     # 주소를 위도와 경도로 변환
     geolocator = Nominatim(user_agent="art_exhibit_locator")
     location = geolocator.geocode(exhibit.address)
-    lat = location.latitude
-    lon = location.longitude
+    # lat = location.latitude
+    lat = 37.4619375
+    # lon = location.longitude
+    lon = 126.9530625
 
     # folium 객체 생성, Marker 추가
     figure = folium.Map(location=[lat, lon], zoom_start=17)
@@ -36,7 +38,4 @@ def exhibit_map(request, exhibit_id):
         'address': exhibit.address,
     }
 
-    return render(request, 'exhibit/exhibit_list.html', context)
-
-
-map = folium.Map(location=[37, 127], zoom_start=10)
+    return render(request, 'exhibit/list_detail.html', context)

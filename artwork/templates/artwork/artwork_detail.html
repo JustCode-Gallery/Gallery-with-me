@@ -1,0 +1,68 @@
+<!-- artwork_detail.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ artwork.title }} - 상세 정보</title>
+    <link rel="stylesheet" href="{% static 'path_to_your_css_file.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>{{ artwork.title }}</h1>
+    <img src="{{ artwork.artimage_set.first.image_url }}" alt="{{ artwork.title }}">
+    <p><strong>설명:</strong> {{ artwork.description }}</p>
+    <p><strong>가격:</strong> {{ artwork.price }}</p>
+    <p><strong>크기:</strong> {{ artwork.width }} x {{ artwork.height }} x {{ artwork.depth }}</p>
+    <p><strong>판매자:</strong> {{ artwork.seller.username }}</p>
+    <p><strong>전시:</strong> {{ artwork.exhibit.title if artwork.exhibit else "없음" }}</p>
+    <p><strong>판매 여부:</strong> {% if artwork.is_sold %} 판매 완료 {% else %} 판매 중 {% endif %}</p>
+
+    <button id="like-button" data-artwork-id="{{ artwork.id }}">
+        {% if user.is_authenticated and artwork.worklike_set.filter(user=user).exists %}
+            좋아요 취소
+        {% else %}
+            좋아요
+        {% endif %}
+    </button>
+    <span id="like-count">{{ artwork.worklike_set.count }}</span>
+
+    <!-- 예약, 구매하기 및 장바구니에 추가하기 버튼 -->
+    {% if not artwork.is_sold %}
+        {% if artwork.is_reservable %}
+        <a href="{% url 'reserve_artwork' artwork.id %}" class="btn btn-warning">구매 예약</a>
+        {% else %}
+        <a href="{% url 'add_to_cart' artwork.id %}" class="btn btn-primary">장바구니에 추가</a>
+        <a href="{% url 'buy_now' artwork.id %}" class="btn btn-success">구매하기</a>
+        {% endif %}
+    {% endif %}
+
+    <!-- 작가에게 문의하기 버튼 -->
+    <button id="inquiry-button" class="btn btn-info">작가에게 문의하기</button>
+
+    <!-- 좋아요 기능 AJAX로 요청 -->
+    <script>
+        $('#like-button').click(function() {
+            var button = $(this);
+            var artworkId = button.data('artwork-id');
+            $.ajax({
+                url: '{% url "toggle_work_like" artwork.id %}',
+                method: 'POST',
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                success: function(response) {
+                    if (response.liked) {
+                        button.text('좋아요 취소');
+                    } else {
+                        button.text('좋아요');
+                    }
+                    $('#like-count').text(response.count);
+                }
+            });
+        });
+
+        $('#inquiry-button').click(function() {
+            window.location.href = '{% url "add_inquiry" artwork.id %}';
+        });
+    </script>
+</body>
+</html>

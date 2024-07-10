@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import Post
-from .models import PostImage
+from .models import Post, PostImage
 
 # Register your models here.
 class PostImageInline(admin.TabularInline):

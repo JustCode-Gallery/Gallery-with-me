@@ -6,23 +6,42 @@
 {% endblock %}
 
 {% block content %}
+
+<!-- 정렬 -->
+<div style="margin-top: 200px;">
+    <a href="javascript:void(0)" onclick="updateSort('recent')">최근 등록순</a> |
+    <a href="javascript:void(0)" onclick="updateSort('high_price')">가격 높은순</a> |
+    <a href="javascript:void(0)" onclick="updateSort('low_price')">가격 낮은순</a>
+</div>
+
 <!-- 작품들 -->
-<div class="container-fluid works" id="artwork-container">
+<div class="container-fluid" id="artwork-container">
     <div class="row" style="margin-top: 350px;">
         {% for artwork in artwork_list %}
-            <div class="col-4 card p-0 border-0 rounded-0">
-                <img src="{{ artwork.artimage_set.first.image_url.url }}" class="artwork-card-img rounded-0">
-                <div class="card-img-overlay d-flex flex-column justify-content-center text-center">
-                    <h5 class="artwork-card-title">{{ artwork.title }}</h5>
-                    <h6 class="artwork-card-text">{{ artwork.price }}</h6>
-                </div>
+        <div class="col-4 artwork-card p-0 border-0 rounded-0">
+            <div class="ratio ratio-1x1">
+                <a href="{% url 'artwork:artwork_detail' artwork.pk %}">
+                    <img src="{{ artwork.artimage_set.first.image_url.url }}" class="artwork-card-img rounded-0">
+                    <div class="artwork-card-img-overlay d-flex flex-column justify-content-center text-center align-items-center">
+                        <h5 class="artwork-card-title">{{ artwork.title }}</h5>
+                        <h5 class="artwork-card-title">{{ artwork.price }}</h5>
+                    </div>
+                </a>
             </div>
+        </div>
         {% endfor %}
     </div>
 </div>
 <!-- 작품들end -->
 
 <script>
+    function updateSort(sortType) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sort_by', sortType);
+        // 다른 필터 파라미터를 유지하면서 URL 업데이트
+        window.location.search = urlParams.toString();
+    }
+    
     var page = 2;
     var loading = false;
 
@@ -39,11 +58,11 @@
                 if (data.artworks.length > 0) {
                     data.artworks.forEach(function(artwork) {
                         var cardHtml = `
-                            <div class="col-4 card p-0 border-0 rounded-0">
-                                <img src="${artwork.image_url}" class="card-img rounded-0" alt="...">
-                                <div class="card-img-overlay d-flex flex-column justify-content-center text-center">
-                                    <h5 class="card-title">${artwork.title}</h5>
-                                    <h6 class="card-text">${artwork.price}</h6>
+                            <div class="col-4 artwork-card p-0 border-0 rounded-0">
+                                <img src="${artwork.image_url}" class="artwork-card-img rounded-0" alt="...">
+                                <div class="artwork-card-img-overlay d-flex flex-column justify-content-center text-center">
+                                    <h5 class="artwork-card-title">${artwork.title}</h5>
+                                    <h6 class="artwork-card-text">${artwork.price}</h6>
                                 </div>
                             </div>`;
                         $('#artwork-container .row').append(cardHtml);

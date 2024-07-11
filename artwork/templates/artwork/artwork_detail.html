@@ -1,4 +1,9 @@
-<!-- artwork_detail.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra-style %}
+<link rel="stylesheet" href="{% static 'artwork/style.css' %}">
+{% endblock %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,11 +20,10 @@
     <p><strong>가격:</strong> {{ artwork.price }}</p>
     <p><strong>크기:</strong> {{ artwork.width }} x {{ artwork.height }} x {{ artwork.depth }}</p>
     <p><strong>판매자:</strong> {{ artwork.seller.username }}</p>
-    <p><strong>전시:</strong> {{ artwork.exhibit.title if artwork.exhibit else "없음" }}</p>
-    <p><strong>판매 여부:</strong> {% if artwork.is_sold %} 판매 완료 {% else %} 판매 중 {% endif %}</p>
+    <p><strong>전시:</strong> {% if artwork.exhibit %} {{ artwork.exhibit.title }} {% else %} 없음 {% endif %}</p>
 
     <button id="like-button" data-artwork-id="{{ artwork.id }}">
-        {% if user.is_authenticated and artwork.worklike_set.filter(user=user).exists %}
+        {% if liked %}
             좋아요 취소
         {% else %}
             좋아요
@@ -30,10 +34,10 @@
     <!-- 예약, 구매하기 및 장바구니에 추가하기 버튼 -->
     {% if not artwork.is_sold %}
         {% if artwork.is_reservable %}
-        <a href="{% url 'reserve_artwork' artwork.id %}" class="btn btn-warning">구매 예약</a>
+        <a href="{% url 'artwork:reserve_artwork' artwork.id %}" class="btn btn-warning">구매 예약</a>
         {% else %}
-        <a href="{% url 'add_to_cart' artwork.id %}" class="btn btn-primary">장바구니에 추가</a>
-        <a href="{% url 'buy_now' artwork.id %}" class="btn btn-success">구매하기</a>
+        <a href="{% url 'artwork:add_to_cart' artwork.id %}" class="btn btn-primary">장바구니에 추가</a>
+        <a href="{% url 'artwork:buy_now' artwork.id %}" class="btn btn-success">구매하기</a>
         {% endif %}
     {% endif %}
 
@@ -46,7 +50,7 @@
             var button = $(this);
             var artworkId = button.data('artwork-id');
             $.ajax({
-                url: '{% url "toggle_work_like" artwork.id %}',
+                url: '{% url "artwork:toggle_work_like" artwork.id %}',
                 method: 'POST',
                 headers: {'X-CSRFToken': '{{ csrf_token }}'},
                 success: function(response) {
@@ -61,7 +65,7 @@
         });
 
         $('#inquiry-button').click(function() {
-            window.location.href = '{% url "add_inquiry" artwork.id %}';
+            window.location.href = '{% url "artwork:add_inquiry" artwork.id %}';
         });
     </script>
 </body>

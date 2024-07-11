@@ -14,7 +14,7 @@ class ArtWork(models.Model):
     is_reservable = models.BooleanField(default=False) # 예약 여부 체크
 
 class ArtImage(models.Model):
-    image_url = models.ImageField()     # !이미지필드 경로추가
+    image_url = models.ImageField(upload_to='artwork_image/')     # !이미지필드 경로추가
     artwork = models.ForeignKey(ArtWork, on_delete=models.CASCADE)
 
 class Material(models.Model):

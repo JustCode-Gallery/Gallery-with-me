@@ -8,7 +8,7 @@ class Post(models.Model):
     exhibit = models.ForeignKey('exhibit.ArtExhibit', on_delete=models.CASCADE)  # 문자열 기반 참조
 
 class PostImage(models.Model):
-    image_url = models.ImageField(upload_to='post_images/')
+    image_url = models.ImageField(upload_to='post_images/', blank=True, null=True)
     image_order = models.IntegerField()
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
 

@@ -59,27 +59,37 @@ class ArtWorkListView(ListView):
             context['artwork_list'] = self.get_queryset()
         return context
     
-def load_more_artworks(request): # AJAX로 무한 페이지 구현
-    page = request.GET.get('page')
+def load_more_artworks(request):
+    page = request.GET.get('page', 1)
     artworks = ArtWork.objects.filter(is_sold=False)
-    paginator = Paginator(artworks, PAGINATE_BY)
-    artworks = paginator.get_page(page)
-    return JsonResponse({
-        'artworks': [
-            {
-                'id': artwork.id,
-                'title': artwork.title,
-                'price': artwork.price,
-                'image_url': artwork.artimage_set.first().image_url
-            }
-            for artwork in artworks
-        ]
-    })
+    paginator = Paginator(artworks, 10)  # 페이지당 10개 항목
+    page_obj = paginator.get_page(page)
+    
+    artworks_data = [
+        {
+            'id': artwork.id,
+            'title': artwork.title,
+            'price': artwork.price,
+            'image_url': artwork.artimage_set.first().image.url if artwork.artimage_set.first() else ''
+        }
+        for artwork in page_obj
+    ]
+    
+    return JsonResponse({'artworks': artworks_data})
     
 class ArtWorkDetailView(DetailView):
     model = ArtWork
-    template_name = 'artwork_detail.html'
+    template_name = 'artwork/artwork_detail.html'
     context_object_name = 'artwork'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        artwork = self.get_object()
+        if self.request.user.is_authenticated:
+            context['liked'] = artwork.worklike_set.filter(user=self.request.user).exists()
+        else:
+            context['liked'] = False
+        return context
 
 
 @login_required

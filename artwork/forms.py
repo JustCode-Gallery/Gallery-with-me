@@ -3,13 +3,13 @@ from .models import Tag, TagCategory, Material, ArtistInquiry
 
 class ArtWorkFilterForm(forms.Form):
 
-    최소가격 = forms.IntegerField(required=False, label='최소가격')
-    최대가격 = forms.IntegerField(required=False, label='최대가격')
-    최소너비 = forms.IntegerField(required=False, label='최소너비')
-    최대너비 = forms.IntegerField(required=False, label='최대너비')
-    최소높이 = forms.IntegerField(required=False, label='최소높이')
-    최대높이 = forms.IntegerField(required=False, label='최대높이')
-    재료 = forms.ModelMultipleChoiceField(
+    min_price = forms.IntegerField(required=False, label='최소가격')
+    max_price = forms.IntegerField(required=False, label='최대가격')
+    min_width = forms.IntegerField(required=False, label='최소너비')
+    max_width = forms.IntegerField(required=False, label='최대너비')
+    min_height = forms.IntegerField(required=False, label='최소높이')
+    max_height = forms.IntegerField(required=False, label='최대높이')
+    Material_tag_search = forms.ModelMultipleChoiceField(
         queryset=Material.objects.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple,
@@ -28,6 +28,9 @@ class ArtWorkFilterForm(forms.Form):
                 widget=forms.CheckboxSelectMultiple,
                 label=field_name
             )
+
+    def label_from_instance(self, obj): # 모델 인스턴스 name 속성을 가져오기
+        return obj.name
 
 class ArtistInquiryForm(forms.ModelForm):
     class Meta:

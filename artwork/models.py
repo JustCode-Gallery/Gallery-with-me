@@ -20,6 +20,10 @@ class ArtImage(models.Model):
 class Material(models.Model):
     name = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.name
+
+
 class ArtWorkMaterial(models.Model):
     art_work = models.ForeignKey(ArtWork, on_delete=models.CASCADE)
     material = models.ForeignKey(Material, on_delete=models.CASCADE)
@@ -34,6 +38,9 @@ class TagCategory(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     tag_category = models.ForeignKey(TagCategory, on_delete=models.PROTECT)  # TagCategory의 하위 Tag가 존재할 경우, 삭제되지 않도록 설정
+
+    def __str__(self):
+        return self.name
 
 class ArtTag(models.Model):
     art_work = models.ForeignKey(ArtWork, on_delete=models.CASCADE)

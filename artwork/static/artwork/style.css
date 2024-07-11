@@ -3,16 +3,19 @@
     overflow: hidden;
 }
 
+.artwork-card-img {
+    transition: opacity 0.3s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    object-fit: cover;
+}
 .artwork-card:hover {
     background-color: #f0ba32;
 }
-
-.artwork-card-img {
-    transition: opacity 0.3s ease-in-out;
-    height: 500px;
-}
-
-.artwork-card:hover .card-img {
+.artwork-card:hover .artwork-card-img {
     opacity: 0;
 }
 
@@ -25,14 +28,6 @@
     font-family: "Bona Nova SC", serif;
     font-style: normal;
 }
-
-.artwork-card:hover .card-title {
+.artwork-card:hover .artwork-card-title {
     opacity: 1;
-}
-
-.artwork-container-rcmd {
-    background-color: white;
-    padding-top: 5rem;
-    padding-inline: 10rem;
-    margin-top: 1000px;
 }

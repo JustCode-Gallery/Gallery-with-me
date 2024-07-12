@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Art Exhibits</title>
+</head>
+<body>
+    <h1>Art Exhibits</h1>
+    <ul>
+        {% for exhibit in exhibits %}
+            <li>
+                <h2>{{ exhibit.title }}</h2>
+                <p>{{ exhibit.description }}</p>
+                <p><strong>Start Date:</strong> {{ exhibit.start_date }}</p>
+                <p><strong>End Date:</strong> {{ exhibit.end_date }}</p>
+                <p><strong>Address:</strong> {{ exhibit.address }}</p>
+                <p><a href="{% url 'exhibit:exhibit_map' exhibit.id %}">View on Map</a></p>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

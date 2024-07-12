@@ -7,4 +7,5 @@ app_name = 'exhibit'
 urlpatterns = [
     path('', exhibit_list, name='exhibit_list'),
     path('map/<int:exhibit_id>/', exhibit_map, name='exhibit_map'),
+    path('create/', create_exhibit, name='create_exhibit'),
 ]

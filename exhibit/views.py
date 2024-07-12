@@ -1,6 +1,7 @@
 from django.shortcuts import render
 import folium
 from .models import ArtExhibit
+from .forms import ArtExhibitForm
 from geopy.geocoders import Nominatim
 
 def exhibit_list(request):
@@ -39,3 +40,13 @@ def exhibit_map(request, exhibit_id):
     }
 
     return render(request, 'exhibit/list_detail.html', context)
+
+def create_exhibit(request):
+    if request.method == 'POST':
+        form = ArtExhibitForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('exhibit_list')
+    else:
+        form = ArtExhibitForm()
+    return render(request, 'art_exhibit/form.html', {'form': form})

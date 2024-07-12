@@ -26,60 +26,58 @@ class ArtWorkListView(ListView):
         elif sort_by == 'recent': # 최근 등록순
             queryset = queryset.order_by('-created_at')
         
-        # 필터 폼 데이터 가져오기
+        # 검색 폼 데이터 처리
         form = ArtWorkFilterForm(self.request.GET)
         if form.is_valid():
-            # 동적으로 생성된 필드들을 기반으로 필터링 적용
             for field_name, field_value in form.cleaned_data.items():
                 if field_value:
-                    if field_name == '최소가격':
-                        queryset = queryset.filter(price__gte=field_value)
-                    elif field_name == '최대가격':
-                        queryset = queryset.filter(price__lte=field_value)
-                    elif field_name == '최소너비':
-                        queryset = queryset.filter(width__gte=field_value)
-                    elif field_name == '최대너비':
-                        queryset = queryset.filter(width__lte=field_value)
-                    elif field_name == '최소높이':
-                        queryset = queryset.filter(height__gte=field_value)
-                    elif field_name == '최대높이':
-                        queryset = queryset.filter(height__lte=field_value)
-                    elif field_name == '재료':
-                        queryset = queryset.filter(artworkmaterial__material__in=field_value).distinct()
-                    else:
-                        # 태그 카테고리 필드인 경우
-                        queryset = queryset.filter(tag__in=field_value).distinct()
+                    queryset = queryset.filter(**{field_name: field_value})
 
         return queryset.filter(is_sold = False)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = ArtWorkFilterForm(self.request.GET)
+        context['form'] = ArtWorkFilterForm()
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             context['artwork_list'] = self.get_queryset()
         return context
     
-def load_more_artworks(request): # AJAX로 무한 페이지 구현
-    page = request.GET.get('page')
+def load_more_artworks(request):
+    page = request.GET.get('page', 1)
     artworks = ArtWork.objects.filter(is_sold=False)
-    paginator = Paginator(artworks, PAGINATE_BY)
-    artworks = paginator.get_page(page)
-    return JsonResponse({
-        'artworks': [
-            {
-                'id': artwork.id,
-                'title': artwork.title,
-                'price': artwork.price,
-                'image_url': artwork.artimage_set.first().image_url
-            }
-            for artwork in artworks
-        ]
-    })
+    paginator = Paginator(artworks, 10)  # 페이지당 10개 항목
+    page_obj = paginator.get_page(page)
+    
+    artworks_data = [
+        {
+            'id': artwork.id,
+            'title': artwork.title,
+            'price': artwork.price,
+            'image_url': artwork.artimage_set.first().image.url if artwork.artimage_set.first() else ''
+        }
+        for artwork in page_obj
+    ]
+    
+    return JsonResponse({'artworks': artworks_data})
     
 class ArtWorkDetailView(DetailView):
     model = ArtWork
-    template_name = 'artwork_detail.html'
+    template_name = 'artwork/artwork_detail.html'
     context_object_name = 'artwork'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        artwork = self.get_object()
+        user = self.request.user
+        if user.is_authenticated:
+            try:
+                context['liked'] = artwork.worklike_set.filter(user=user).exists()
+            except Exception as e:
+                context['liked'] = False
+                context['error'] = str(e)
+        else:
+            context['liked'] = False
+        return context
 
 
 @login_required

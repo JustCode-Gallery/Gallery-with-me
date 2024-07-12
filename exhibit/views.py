@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import folium
 from .models import ArtExhibit
 from .forms import ArtExhibitForm
@@ -49,4 +49,4 @@ def create_exhibit(request):
             return redirect('exhibit_list')
     else:
         form = ArtExhibitForm()
-    return render(request, 'art_exhibit/form.html', {'form': form})
+    return render(request, 'exhibit/form.html', {'form': form})

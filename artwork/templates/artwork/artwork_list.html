@@ -2,27 +2,37 @@
 {% load static %}
 
 {% block extra-style %}
-<link rel="stylesheet" href="{% static 'artwork/style.css' %}">
+<link rel="stylesheet" href="{% static 'artwork/list_style.css' %}">
 {% endblock %}
 
 {% block content %}
 
 <!-- 정렬 -->
-<div style="margin-top: 200px;">
-    <a href="javascript:void(0)" onclick="updateSort('recent')">최근 등록순</a> |
-    <a href="javascript:void(0)" onclick="updateSort('high_price')">가격 높은순</a> |
-    <a href="javascript:void(0)" onclick="updateSort('low_price')">가격 낮은순</a>
+<div class="head-container">
+    <div class="direct-container">
+        <p class="text-center">Artworks</p>
+        <div class="d-flex justify-content-center">
+            <a class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover">Artworks |</a>
+            <a class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover">Community</a>
+            <a class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover">| Exhibition Map</a>
+        </div>
+    <!-- </div> -->
+    <div class="sort-container d-flex justify-content-end">
+        <a class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover" href="javascript:void(0)" onclick="updateSort('recent')">최근 등록순 |</a>
+        <a class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover" href="javascript:void(0)" onclick="updateSort('high_price')">가격 높은순</a>
+        <a class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover" href="javascript:void(0)" onclick="updateSort('low_price')">| 가격 낮은순</a>
+    </div>
 </div>
 
 <!-- 작품들 -->
 <div class="container-fluid" id="artwork-container">
-    <div class="row" style="margin-top: 350px;">
+    <div class="row" style="margin-top: 20px;">
         {% for artwork in artwork_list %}
         <div class="col-4 artwork-card p-0 border-0 rounded-0">
             <div class="ratio ratio-1x1">
                 <a href="{% url 'artwork:artwork_detail' artwork.pk %}">
                     <img src="{{ artwork.artimage_set.first.image_url.url }}" class="artwork-card-img rounded-0">
-                    <div class="artwork-card-img-overlay d-flex flex-column justify-content-center text-center align-items-center">
+                    <div class="artwork-card-img-overlay d-flex flex-column justify-content-center align-items-center">
                         <h5 class="artwork-card-title">{{ artwork.title }}</h5>
                         <h5 class="artwork-card-title">{{ artwork.price }}</h5>
                     </div>

@@ -4,21 +4,17 @@
 {% block extra-style %}
 <link rel="stylesheet" href="{% static 'artwork/style.css' %}">
 {% endblock %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ artwork.title }} - 상세 정보</title>
-    <link rel="stylesheet" href="{% static 'path_to_your_css_file.css' %}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-    <h1>{{ artwork.title }}</h1>
-    <img src="{{ artwork.artimage_set.first.image_url }}" alt="{{ artwork.title }}">
+{% block content %}
+    <img src="{{ artwork.artimage_set.first.image_url.url }}" alt="{{ artwork.title }}" style="margin-top: 100px; width: 500px; height:100%">
     <p><strong>설명:</strong> {{ artwork.description }}</p>
     <p><strong>가격:</strong> {{ artwork.price }}</p>
-    <p><strong>크기:</strong> {{ artwork.width }} x {{ artwork.height }} x {{ artwork.depth }}</p>
+    <p><strong>크기:</strong> 
+        {% if artwork.depth == 0 %}
+        {{ artwork.width }} x {{ artwork.height }}
+        {% else %}
+        {{ artwork.width }} x {{ artwork.height }} x {{ artwork.depth }}
+        {% endif %}
+    </p>
     <p><strong>판매자:</strong> {{ artwork.seller.username }}</p>
     <p><strong>전시:</strong> {% if artwork.exhibit %} {{ artwork.exhibit.title }} {% else %} 없음 {% endif %}</p>
 
@@ -68,5 +64,5 @@
             window.location.href = '{% url "artwork:add_inquiry" artwork.id %}';
         });
     </script>
-</body>
-</html>
+{% endblock %}
+

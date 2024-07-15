@@ -1,0 +1,28 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="d-flex justify-content-center mb-5">
+        <form method="post" class="border p-4 rounded mt-4" style="width: 300px;">
+            <h2 class="text-center mb-4">Login</h2>
+            {% if error %}
+            <p style="color: red;" class="text-center">{{ error }}</p>
+            {% endif %}
+            {% csrf_token %}
+            <div class="mb-3">
+                <!-- <label for="email" class="form-label">Email:</label> -->
+                <input type="text" id="email" name="email" class="form-control" placeholder="Email" required>
+            </div>
+            <div class="mb-3">
+                <!-- <label for="password" class="form-label">Password:</label> -->
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password"
+                    required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mb-4">Submit</button>
+            <a class="text-center text-decoration-none black fs-6" href="{% url 'user:select_register' %}">
+                <h6>회원가입</h6>
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

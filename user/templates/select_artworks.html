@@ -1,0 +1,40 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+{% block extra-style %}
+<link href="{% static 'css/user.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<form method="post" action="{% url 'user:select_artworks' %}">
+    {% csrf_token %}
+    
+    <div class="row justify-content-center mt-5 mb-5">
+        <div class="col mt-5 text-center">
+            <h3>마음에 드는 작품을 최소 5개 이상 골라주세요</h3>
+            <button type="subbmit" class="btn artwork-select btn-primary mt-3 mb-5">선택 완료</button>
+        </div>
+    </div>
+
+    <div class="container-fluid works mt-5">
+        <div class="row">
+            {% for artwork in artworks %}
+            <div class="col-4 card p-0 border-0 rounded-0">
+                <label for="artwork_{{ artwork.id }}" class="artwork-card">
+                    <input type="checkbox" id="artwork_{{ artwork.id }}" name="artworks" value="{{ artwork.id }}">
+                    {% if artwork.artimage_set.exists %}
+                    <img src="{{ artwork.artimage_set.first.image_url.url }}" class="card-img rounded-0" alt="{{ artwork.title }}">
+                    {% else %}
+                    <img src="{% static 'sample_images/basic_person.jpg' %}" class="card-img rounded-0" alt="{{ artwork.title }}">
+                    {% endif %}
+                    <div class="card-img-overlay d-flex flex-column justify-content-center text-center">
+                        <h5 class="card-title">{{ artwork.title }}</h5>
+                        <span class="selected-text">선택됨</span>
+                    </div>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <br>
+</form>
+{% endblock %}

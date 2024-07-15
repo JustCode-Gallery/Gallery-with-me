@@ -1,0 +1,30 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+{% block extra-style %}
+<link href="{% static 'css/user.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="d-flex justify-content-center mb-5">
+        <div class="border p-4 rounded mt-4 register-container">
+            <h2 class="text-center mb-4">계정 삭제</h2>
+            {% if error %}
+            <p style="color: red;" class="text-center">{{ error }}</p>
+            {% endif %}
+            <p class="text-center">정말 계정을 삭제하시겠습니까?</p>
+            <form method="post" class="register-form">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="password" class="form-label">비밀번호:</label>
+                    <input type="password" id="password" name="password" class="form-control" required>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" id="agree" name="agree" class="form-check-input" required>
+                    <label for="agree" class="form-check-label">동의합니다</label>
+                </div>
+                <button type="submit" class="btn w-100">확인</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

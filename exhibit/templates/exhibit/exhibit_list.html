@@ -1,21 +1,35 @@
-<!DOCTYPE html>
-<html>
 <head>
-    <title>Art Exhibits</title>
+    <meta charset="UTF-8">
+    <title>Exhibit List</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
 <body>
-    <h1>Art Exhibits</h1>
-    <ul>
-        {% for exhibit in exhibits %}
-            <li>
-                <h2>{{ exhibit.title }}</h2>
-                <p>{{ exhibit.description }}</p>
-                <p><strong>Start Date:</strong> {{ exhibit.start_date }}</p>
-                <p><strong>End Date:</strong> {{ exhibit.end_date }}</p>
-                <p><strong>Address:</strong> {{ exhibit.address }}</p>
-                <p><a href="{% url 'exhibit:exhibit_map' exhibit.id %}">View on Map</a></p>
-            </li>
-        {% endfor %}
-    </ul>
+    <h1>Exhibit List</h1>
+    <div style="display: flex;">
+        <div style="flex: 1;">
+            <ul>
+                {% for exhibit in exhibits %}
+                    <li><a href="{% url 'exhibit:exhibit_map' exhibit.id %}" >{{ exhibit.title }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id="map" style="flex: 1; height: 500px;"></div>
+    </div>
+    
+    <script>
+        var map = L.map('map').setView([37.551626712513254, 126.92812680069988], 12);  // 초기 위치 설정
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var locations = JSON.parse('{{ locations|escapejs }}');
+        var markers = {};
+        locations.forEach(function(location) {
+            var marker = L.marker([location.latitude, location.longitude]).addTo(map)
+                .bindPopup(location.title);
+            markers[location.title] = marker;
+        });
+
+    </script>
 </body>
-</html>

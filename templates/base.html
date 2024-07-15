@@ -213,6 +213,7 @@
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
   <script src="{% static 'js/base.js' %}"></script>
+  {% block  extra-js %}{% endblock %}
   
   <script>
     document.getElementById('toggle-tag-search-form').addEventListener('click', function(event) {

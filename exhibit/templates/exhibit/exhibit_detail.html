@@ -1,28 +1,38 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ title }}</title>
-    <style>
-        #map {
-            width: 50%;
-            /* height: px; */
-        }
-    </style>
-</head>
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    #map {
+        width: 100%;
+        /* height: px; */
+    }
+    body {
+        padding-top: 50px;
+    }
+</style>
+
 <body>
-    <h1>{{ title }}</h1>
-    <div>
-        <h2>Poster</h2>
-        <p>여기에 포스터들 쭉 나열</p>
-        <h2>Description</h2>
-        <p>{{ description }}</p>
-        <h2>Details</h2>
-        <p><strong>Start Date:</strong> {{ start_date }}</p>
-        <p><strong>End Date:</strong> {{ end_date }}</p>
-        <p><strong>Address:</strong> {{ address }}</p>
-        <div id="map">
-            {{ map|safe }}
+    <div class="container mt-5 mb-3">
+        <h1 class="mb-5">{{ title }}</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="mb-3">Poster</h2>
+                <p>여기에 포스터들 쭉 나열</p>
+                <h2 class="mb-3">Description</h2>
+                <p>{{ description }}</p>
+                <h2 class="mb-3">Details</h2>
+                <p><strong>Start Date:</strong> {{ start_date }}</p>
+                <p><strong>End Date:</strong> {{ end_date }}</p>
+                <p><strong>Address:</strong> {{ address }}</p>
+            </div>
+            <div class="col-md-6">
+                <h2 class="mb-3">Map</h2>
+                <div id="map" style="height: 400px;">
+                    {{ map|safe }}
+                </div>
+            </div>
         </div>
     </div>
 </body>
-</html>
+{% endblock %}

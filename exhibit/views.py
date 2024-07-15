@@ -2,28 +2,34 @@ from django.shortcuts import render, redirect
 import folium
 from .models import ArtExhibit
 from .forms import ArtExhibitForm
-from geopy.geocoders import Nominatim
+from django.core.paginator import Paginator
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
 def exhibit_list(request):
     exhibits = ArtExhibit.objects.all()
 
+    # 페이지네이션 설정
+    paginator = Paginator(exhibits, 10)  # 한 페이지에 10개씩 보이도록 설정
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     locations = []
-    for exhibit in exhibits:
+    for exhibit in page_obj:
             locations.append({
+                'id' : exhibit.id,
                 'title': exhibit.title,
                 'latitude': float(exhibit.latitude),  # Decimal을 float로 변환
                 'longitude': float(exhibit.longitude)  
             })
     
     context = {
-        'exhibits': exhibits,
+        'exhibits': page_obj,
         'locations': json.dumps(locations, cls=DjangoJSONEncoder)
     }
     return render(request, 'exhibit/exhibit_list.html', context)
 
-def exhibit_map(request, exhibit_id):
+def exhibit_detail(request, exhibit_id):
     # ArtExhibit 객체 가져오기
     exhibit = ArtExhibit.objects.get(id=exhibit_id)
 

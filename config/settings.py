@@ -124,9 +124,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
@@ -147,3 +147,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Media
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+TEMP_UPLOAD_DIR = os.path.join(MEDIA_ROOT, 'temp_uploads')
+
+# 임시데이터 저장 폴더 
+os.makedirs(TEMP_UPLOAD_DIR, exist_ok=True)
+
+# 최대 허용 크기를 10MB로 설정
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB를 바이트 단위로 표현

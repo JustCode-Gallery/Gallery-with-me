@@ -7,6 +7,9 @@ class ArtExhibit(models.Model):
     end_date = models.DateField()
     address = models.CharField(max_length=100)
     department = models.ForeignKey('user.Department', on_delete=models.PROTECT, related_name='exhibit_departments')  # 문자열 기반 참조
+    
+    def __str__(self):
+        return self.title
 
 class ArtExhibitPoster(models.Model):
     poster_url = models.ImageField() # !이미지필드 경로추가

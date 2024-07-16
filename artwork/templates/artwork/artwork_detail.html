@@ -3,6 +3,9 @@
 
 {% block extra-style %}
 <link rel="stylesheet" href="{% static 'artwork/detail_style.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock %}
 {% block content %}
 
@@ -104,7 +107,7 @@
 
 <div class="container container-description">
     <h4 class="mt-5">작가의 말</h4>
-    <p class="" style="overflow-wrap: break-word; overflow: hidden;">{{ artwork.description }}</p>
+    <p>{{ artwork.description }}</p>
 </div>
 
 

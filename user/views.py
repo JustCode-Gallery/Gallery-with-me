@@ -259,7 +259,9 @@ def select_artworks(request):
         
     return render(request, 'select_artworks.html', {'artworks': artworks})
 
-
+def change_address(request):
+    address_list = ShippingAddress.objects.filter(user_id=request.user.id)
+    return render(request, 'change_address.html', {'address_list': address_list})
 
 
 

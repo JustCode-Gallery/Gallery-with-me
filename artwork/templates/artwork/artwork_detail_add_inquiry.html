@@ -1,13 +1,14 @@
-<!-- add_inquiry.html -->
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>작가에게 문의하기</title>
     <link rel="stylesheet" href="{% static 'path_to_your_css_file.css' %}">
 </head>
-<body>
+<body style="margin-top: 100px;">
     <h1>{{ artwork.title }} - 작가에게 문의하기</h1>
     {% if messages %}
         <div>
@@ -25,8 +26,9 @@
 
     <script>
         document.getElementById('close-button').addEventListener('click', function() {
-            window.location.href = '{% url "artwork_detail" artwork.id %}';
+            window.location.href = "{% url 'artwork:artwork_detail' artwork.pk %}";
         });
     </script>
 </body>
 </html>
+{% endblock %}

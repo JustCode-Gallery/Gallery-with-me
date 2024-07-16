@@ -259,217 +259,194 @@
     }
 
     // 드래그앤드롭 
-    Dropzone.options.demoUpload = {
-        // sessionStorage규격
-        paramName: "file", // 파일 이름
-        acceptedFiles: ".jpeg,.jpg,.png,.gif", // 허용할 파일 확장자
-        addRemoveLinks: true, // 파일 제거 링크 표시
-        dictDefaultMessage: "여기에 파일을 드롭하세요", // 기본 메시지
-        dictRemoveFile: "", // 기본 "Remove file" 텍스트를 숨김
+        Dropzone.options.demoUpload = {
+            // sessionStorage규격
+            paramName: "file", // 파일 이름
+            acceptedFiles: ".jpeg,.jpg,.png,.gif", // 허용할 파일 확장자
+            addRemoveLinks: true, // 파일 제거 링크 표시
+            dictDefaultMessage: "여기에 파일을 드롭하세요", // 기본 메시지
+            dictRemoveFile: "", // 기본 "Remove file" 텍스트를 숨김
 
-        init: function() {
-            var _this = this;
-            var totalFileSize = 0; // 전체 파일 사이즈를 추적하기 위한 변수
+            init: function() {
+                var _this = this;
+                var totalFileSize = 0; // 전체 파일 사이즈를 추적하기 위한 변수
+                this.element = document.getElementById('demo-upload');
 
-             // 세션 스토리지에서 파일 복원
-            var storedFiles = JSON.parse(sessionStorage.getItem('uploadedFiles') || '[]');
-            storedFiles.forEach(function(fileData) {
-                var mockFile = { 
-                    name: fileData.name, 
-                    size: fileData.size, 
-                    type: fileData.type, 
-                    // dataUrl: fileData.dataUrl 
-                };
-                _this.emit("addedfile", mockFile);
-                // _this.createThumbnailFromUrl(mockFile, fileData.dataUrl);
-                _this.emit("thumbnail", mockFile, fileData.dataUrl);
-                _this.emit("complete", mockFile);
-                
-                console.log(mockFile);
-                // 사용자 정의 x 버튼 추가
-                var removeButton = Dropzone.createElement("<button class='dz-remove custom-remove'></button>");
-                removeButton.setAttribute('data-dz-remove', '');
-                mockFile.previewElement.appendChild(removeButton);
+                // 세션 스토리지에서 파일 복원
+                var storedFiles = JSON.parse(sessionStorage.getItem('uploadedFiles') || '[]');
+                storedFiles.forEach(function(fileData) {
+                    var mockFile = { 
+                        name: fileData.name, 
+                        size: fileData.size, 
+                        type: fileData.type, 
+                        // dataUrl: fileData.dataUrl 
+                    };
+                    _this.emit("addedfile", mockFile);
+                    // _this.createThumbnailFromUrl(mockFile, fileData.dataUrl);
+                    _this.emit("thumbnail", mockFile, fileData.dataUrl);
+                    _this.emit("complete", mockFile);
+                    
+                    console.log(mockFile);
+                    // 사용자 정의 x 버튼 추가
+                    var removeButton = Dropzone.createElement("<button class='dz-remove custom-remove'></button>");
+                    removeButton.setAttribute('data-dz-remove', '');
+                    mockFile.previewElement.appendChild(removeButton);
 
-                removeButton.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    _this.removeFile(mockFile); // Dropzone에서 파일 제거
+                    removeButton.addEventListener("click", function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        _this.removeFile(mockFile); // Dropzone에서 파일 제거
 
-                    // 세션 스토리지에서도 파일 제거
+                        // 세션 스토리지에서도 파일 제거
+                        var sessionFiles = JSON.parse(sessionStorage.getItem('uploadedFiles') || '[]');
+                        var updatedSessionFiles = sessionFiles.filter(function(f) {
+                            return f.name !== mockFile.name;
+                        });
+                        sessionStorage.setItem('uploadedFiles', JSON.stringify(updatedSessionFiles));
+                    });
+
+                    // Dropzone에 파일 객체를 추가
+                    _this.files.push(mockFile);
+
+                    // 파일 클릭 이벤트 설정
+                    mockFile.previewElement.addEventListener("click", function (e) {
+                        if (e.target.classList.contains('dz-remove')) return;
+
+                        var previewImage = document.getElementById('preview-image');
+                        previewImage.src = fileData.dataUrl;
+                        previewImage.style.display = 'block';
+                    });
+                });
+
+
+
+                this.on("success", function(file, response) {
+                    // 서버에서 응답으로 받은 데이터 처리
+                    var fileUrl = response.file_url;
+                    var filename = response.filename;
+                    // // 세션 스토리지에 저장
+                    // var uploadedFiles = JSON.parse(sessionStorage.getItem('uploadedFiles') || '[]');
+                    // uploadedFiles.push({ file_url: fileUrl, filename: filename });
+                    // sessionStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles));
+                    console.log(fileUrl,filename)
+
+                    var sessionFiles = sessionStorage.getItem('uploadedFiles') ? JSON.parse(sessionStorage.getItem('uploadedFiles')) : [];
+                    if (file.size > 2 * 1024 * 1024) {
+                        resizeImage(file, 845.33, 600, function(resizedBlob) {
+                            saveToSessionStorage(file, resizedBlob, sessionFiles, fileUrl = fileUrl, filename=filename);
+                        });
+                    } else {
+                        saveToSessionStorage(file, file, sessionFiles, fileUrl=response.file_url, filename=response.filename);
+                    }
+                });
+
+                            
+                    // Dropzone 컨테이너에 이벤트 리스너 추가
+                this.element.addEventListener("click", function(e) {
+                    if (e.target.classList.contains('dz-remove')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        var fileElement = e.target.closest('.dz-preview');
+                        if (fileElement) {
+                            var fileName = fileElement.querySelector(".dz-filename").innerText.trim(); // 파일 이름 가져옴
+                            console.log(fileElement);
+                            var file = _this.getAcceptedFiles().find(function(f) {
+                                console.log(f);
+                                // return f.name === fileElement.file.name;
+                                return f.name === fileName;
+                            });
+                            
+                            if (file) {
+                                console.log("Removing file:", file.name);
+                                _this.removeFile(file);
+
+                                // 세션 스토리지에서도 파일 제거
+                                var sessionFiles = JSON.parse(sessionStorage.getItem('uploadedFiles') || '[]');
+                                var updatedSessionFiles = sessionFiles.filter(function(f) {
+                                    return f.name !== file.name;
+                                });
+                                sessionStorage.setItem('uploadedFiles', JSON.stringify(updatedSessionFiles));
+                            } else {
+                                console.error("File not found");
+                            }
+                        } else {
+                            console.error("File element not found");
+                        }
+                    }
+                });
+
+                this.on("addedfile", function(file) { // "thumbnail" 이벤트에서 "addedfile" 이벤트로 변경
+                    totalFileSize += file.size / 1024 / 1024; // 파일 사이즈를 MB로 변환하여 추가
+                        if (totalFileSize > 10) {
+                            this.removeFile(file);
+                            alert("전체 파일 크기가 10MB를 초과할 수 없습니다.");
+                        } else {
+                            console.log("File added:", file.name);
+                            var removeButton = Dropzone.createElement("<button class='dz-remove custom-remove'></button>");
+                            removeButton.setAttribute('data-dz-remove', '');
+                            file.previewElement.appendChild(removeButton);
+                            // 파일 객체를 previewElement에 직접 연결
+                            file.previewElement.file = file;
+                    
+                            // 파일을 세션 스토리지에 저장
+                            var reader = new FileReader();
+                            reader.onload = function(event) {
+                                file.previewElement.addEventListener("click", function(e) {
+                                    // 이벤트 버블링 방지
+                                    if (e.target.classList.contains('dz-remove')) return;
+
+                                    var previewImage = document.getElementById('preview-image');
+                                    previewImage.src = event.target.result;
+                                    previewImage.style.display = 'block';
+                                });
+                            };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                this.on("removedfile", function(file) {
+                    totalFileSize -= file.size / 1024 / 1024; // 파일 제거 시 크기도 줄임
+                    // Dropzone에서 파일 객체 제거
+                    _this.files = _this.files.filter(function(f) {
+                        return f.name !== file.name;
+                    });
+                    // 파일이 제거될 때 세션 스토리지에서도 제거
                     var sessionFiles = JSON.parse(sessionStorage.getItem('uploadedFiles') || '[]');
                     var updatedSessionFiles = sessionFiles.filter(function(f) {
-                        return f.name !== mockFile.name;
+                        return f.name !== file.name;
                     });
                     sessionStorage.setItem('uploadedFiles', JSON.stringify(updatedSessionFiles));
-                });
-                // var reader = new FileReader();
 
-                // reader.onload = function(event) {
-                //     file.previewElement.addEventListener("click", function(e) {
-                //         // 이벤트 버블링 방지
-                //         if (e.target.classList.contains('dz-remove')) return;
-
-                //         var previewImage = document.getElementById('preview-image');
-                //         previewImage.src = event.target.result;
-                //         previewImage.style.display = 'block';
-                //         });
-                // };
-
-                // Dropzone에 파일 객체를 추가
-                _this.files.push(mockFile);
-
-                // 파일 클릭 이벤트 설정
-                mockFile.previewElement.addEventListener("click", function (e) {
-                    if (e.target.classList.contains('dz-remove')) return;
-
-                    var previewImage = document.getElementById('preview-image');
-                    previewImage.src = fileData.dataUrl;
-                    previewImage.style.display = 'block';
-                });
-            });
-
-
-
-            this.on("success", function(file, response) {
-                var sessionFiles = sessionStorage.getItem('uploadedFiles') ? JSON.parse(sessionStorage.getItem('uploadedFiles')) : [];
-                if (file.size > 2 * 1024 * 1024) {
-                    resizeImage(file, 845.33, 600, function(resizedBlob) {
-                        saveToSessionStorage(file, resizedBlob, sessionFiles);
+                    // Dropzone에서도 파일 객체를 찾아서 삭제
+                    var existingFile = _this.files.find(function(f) {
+                        return f.name === file.name && f.size === file.size && f.type === file.type && f.dataUrl === file.dataUrl;
                     });
-                } else {
-                    saveToSessionStorage(file, file, sessionFiles);
-                }
-            });
-
-              
-
-            // this.on("removedfile", function(file) {
-            //     var sessionFiles = JSON.parse(sessionStorage.getItem('uploadedFiles') || '[]');
-            //     var updatedSessionFiles = sessionFiles.filter(function(f) {
-            //         return f.name !== file.name;
-            //     });
-            //     sessionStorage.setItem('uploadedFiles', JSON.stringify(updatedSessionFiles));
-
-            //     // Dropzone에서도 파일 객체를 찾아서 삭제
-            //     var existingFile = _this.files.find(function(f) {
-            //         return f.name === file.name && f.size === file.size && f.type === file.type && f.dataUrl === file.dataUrl;
-            //     });
-            //     if (existingFile) {
-            //         _this.removeFile(existingFile);
-            //     }
-            //     // Dropzone에서 파일 객체 제거
-            //     _this.files = _this.files.filter(function(f) {
-            //         return f.name !== file.name;
-            //     });
-
-            //     // 세션 스토리지에서도 파일 제거
-            //     var sessionFiles = JSON.parse(sessionStorage.getItem('uploadedFiles') || '[]');
-            //     var updatedSessionFiles = sessionFiles.filter(function(f) {
-            //         return f.name !== file.name;
-            //     });
-            //     sessionStorage.setItem('uploadedFiles', JSON.stringify(updatedSessionFiles));
-            
-            // });
-                        
-                // Dropzone 컨테이너에 이벤트 리스너 추가
-            this.element.addEventListener("click", function(e) {
-                if (e.target.classList.contains('dz-remove')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    var fileElement = e.target.closest('.dz-preview');
-                    if (fileElement) {
-                        var fileName = fileElement.querySelector(".dz-filename").innerText.trim(); // 파일 이름 가져옴
-                        console.log(fileElement);
-                        var file = _this.getAcceptedFiles().find(function(f) {
-                            console.log(f);
-                            // return f.name === fileElement.file.name;
-                            return f.name === fileName;
-                        });
-                        
-                        if (file) {
-                            console.log("Removing file:", file.name);
-                            _this.removeFile(file);
-
-                            // 세션 스토리지에서도 파일 제거
-                            var sessionFiles = JSON.parse(sessionStorage.getItem('uploadedFiles') || '[]');
-                            var updatedSessionFiles = sessionFiles.filter(function(f) {
-                                return f.name !== file.name;
-                            });
-                            sessionStorage.setItem('uploadedFiles', JSON.stringify(updatedSessionFiles));
-                        } else {
-                            console.error("File not found");
-                        }
-                    } else {
-                        console.error("File element not found");
+                    if (existingFile) {
+                        _this.removeFile(existingFile);
                     }
-                }
-            });
+                });
 
-            this.on("addedfile", function(file) { // "thumbnail" 이벤트에서 "addedfile" 이벤트로 변경
-                totalFileSize += file.size / 1024 / 1024; // 파일 사이즈를 MB로 변환하여 추가
-                    if (totalFileSize > 10) {
-                        this.removeFile(file);
-                        alert("전체 파일 크기가 10MB를 초과할 수 없습니다.");
-                    } else {
-                        console.log("File added:", file.name);
-                        var removeButton = Dropzone.createElement("<button class='dz-remove custom-remove'></button>");
-                        removeButton.setAttribute('data-dz-remove', '');
-                        file.previewElement.appendChild(removeButton);
-                        // 파일 객체를 previewElement에 직접 연결
-                        file.previewElement.file = file;
                 
-                        // 파일을 세션 스토리지에 저장
-                        var reader = new FileReader();
-                        reader.onload = function(event) {
-                            file.previewElement.addEventListener("click", function(e) {
-                                // 이벤트 버블링 방지
-                                if (e.target.classList.contains('dz-remove')) return;
+            }
+        };
+    
 
-                                var previewImage = document.getElementById('preview-image');
-                                previewImage.src = event.target.result;
-                                previewImage.style.display = 'block';
-                               });
-                        };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            this.on("removedfile", function(file) {
-                totalFileSize -= file.size / 1024 / 1024; // 파일 제거 시 크기도 줄임
-                // Dropzone에서 파일 객체 제거
-                _this.files = _this.files.filter(function(f) {
-                    return f.name !== file.name;
-                });
-                // 파일이 제거될 때 세션 스토리지에서도 제거
-                var sessionFiles = JSON.parse(sessionStorage.getItem('uploadedFiles') || '[]');
-                var updatedSessionFiles = sessionFiles.filter(function(f) {
-                    return f.name !== file.name;
-                });
-                sessionStorage.setItem('uploadedFiles', JSON.stringify(updatedSessionFiles));
-
-                // Dropzone에서도 파일 객체를 찾아서 삭제
-                var existingFile = _this.files.find(function(f) {
-                    return f.name === file.name && f.size === file.size && f.type === file.type && f.dataUrl === file.dataUrl;
-                });
-                if (existingFile) {
-                    _this.removeFile(existingFile);
-                }
-            });
-
-            
-        }
-    };
-
-    function saveToSessionStorage(file, blob, sessionFiles) {
+    function saveToSessionStorage(file, blob, sessionFiles, fileUrl, filename) {
         var reader = new FileReader();
         reader.onload = function(event) {
             sessionFiles.push({
                 name: file.name,
                 size: file.size,
                 type: file.type,
-                dataUrl: event.target.result
+                dataUrl: event.target.result,
+                file_url:  fileUrl,
+                filename: filename,
+
+
+                // 나중에 들어오는 로직처리
+                // filename: file.name,
+                // file_url: fileUrl
             });
             sessionStorage.setItem('uploadedFiles', JSON.stringify(sessionFiles));
         };

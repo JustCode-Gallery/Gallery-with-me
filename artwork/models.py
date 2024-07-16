@@ -7,6 +7,7 @@ class ArtWork(models.Model):
     height = models.IntegerField()
     depth = models.IntegerField()
     created_at = models.DateField(auto_now_add=True)  # 생성될 때
+    year = models.IntegerField(null=True) # 작품 제작 연도
     price = models.DecimalField(max_digits=10, decimal_places=2)  # 금액은 DecimalField로 처리
     seller = models.ForeignKey('user.Seller', on_delete=models.CASCADE)  # 문자열 기반 참조
     exhibit = models.ForeignKey('exhibit.ArtExhibit', on_delete=models.SET_NULL, null=True)  # 전시 삭제시 or 전시 없는 경우, NULL로 설정
@@ -14,11 +15,15 @@ class ArtWork(models.Model):
     is_reservable = models.BooleanField(default=False) # 예약 여부 체크
 
 class ArtImage(models.Model):
-    image_url = models.ImageField()     # !이미지필드 경로추가
+    image_url = models.ImageField(upload_to='artwork_image/')     # !이미지필드 경로추가
     artwork = models.ForeignKey(ArtWork, on_delete=models.CASCADE)
 
 class Material(models.Model):
     name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
 
 class ArtWorkMaterial(models.Model):
     art_work = models.ForeignKey(ArtWork, on_delete=models.CASCADE)
@@ -34,6 +39,9 @@ class TagCategory(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     tag_category = models.ForeignKey(TagCategory, on_delete=models.PROTECT)  # TagCategory의 하위 Tag가 존재할 경우, 삭제되지 않도록 설정
+
+    def __str__(self):
+        return self.name
 
 class ArtTag(models.Model):
     art_work = models.ForeignKey(ArtWork, on_delete=models.CASCADE)

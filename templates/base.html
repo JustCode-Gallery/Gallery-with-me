@@ -23,6 +23,20 @@
       <a href="/" class="d-flex align-items-center  mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
         <span class="logo fs-4">Gallery With Me</span>
       </a>
+      
+      <!-- 태그 검색 아이콘 -->
+      <ul class="nav nav-pills align-items-center">
+        {% if request.resolver_match.url_name == 'artwork_list' or request.resolver_match.url_name == 'artwork_detail' %}
+        <li class="nav-item">
+          <a href="#" class="nav-link" id="toggle-tag-search-form">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-tag" viewBox="0 0 16 16">
+              <path d="M3 2a1 1 0 0 0-1 1v2a1 1 0 0 0 .293.707L9.586 12.586a1 1 0 0 0 1.414-1.414L4.707 3.293A1 1 0 0 0 4 3H2.5A.5.5 0 0 0 2 3.5V4z"/>
+              <path d="M2 1a2 2 0 0 0-2 2v2a2 2 0 0 0 .586 1.414l6.586 6.586a2 2 0 0 0 2.828-2.828L4.828 2.586A2 2 0 0 0 3.414 2H2.5A1.5 1.5 0 0 0 2 1.5v-1z"/>
+            </svg>
+          </a>
+        </li>
+        {% endif %}
+      </ul>
 
       <ul class="nav nav-pills">
         <li class="nav-item"><a href="#" class="nav-link" id="Sidebar-menu">
@@ -51,17 +65,25 @@
   </div>
   <!-- 헤더end -->
 
+  <!-- 태그 검색 폼 (숨겨진 상태로 초기화) -->
+  <div id="tag-search-form-container" class="container" style="display: none; padding-top: 60px;">
+    <form method="get" action="{% url 'artwork:artwork_list' %}">
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary mt-2">Search by Tag</button>
+    </form>
+  </div>
+
   <!-- 사이드바 -->
   <div class="sidebar sidebar-menu flex-shrink-0 p-3">
     <ul class="list-unstyled ps-0 mt-5">
       <li class="mb-2">
         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed">
-          <a href="#" class="link-body-emphasis text-decoration-none">Artworks</a>
+          <a href="/artwork/artwork_list" class="link-body-emphasis text-decoration-none">Artworks</a>
         </button>
       </li>
       <li class="mb-2">
         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed">
-          <a href="#" class="link-body-emphasis text-decoration-none">Community</a>
+          <a href="/board/" class="link-body-emphasis text-decoration-none">Community</a>
         </button>
       </li>
       <li class="mb-2">
@@ -192,5 +214,16 @@
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
   <script src="{% static 'js/base.js' %}"></script>
+  {% block  extra-js %}{% endblock %}
+  
+  <script>
+    document.getElementById('toggle-tag-search-form').addEventListener('click', function(event) {
+      event.preventDefault(); // 기본 앵커 동작 방지
+      var searchFormContainer = document.getElementById('tag-search-form-container');
+      // 검색 폼 표시 토글
+      searchFormContainer.style.display = (searchFormContainer.style.display === 'none' ? 'block' : 'none');
+    });
+    </script>
+
 </body>
 </html>

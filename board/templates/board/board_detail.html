@@ -135,19 +135,17 @@
 
             <ul class="col-md-4 post-content">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                    <h5 class="mb-3"><i class="fa-solid fa-circle-user"></i>&nbsp;관리자</h5>
-                    <p>2024-07-09</p>
+                    <h5 class="mb-3"><i class="fa-solid fa-circle-user"></i>&nbsp;{{ post.user }}</h5>
+                    <p>{{ post.post_timestamp}}</p>
                 </div>
-                <h2 class="">2023 예원예술대학교 졸업전 리뷰</h2>
+                <h2 class="">{{ post.post_title }}</h2>
                 
                 <p>
-                    전북특별자치도 임실군 신평면 창인로 117에 위치한 예원예대 학교가 너무 멀다 
-                    전시자체는 작년에 비해 동선이 개선되어서 보기에 한결 편해졌다.
-                    아주 적게 걷고 콤펙트 하게 전시를 감상했다
+                    {{ post.post_content }}
                 </p>
                 
                 <li class="h5">전시</li>
-                <p><a href="">예원예술대 융합디자인</a></p>
+                <p><a href="">{{ post.exhibit }}</a></p>
                 <div>
                     <br>
                     <hr>

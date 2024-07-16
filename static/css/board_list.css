@@ -28,9 +28,11 @@
     transition: opacity 0.3s ease;
     cursor: pointer;
     border-radius: 12px;
+    pointer-events: none;
 }
 .university-cap{
     margin: 10px 10px;
+    pointer-events: auto;
 }
 .img-container:hover .overlay {
     opacity: 1;

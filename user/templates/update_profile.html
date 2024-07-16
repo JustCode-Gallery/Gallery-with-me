@@ -1,0 +1,43 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+{% block extra-style %}
+<link href="{% static 'css/user.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="d-flex justify-content-center mb-5">
+        <div class="border p-4 rounded mt-4 register-container">
+            <h2 class="text-center mb-4">회원 정보 수정</h2>
+            {% if error %}
+            <p style="color: red;" class="text-center">{{ error }}</p>
+            {% endif %}
+            <form method="post" enctype="multipart/form-data" class="register-form">
+                {% csrf_token %}
+                <div class="mb-3 d-flex">
+                    <div class="me-2" style="flex: 1;">
+                        <label for="nickname" class="form-label">성:</label>
+                        <input type="text" id="first_name" name="first_name" class="form-control"
+                            value="{{ request.user.first_name }}" required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="last_name" class="form-label">이름:</label>
+                        <input type="text" id="last_name" name="last_name" class="form-control"
+                            value="{{ request.user.first_name }}" required>
+                    </div>
+                </div>
+                <label for="nickname" class="form-label">닉네임:</label>
+                <input type="text" id="nickname" name="nickname" class="form-control md-3"
+                    value="{{ request.user.nickname }}" required>
+
+                <label for="phone_number" class="form-label">핸드폰 번호:</label>
+                <input type="text" id="phone_number" name="phone_number" class="form-control mb-3"
+                    value="{{ request.user.phone_number }}" required>
+
+                <label for="photo" class="form-label">프로필(선택사항)</label>
+                <input type="file" id="photo" name="photo" class="form-control mb-3">
+                <button type="submit" class="btn btn-primary w-100">저장</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

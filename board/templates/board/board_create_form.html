@@ -228,21 +228,6 @@
                         </div>
                     {% endif %}
                     <input type="hidden" name="uploadedFiles" id="uploadedFiles" value="">
-                    <!-- <label for="title"></label>
-                    <input type="text" id="title" placeholder="포스트 제목...">
-                    
-                    <label for="content"></label>
-                    <textarea id="content" placeholder="내용 입력..."></textarea>
-                    
-                    
-                    <li class="h5">전시</li>
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected></option>
-                        <option value="1">예원예술대 융합디자인</option>
-                        <option value="2">서울예대 공간디자인</option>
-                    </select> -->
-
-                    
                 </form>
                     
             </ul>
@@ -252,8 +237,6 @@
 
 <script>
     window.addEventListener('DOMContentLoaded', (event) => {
-        // var uploadedFiles = {{ request.session.uploaded_files|safe }};
-        // var uploadedFiles = {{ uploaded_files|safe }};
         var uploadedFiles = JSON.parse(sessionStorage.getItem('uploadedFiles') || '[]');
         console.log("Uploaded files:", uploadedFiles);  // 브라우저 콘솔에 출력
         if (uploadedFiles && uploadedFiles.length > 0) {
@@ -263,7 +246,8 @@
             console.log("No uploaded files found");
         }
     });
-
+    
+    // 캐러셀 이미지 표시
     function displayUploadedImages(files) {
         var carouselInner = document.querySelector('.carousel-inner');
         carouselInner.innerHTML = '';  // 기존 내용 제거
@@ -294,11 +278,52 @@
             carouselInner.appendChild(carouselItem);
         });
     }
+    function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
     // 게시하기 폼 제출 시 폼 입력데이터 제출
     function submitPostForm() {
-        var postForm = document.getElementById('postForm');
+        var form = document.getElementById('postForm');
         // postForm 제출
-        postForm.submit();
+        // postForm.submit();
+        const formData = new FormData(form);
+
+        fetch("{% url 'board:form_submit' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();  // JSON 데이터로 변환하여 반환
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        })
+        .then(data => {
+                // 세션 갱신 후 리디렉션
+                // res = response.json();
+                // const post_Id = res.pk;
+                const post_Id = data.pk;
+
+                fetch("{% url 'board:refresh_session' %}")
+                .then(() => {
+                    // 브라우저 세션 삭제
+                    sessionStorage.removeItem('uploadedFiles');
+
+                      // board_detail 뷰로 리디렉션, pk 값 전달
+                    const redirectUrl = `/board/detail/${post_Id}/`
+                    window.location.href = redirectUrl
+
+                });
+            })
+        .catch(error => {
+            console.error(error);
+            alert('오류가 발생했습니다. 다시 시도해 주세요.');
+        });
     }
                   
 </script>

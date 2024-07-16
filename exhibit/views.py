@@ -62,3 +62,9 @@ def create_exhibit(request):
     else:
         form = ArtExhibitForm()
     return render(request, 'exhibit/form.html', {'form': form})
+
+def exhibit_bookmark(request):
+    #사용자가 담기 버튼 / 좋아요 버튼을 누를 수 있음
+    if request.method == 'POST':
+        # exhibit_list에 합할지?
+    return render(request, 'exhibit/exhibit_list.html')

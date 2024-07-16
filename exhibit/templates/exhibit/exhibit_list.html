@@ -1,21 +1,62 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
 <head>
-    <title>Art Exhibits</title>
+    <meta charset="UTF-8">
+    <title>Exhibit List</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
+
+<style>
+    body {
+        padding-top: 90px;
+    }
+    .custom-link {
+        color: #1b1b1b; /* 원하는 색상으로 변경 */
+        text-decoration: none; /* 밑줄 제거 */
+    }
+    .custom-link:hover {
+        text-decoration: underline; /* 호버 시 밑줄 추가 */
+    }
+</style>
+
 <body>
-    <h1>Art Exhibits</h1>
-    <ul>
-        {% for exhibit in exhibits %}
-            <li>
-                <h2>{{ exhibit.title }}</h2>
-                <p>{{ exhibit.description }}</p>
-                <p><strong>Start Date:</strong> {{ exhibit.start_date }}</p>
-                <p><strong>End Date:</strong> {{ exhibit.end_date }}</p>
-                <p><strong>Address:</strong> {{ exhibit.address }}</p>
-                <p><a href="{% url 'exhibit:exhibit_map' exhibit.id %}">View on Map</a></p>
-            </li>
-        {% endfor %}
-    </ul>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 px-5">
+                <h1 class="mb-4">Exhibit List</h1>
+                <ul class="list-group">
+                    {% for exhibit in exhibits %}
+                        <li class="list-group-item">
+                            <a href="{% url 'exhibit:exhibit_detail' exhibit.id %}" class="custom-link">
+                                {{ exhibit.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div id="map" class="col-md-6 px-5" style="height: 500px;"></div>
+        </div>
+    </div>
+    
+    <script>
+        var map = L.map('map').setView([37.551626712513254, 126.92812680069988], 12);  // 초기 위치 설정
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var locations = JSON.parse('{{ locations|escapejs }}');
+        var markers = {};
+        locations.forEach(function(location) {
+            var url = '/exhibit/exhibit_detail/' + location.id + '/';
+            var popupContent = '<a href="' + url + '">' + location.title + '</a>';
+            var marker = L.marker([location.latitude, location.longitude]).addTo(map)
+                .bindPopup(popupContent);
+            markers[location.title] = marker;
+        });
+
+    </script>
+
 </body>
-</html>
+{% endblock %}

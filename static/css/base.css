@@ -77,25 +77,25 @@
     text-decoration: none; /* 밑줄 제거 */
 }
 
-.card {
+.card-cate {
     position: relative;
     overflow: hidden;
 }
 
-.card-img {
+.card-cate .card-img {
     transition: opacity 0.3s ease-in-out;
     height: 100%;
 }
 
-.card:hover {
+.card-cate:hover {
     background-color: #f0ba32;
 }
 
-.card:hover .card-img {
+.card-cate:hover .card-img {
     opacity: 0;
 }
 
-.card-title {
+.card-cate .card-title {
     color: black;
     font-size: 1.2rem;
     opacity: 0;
@@ -105,7 +105,7 @@
     font-style: normal;
 }
 
-.card:hover .card-title {
+.card-cate:hover .card-title {
     opacity: 1;
 }
 
@@ -159,11 +159,11 @@
 }
 
 .rcmd-text h2 {
-    font-weight: 700;
+    font-weight: 400;
 }
 
 .rcmd-text h3 {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 400;
 }
 
@@ -174,7 +174,6 @@
 }
 
 .rcmd-text a {
-    /* margin-left: 1rem; */
     font-size: 21px;
     font-weight: 400;
     color: black;

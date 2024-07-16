@@ -2,13 +2,6 @@ from django import forms
 from .models import Tag, TagCategory, Material, ArtistInquiry
 
 class ArtWorkFilterForm(forms.Form):
-
-    min_price = forms.IntegerField(required=False, label='최소가격')
-    max_price = forms.IntegerField(required=False, label='최대가격')
-    min_width = forms.IntegerField(required=False, label='최소너비')
-    max_width = forms.IntegerField(required=False, label='최대너비')
-    min_height = forms.IntegerField(required=False, label='최소높이')
-    max_height = forms.IntegerField(required=False, label='최대높이')
     Material_tag_search = forms.ModelMultipleChoiceField(
         queryset=Material.objects.all(),
         required=False,
@@ -16,17 +9,16 @@ class ArtWorkFilterForm(forms.Form):
         label='재료'
     )
 
+    # 태그 검색 필드 추가
     def __init__(self, *args, **kwargs):
         super(ArtWorkFilterForm, self).__init__(*args, **kwargs)
-
         tag_categories = TagCategory.objects.all()
-        for category in tag_categories: # 태그 테이블 내의 정보 가져오기
-            field_name = category.name
-            self.fields[field_name] = forms.ModelMultipleChoiceField(
+        for category in tag_categories:
+            self.fields[category.name] = forms.ModelMultipleChoiceField(
                 queryset=Tag.objects.filter(tag_category=category),
                 required=False,
                 widget=forms.CheckboxSelectMultiple,
-                label=field_name
+                label=category.name,
             )
 
     def label_from_instance(self, obj): # 모델 인스턴스 name 속성을 가져오기
@@ -42,3 +34,6 @@ class ArtistInquiryForm(forms.ModelForm):
         labels = {
             'question': '문의 내용',
         }
+
+class ArtWorkSearchForm(forms.Form):
+    query = forms.CharField(label='Search', max_length=100)

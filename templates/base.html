@@ -12,8 +12,7 @@
   <link href="{% static 'css/base.css' %}" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bona+Nova+SC:ital,wght@0,400;0,700;1,400&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bona+Nova+SC:ital,wght@0,400;0,700;1,400&family=Noto+Serif+KR:wght@200..900&display=swap" rel="stylesheet">
   {% block extra-style %}{% endblock %}
 </head>
 
@@ -71,14 +70,6 @@
   </div>
   <!-- 헤더end -->
 
-  <!-- 태그 검색 폼 (숨겨진 상태로 초기화) -->
-  <div id="tag-search-form-container" class="container" style="display: none; padding-top: 60px;">
-    <form method="get" action="{% url 'artwork:artwork_list' %}">
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-primary mt-2">Search by Tag</button>
-    </form>
-  </div>
-
   <!-- 사이드바 -->
   <div class="sidebar sidebar-menu flex-shrink-0 p-3">
     <ul class="list-unstyled ps-0 mt-5">
@@ -133,7 +124,7 @@
             <li><a href="{% url 'user:delete_account' %}"
                 class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">계정 삭제</a>
             </li>
-            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">배송지 변경</a>
+            <li><a href="/user/change_address" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">배송지 변경</a>
             </li>
             <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">문의내역</a>
             </li>
@@ -214,14 +205,9 @@
   {% block content %}{% endblock %}
 
   <!-- footer -->
-  <div class="container footer">
-    <footer class="pt-5 pb-3">
+  <div class="container mt-4" style="border-top: 1px solid #dee2e6;">
+    <footer class="pt-3 pb-3 mt-auto">
       <div class="mb-3">
-        <!-- <a href="/" class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none">
-          <svg class="bi me-2" width="40" height="32">
-            <use xlink:href="#bootstrap"></use>
-          </svg>
-        </a> -->
         <p class="footer-text">Gallery with Me</p>
         <p class="footer-text">대표: JustCode</p>
         <p class="footer-text">상호: 갤러리윗미</p>
@@ -238,6 +224,7 @@
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
   <script src="{% static 'js/base.js' %}"></script>
+  
   {% block extra-js %}{% endblock %}
 
   <script>
@@ -249,6 +236,7 @@
     });
   </script>
 
+  
 </body>
 
 </html>

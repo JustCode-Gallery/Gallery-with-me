@@ -5,6 +5,7 @@ from . import views
 app_name = 'artwork'
 urlpatterns = [
     path('artwork_list/', views.ArtWorkListView.as_view(), name='artwork_list'),
+    path('api/tag-material-categories/', views.tag_material_categories_api, name='tag_material_categories_api'),
     path('<int:pk>/', views.ArtWorkDetailView.as_view(), name='artwork_detail'),
     path('<int:pk>/like/', views.toggle_work_like, name='toggle_work_like'),
     path('<int:pk>/add_to_cart/', views.add_to_cart, name='add_to_cart'),

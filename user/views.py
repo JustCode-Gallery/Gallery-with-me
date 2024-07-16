@@ -51,7 +51,6 @@ def register(request):
     else:
         return render(request, 'register.html')
 
-
 def register_seller(request):
     if request.method == 'POST':
         username = request.POST['email']
@@ -102,8 +101,6 @@ def register_seller(request):
     
     departments = Department.objects.all()
     return render(request, 'register_seller.html', {'departments': departments})
-
-
 
 def send_verification_code(request):
     if request.method == 'POST':

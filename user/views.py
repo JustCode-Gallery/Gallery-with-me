@@ -51,7 +51,6 @@ def register(request):
     else:
         return render(request, 'register.html')
 
-
 def register_seller(request):
     if request.method == 'POST':
         username = request.POST['email']
@@ -102,8 +101,6 @@ def register_seller(request):
     
     departments = Department.objects.all()
     return render(request, 'register_seller.html', {'departments': departments})
-
-
 
 def send_verification_code(request):
     if request.method == 'POST':
@@ -259,7 +256,9 @@ def select_artworks(request):
         
     return render(request, 'select_artworks.html', {'artworks': artworks})
 
-
+def change_address(request):
+    address_list = ShippingAddress.objects.filter(user_id=request.user.id)
+    return render(request, 'change_address.html', {'address_list': address_list})
 
 
 

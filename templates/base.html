@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,8 +12,7 @@
   <link href="{% static 'css/base.css' %}" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bona+Nova+SC:ital,wght@0,400;0,700;1,400&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bona+Nova+SC:ital,wght@0,400;0,700;1,400&family=Noto+Serif+KR:wght@200..900&display=swap" rel="stylesheet">
   {% block extra-style %}{% endblock %}
 </head>
 
@@ -23,15 +23,18 @@
       <a href="/" class="d-flex align-items-center  mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
         <span class="logo fs-4">Gallery With Me</span>
       </a>
-      
+
       <!-- 태그 검색 아이콘 -->
       <ul class="nav nav-pills align-items-center">
         {% if request.resolver_match.url_name == 'artwork_list' or request.resolver_match.url_name == 'artwork_detail' %}
         <li class="nav-item">
           <a href="#" class="nav-link" id="toggle-tag-search-form">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-tag" viewBox="0 0 16 16">
-              <path d="M3 2a1 1 0 0 0-1 1v2a1 1 0 0 0 .293.707L9.586 12.586a1 1 0 0 0 1.414-1.414L4.707 3.293A1 1 0 0 0 4 3H2.5A.5.5 0 0 0 2 3.5V4z"/>
-              <path d="M2 1a2 2 0 0 0-2 2v2a2 2 0 0 0 .586 1.414l6.586 6.586a2 2 0 0 0 2.828-2.828L4.828 2.586A2 2 0 0 0 3.414 2H2.5A1.5 1.5 0 0 0 2 1.5v-1z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-tag"
+              viewBox="0 0 16 16">
+              <path
+                d="M3 2a1 1 0 0 0-1 1v2a1 1 0 0 0 .293.707L9.586 12.586a1 1 0 0 0 1.414-1.414L4.707 3.293A1 1 0 0 0 4 3H2.5A.5.5 0 0 0 2 3.5V4z" />
+              <path
+                d="M2 1a2 2 0 0 0-2 2v2a2 2 0 0 0 .586 1.414l6.586 6.586a2 2 0 0 0 2.828-2.828L4.828 2.586A2 2 0 0 0 3.414 2H2.5A1.5 1.5 0 0 0 2 1.5v-1z" />
             </svg>
           </a>
         </li>
@@ -48,13 +51,15 @@
 
         <li class="nav-item"><a href="#" class="nav-link">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="bi bi-bag" viewBox="0 0 16 16">
-              <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+              <path
+                d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z" />
             </svg>
           </a></li>
 
 
         <li class="nav-item"><a href="#" class="nav-link" id="Sidebar-profile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="bi bi-person-circle" viewBox="0 0 16 16">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="bi bi-person-circle"
+              viewBox="0 0 16 16">
               <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
               <path fill-rule="evenodd"
                 d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
@@ -64,14 +69,6 @@
     </header>
   </div>
   <!-- 헤더end -->
-
-  <!-- 태그 검색 폼 (숨겨진 상태로 초기화) -->
-  <div id="tag-search-form-container" class="container" style="display: none; padding-top: 60px;">
-    <form method="get" action="{% url 'artwork:artwork_list' %}">
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-primary mt-2">Search by Tag</button>
-    </form>
-  </div>
 
   <!-- 사이드바 -->
   <div class="sidebar sidebar-menu flex-shrink-0 p-3">
@@ -112,9 +109,22 @@
         </button>
         <div class="collapse" id="profile-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">회원정보 수정</a>
+            <li>
+              {% if seller %}
+              <a href="{% url 'user:update_seller_profile' %}"
+                class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">회원정보 수정</a>
+              {% else %}
+              <a href="{% url 'user:update_profile' %}"
+                class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">회원정보 수정</a>
+              {% endif %}
             </li>
-            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">배송지 변경</a>
+            <li><a href="{% url 'user:change_password' %}"
+                class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">비밀번호 수정</a>
+            </li>
+            <li><a href="{% url 'user:delete_account' %}"
+                class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">계정 삭제</a>
+            </li>
+            <li><a href="/user/change_address" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">배송지 변경</a>
             </li>
             <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">문의내역</a>
             </li>
@@ -130,7 +140,8 @@
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
             <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">찜한 작품</a>
             </li>
-            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">전시 북마크</a></li>
+            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">전시 북마크</a>
+            </li>
           </ul>
         </div>
       </li>
@@ -143,14 +154,16 @@
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
             <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">구매/환불내역</a>
             </li>
-            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">예약관리</a></li>
+            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">예약관리</a>
+            </li>
           </ul>
         </div>
       </li>
       <li class="mb-2">
-        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed">
-          <a href="#" class="link-body-emphasis text-decoration-none">Logout</a>
-        </button>
+        <form method="post" action="{% url 'user:logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn d-inline-flex align-items-center rounded border-0 "aria-expanded="false">LOGOUT</button>
+        </form>
       </li>
 
       <li class="border-top "></li>
@@ -161,10 +174,11 @@
         </button>
         <div class="collapse" id="seller-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">내 작품 관리</a></li>
+            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">내 작품 관리</a>
+            </li>
             <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">판매내역</a>
             <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">예약현황</a>
-              <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">받은 문의내역</a>
+            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">받은 문의내역</a>
             </li>
           </ul>
         </div>
@@ -174,12 +188,12 @@
       <ul class="list-unstyled ps-0 mt-5">
         <li class="mb-2">
           <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed">
-            <a href="#" class="link-body-emphasis text-decoration-none">Register</a>
+            <a href="{% url 'user:login' %}" class="link-body-emphasis text-decoration-none">Login</a>
           </button>
         </li>
         <li class="mb-2">
           <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed">
-            <a href="#" class="link-body-emphasis text-decoration-none">Login</a>
+            <a href="{% url 'user:select_register' %}" class="link-body-emphasis text-decoration-none">Register</a>
           </button>
         </li>
       </ul>
@@ -191,19 +205,15 @@
   {% block content %}{% endblock %}
 
   <!-- footer -->
-  <div class="container footer">
-    <footer class="pt-5 pb-3">
+  <div class="container mt-4" style="border-top: 1px solid #dee2e6;">
+    <footer class="pt-3 pb-3 mt-auto">
       <div class="mb-3">
-        <!-- <a href="/" class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none">
-          <svg class="bi me-2" width="40" height="32">
-            <use xlink:href="#bootstrap"></use>
-          </svg>
-        </a> -->
         <p class="footer-text">Gallery with Me</p>
         <p class="footer-text">대표: JustCode</p>
         <p class="footer-text">상호: 갤러리윗미</p>
         <p class="footer-text">전자우편주소: justcode@likelion.com</p>
-        <p class="footer-text">Gallery with me는 통신판매의 당사자가 아닌 통신판매중개자로서 상품, 상품정보, 거래에 대한 책임이 제한될 수 있으므로, 각 상품의 구체적인 내용을 확인하시기 바랍니다.</p>
+        <p class="footer-text">Gallery with me는 통신판매의 당사자가 아닌 통신판매중개자로서 상품, 상품정보, 거래에 대한 책임이 제한될 수 있으므로, 각 상품의 구체적인 내용을
+          확인하시기 바랍니다.</p>
         <p class="footer-text">© 2024 Gallery with Me all rights reserved</p>
       </div>
     </footer>
@@ -214,16 +224,19 @@
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
   <script src="{% static 'js/base.js' %}"></script>
-  {% block  extra-js %}{% endblock %}
   
+  {% block extra-js %}{% endblock %}
+
   <script>
-    document.getElementById('toggle-tag-search-form').addEventListener('click', function(event) {
+    document.getElementById('toggle-tag-search-form').addEventListener('click', function (event) {
       event.preventDefault(); // 기본 앵커 동작 방지
       var searchFormContainer = document.getElementById('tag-search-form-container');
       // 검색 폼 표시 토글
       searchFormContainer.style.display = (searchFormContainer.style.display === 'none' ? 'block' : 'none');
     });
-    </script>
+  </script>
 
+  
 </body>
+
 </html>

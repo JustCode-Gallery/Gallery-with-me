@@ -1,0 +1,31 @@
+.carousel-item {
+    margin-top: 50px;
+    background-color: darkgrey;
+    text-align: center;
+    height: 650px;
+    width: 100%;
+}
+
+.carousel-item img {
+    width: auto;
+    height: 650px;
+    object-fit: contain;
+    margin: 0 auto;
+}
+
+.card-caption h3, 
+.card-caption h5, 
+.card-caption h6 {
+    font-family: "Noto Serif KR", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.container-description h4,
+.container-description p {
+    font-family: "Noto Serif KR", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}

@@ -9,6 +9,9 @@ class ArtExhibit(models.Model):
     latitude = models.DecimalField(max_digits=25, decimal_places=20, null=True, blank=True)
     longitude = models.DecimalField(max_digits=25, decimal_places=20, null=True, blank=True)
     department = models.ForeignKey('user.Department', on_delete=models.PROTECT, related_name='exhibit_departments')  # 문자열 기반 참조
+    
+    def __str__(self):
+        return self.title
 
 class ArtExhibitPoster(models.Model):
     poster_url = models.ImageField() # !이미지필드 경로추가

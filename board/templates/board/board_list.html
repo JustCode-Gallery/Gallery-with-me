@@ -27,50 +27,31 @@
 
     </div>
     <div class="row">
+        {% for post in posts %}
         <div class="col-6 col-md-4 col-lg-3 mb-3">
             <div class="img-container">
             <!-- seed 뒤 포스트 id 부여 seed/{{post.id}} -->
-                <a href="{% url 'board:board_detail' %}"><img src="https://picsum.photos/seed/11/300/300" class="img-fluid" alt="random_img11"></a>
+                    {% if post.postimage_set.first %}
+                    <img src="{{post.postimage_set.first.image_url.url}}" class="img-fluid" alt="random_img11">
+                    {% else %}
+                    <img src="https://picsum.photos/seed/1/300/300" class="img-fluid" alt="random_img11">
+                    {% endif %}
+                <a id="click_a" href="{% url 'board:board_detail' post.pk %}">
                 <div class="overlay">
+                    <span class="badge bg-light text-dark university-cap"><i class="fa-solid fa-graduation-cap"></i>&nbsp;{{ post.exhibit }}</span>
                     
-                    <span class="badge bg-light text-dark university-cap"><i class="fa-solid fa-graduation-cap"></i>&nbsp;홍익대</span>
                 </div>
-            
+                </a>
             
             </div>
-            <h4>졸업전시 후기</h4>
-            <p>GWM</p>
+            <h4>{{ post.post_title }}</h4>
+            <p>{{ post.user }}</p>
         </div>
+        {% endfor %}
         <div class="col-6 col-md-4 col-lg-3 mb-3">
             <img src="https://picsum.photos/seed/1/300/300" class="img-fluid" alt="random_img">
         </div>
-        <div class="col-6 col-md-4 col-lg-3 mb-3">
-            <img src="https://picsum.photos/seed/2/300/300" class="img-fluid" alt="random_img2">
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 mb-3">
-            <img src="https://picsum.photos/seed/3/300/300" class="img-fluid" alt="random_img3">
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 mb-3">
-            <img src="https://picsum.photos/seed/4/300/300" class="img-fluid" alt="random_img4">
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 mb-3">
-            <img src="https://picsum.photos/seed/9/300/300" class="img-fluid" alt="random_img5">
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 mb-3">
-            <img src="https://picsum.photos/seed/5/300/300" class="img-fluid" alt="random_img6">
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 mb-3">
-            <img src="https://picsum.photos/seed/6/300/300" class="img-fluid" alt="random_img7">
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 mb-3">
-            <img src="https://picsum.photos/seed/7/300/300" class="img-fluid" alt="random_img8">
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 mb-3">
-            <img src="https://picsum.photos/seed/8/300/300" class="img-fluid" alt="random_img9">
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 mb-3">
-            <img src="https://picsum.photos/seed/10/300/300" class="img-fluid" alt="random_img10">
-        </div>
     </div>
 </div>
+
 {% endblock %}

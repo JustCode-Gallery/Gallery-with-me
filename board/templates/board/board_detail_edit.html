@@ -150,6 +150,21 @@
         border: none;
 
     }
+    .delete{
+        border: none;
+    }
+    .delete:hover {
+        /* background:#FD4157;         */
+        /* background:#FF9090; */
+        background:#D36C6C;
+        /* background:#F0BA32; */
+    }
+    .save{
+        border: none;
+    }
+    .save:hover {
+        background:#F0BA32;
+    }
 
     
 </style>
@@ -158,38 +173,43 @@
 {% block content %}
 <div class="container mt-5">
     <div class="create-header">
-        <form action="{% url 'board:board_create' %}" method="post">
+        <form action="{% url 'board:board_delete' post.pk %}" method="post">
             {% csrf_token%}
-            <button type="submit" class="btn btn-outline-secondary back"><i class="fa-solid fa-chevron-left"></i></button>
+            <button type="submit" class="btn btn-outline-secondary delete">삭제</button>
         </form>
-        <h1>새 포스트 생성</h1>
+        <h1>포스트 수정</h1>
         
-            <button type="button" onclick="submitPostForm()" class="btn btn-outline-secondary posting">게시하기</button>
+            <button type="button" onclick="submitPostForm()" class="btn btn-outline-secondary save">저장</button>
 
     </div>
     <div class="row">
         <div class="col-md-8 post-img" >
             <div id="carouselExampleControls" class="carousel slide">
                 <div class="carousel-inner">
-                <div class="carousel-item active">
+                    {% if post_img %}
+                    {% for image in post_img %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
                     <div class="img-container">
                         <!-- seed 뒤 포스트 id 부여 seed/{{post.id}} -->
-                        <img src="https://picsum.photos/seed/1/" class="img-fluid" alt="NO IMAGE">
+                        <img src="{{ MEDIA_URL }}{{ image.image_url.url }}" class="img-fluid" alt="random_img11">
                             <div class="overlay">
                                 <!-- #373634 -->
-                                <span class="carousel-cap"></span>
+                                <span class="carousel-cap">{{ forloop.counter }}/{{ post_img|length}}</span>
                             </div>
                     </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="img-container">
-                        <img src="https://picsum.photos/seed/1/" class="img-fluid" alt="NO IMAGE">
-                            <div class="overlay">
-                                <!-- #373634 -->
-                                <span class="carousel-cap"></span>
-                            </div>
                     </div>
-                </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="carousel-item active">
+                        <div class="img-container">
+                            <!-- seed 뒤 포스트 id 부여 seed/{{post.id}} -->
+                            <img style="color:white;" src="https://picsum.photos/seed/1/" class="img-fluid" alt="NO IMAGE">
+                                <!-- <div class="overlay">
+                                    <span class="carousel-cap">{{ forloop.counter }}/{{ post_img|length}}</span>
+                                </div> -->
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
 
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
@@ -208,24 +228,10 @@
                 <h5 class="mb-3"><i class="fa-solid fa-circle-user"></i>&nbsp;{{user}}</h5>
                 <!-- <p>2024-07-09</p> -->
             </div>
-            <form id="postForm" action="{% url 'board:form_submit' %}" method="post">
+            <form id="postForm" action="{% url 'board:board_update' post.pk %}" method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <!-- 에러 메시지 표시 -->
-                {% if form.errors %}
-                    <div class="alert alert-danger">
-                        <ul>
-                            {% for field in form %}
-                                {% if field.errors %}
-                                    <li>{{ field.label }}: {{ field.errors|striptags }}</li>
-                                {% endif %}
-                            {% endfor %}
-                            {% for error in form.non_field_errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
                 <input type="hidden" name="uploadedFiles" id="uploadedFiles" value="">
             </form>
                 
@@ -283,44 +289,8 @@
     function submitPostForm() {
         var form = document.getElementById('postForm');
         // postForm 제출
-        // postForm.submit();
-        const formData = new FormData(form);
-
-        fetch("{% url 'board:form_submit' %}", {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: formData
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.json();  // JSON 데이터로 변환하여 반환
-            } else {
-                throw new Error('Network response was not ok');
-            }
-        })
-        .then(data => {
-                // 세션 갱신 후 리디렉션
-                // res = response.json();
-                // const post_Id = res.pk;
-                const post_Id = data.pk;
-
-                fetch("{% url 'board:refresh_session' %}")
-                .then(() => {
-                    // 브라우저 세션 삭제
-                    sessionStorage.removeItem('uploadedFiles');
-
-                      // board_detail 뷰로 리디렉션, pk 값 전달
-                    const redirectUrl = `/board/detail/${post_Id}/`
-                    window.location.href = redirectUrl
-
-                });
-            })
-        .catch(error => {
-            console.error(error);
-            alert('오류가 발생했습니다. 다시 시도해 주세요.');
-        });
+        postForm.submit();
+        
     }
                   
 </script>

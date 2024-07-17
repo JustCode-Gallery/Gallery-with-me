@@ -1,27 +1,38 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra-style %}
+<link href="{% static 'css/board_list.css' %}" rel="stylesheet">
+<script src="https://kit.fontawesome.com/a47086679e.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@40,400,0,0" />
+<style>
 
-    <title>Board</title>
-    {% block extra-style %}
-    <link href="{% static 'css/board_list.css' %}" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a47086679e.js" crossorigin="anonymous"></script>
-    
-    {% endblock %}
+</style>
+{% endblock %}
     
 {% block content %}
-<div class="my-container mt-5">
-    <div class="head">
-        <div class="alert alert-primary" role="alert"><h1>Into</h1></div>
-        <div class="alert alert-primary" role="alert"><h1>Exhibits</h1></div>
-        <div class="alert alert-primary" role="alert"><h1>Post</h1></div>
-    </div>  
+<div class="my-container">
+    <div class="head-container">
+        <div class="direct-container">
+            <p class="text-center">Community</p>
+            <div class="d-flex justify-content-center">
+                <!-- 검색 폼 -->
+                <form id="search-form" action="" method="get">
+                    <input type="text" id="search-query" name="query" placeholder="포스트 검색">
+                    <button id="search-button" type="submit" style="padding: 0%;">
+                        <span class="material-symbols-outlined" style="font-size: 35px;">
+                            search
+                            </span>
+                    </button>
+                </form>
+            </div>
+    </div>
 </div>
 <div class="container">
     <div class="stats" style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
         <form action="{% url 'board:board_create' %}" method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-outline-secondary">등록</button>
+            <button type="submit" class="btn btn-outline-secondary registration" style="border: none;">등록</button>
         </form>
         
 
@@ -31,15 +42,24 @@
         <div class="col-6 col-md-4 col-lg-3 mb-3">
             <div class="img-container">
             <!-- seed 뒤 포스트 id 부여 seed/{{post.id}} -->
+                <a id="click_a" href="{% url 'board:board_detail' post.pk %}">
                     {% if post.postimage_set.first %}
                     <img src="{{post.postimage_set.first.image_url.url}}" class="img-fluid" alt="random_img11">
                     {% else %}
                     <img src="https://picsum.photos/seed/1/300/300" class="img-fluid" alt="random_img11">
                     {% endif %}
-                <a id="click_a" href="{% url 'board:board_detail' post.pk %}">
+                
                 <div class="overlay">
-                    <span class="badge bg-light text-dark university-cap"><i class="fa-solid fa-graduation-cap"></i>&nbsp;{{ post.exhibit }}</span>
-                    
+                    <!-- <span class="badge bg-light text-dark university-cap"><i class="fa-solid fa-graduation-cap"></i>&nbsp;{{ post.exhibit }}</span>
+                    <span class="badge bg-light text-dark visitors"><i class="fa-solid fa-eye"></i>&nbsp;3345</span> -->
+                    <div class="top-row">
+                        <span class="badge bg-light text-dark university-cap">
+                            <i class="fa-solid fa-graduation-cap"></i>&nbsp;{{ post.exhibit }}
+                        </span>
+                        <span class="badge bg-light text-dark visitors">
+                            <i class="fa-solid fa-eye"></i>&nbsp;3345
+                        </span>
+                    </div>
                 </div>
                 </a>
             
@@ -48,9 +68,6 @@
             <p>{{ post.user }}</p>
         </div>
         {% endfor %}
-        <div class="col-6 col-md-4 col-lg-3 mb-3">
-            <img src="https://picsum.photos/seed/1/300/300" class="img-fluid" alt="random_img">
-        </div>
     </div>
 </div>
 

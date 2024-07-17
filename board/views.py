@@ -11,6 +11,7 @@ from exhibit.models import ArtExhibit
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from io import BytesIO
+from django.http import HttpResponse
 
 User = get_user_model()
 
@@ -127,8 +128,11 @@ def form_submit(request):
 
 def board_detail(request, pk):
     post = Post.objects.get(pk=pk)
+    post_img = PostImage.objects.filter(post=post)
+    # 저장된
     context = {
-        'post' : post
+        'post' : post,
+        'post_img': post_img,
     }
     return render(request, 'board/board_detail.html', context)
 
@@ -163,3 +167,42 @@ def refresh_session(request):
         return JsonResponse({'status': 'success'})
         
     return JsonResponse({'status': 'error'}, status=400)
+
+def board_detail_edit(request,pk):
+    post = Post.objects.get(pk=pk)
+    post_img = PostImage.objects.filter(post=post)
+    if request.method == 'POST':
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid:
+            form.save()
+            return redirect('board:board_detail', pk=post.pk)
+    else:
+        form = PostForm(instance=post)
+
+    context = {
+        'post': post,
+        'form': form,
+        'post_img': post_img,
+
+    }
+
+    return render(request,'board/board_detail_edit.html', context)
+
+def board_delete(request, pk):
+    if request.method=="POST":
+        post = Post.objects.get(pk=pk)
+        post.delete()
+
+        return redirect('board:board_list')
+    return HttpResponse(status=405)
+
+def board_update(request, pk):
+    if request.method=="POST":
+        post = Post.objects.get(pk=pk)
+
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+        return redirect('board:board_detail', pk=pk)
+    form = PostForm(instance=post)
+    return HttpResponse(status=405)

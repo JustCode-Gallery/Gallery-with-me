@@ -91,31 +91,32 @@
 #search-form {
     display: flex;
     align-items: center;
-    border: 0px solid #ffffff; /* 테두리 */
+    border-bottom: 1px solid #111;
     width: 450px;
 }
 
 #search-query {
-    width: 100%;
+    flex: 1;
     padding: 10px;
     font-size: 16px;
-    border: 1px solid #ffffff;
-    border-radius: 4px 0 0 4px;
-    border-bottom: 1px solid black;
+    border: none;
     outline: none;
 }
 
 #search-button {
-    /* background: url("{% static 'sample_images/search_icon.png' %}") no-repeat center; */
     background-color: #ffffff;
     background-size: contain;
     width: 50px;
     height: 50px;
     border: none;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 0 4px 4px 0;
     outline: none;
 }
-.haed-container{
-    
+.registration:hover{
+    background:#F0BA32;
 }
+

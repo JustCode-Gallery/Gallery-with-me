@@ -118,7 +118,7 @@
                     <div class="carousel-item active">
                         <div class="img-container">
                             <!-- seed 뒤 포스트 id 부여 seed/{{post.id}} -->
-                            <img style="color:white;" src="https://picsum.photos/seed/1/" class="img-fluid" alt="NO IMAGE">
+                            <img style="color:white;" src="https://picsum.photos/900/500/" class="img-fluid" alt="NO IMAGE">
                                 <!-- <div class="overlay">
                                     <span class="carousel-cap">{{ forloop.counter }}/{{ post_img|length}}</span>
                                 </div> -->
@@ -144,10 +144,12 @@
                 <h5 style="display: flex; align-items: center; margin: 0;">
                     <i class="fa-solid fa-circle-user" style="font-size: 1.2em; vertical-align: middle;"></i>&nbsp;{{ post.user }}
                 </h5>
+                {% if user.is_authenticated %}
                 <form action="{% url 'board:board_detail_edit' post.pk %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-outline-secondary edit">수정</button>
                 </form>
+                {% endif %}
                 
             </div>
             <p style="margin: 5px 16px; margin-bottom: 5px;">{{ post.post_timestamp}}</p>
@@ -159,8 +161,8 @@
                 {{ post.post_content }}
             </p>
             
-            <li class="h5">전시</li>
-            <p><a href="{% url 'exhibit:exhibit_detail' exhibit_id=post.exhibit.id %}">{{ post.exhibit }}</a></p>
+            <li class="h6 fw-bold mt-5">전시</li>
+            <p><i class="fa-solid fa-tags"></i>&nbsp;<a href="{% url 'exhibit:exhibit_detail' exhibit_id=post.exhibit.id %}" style="text-decoration: none;">{{ post.exhibit }}</a></p>
             <div>
                 <br>
                 <hr>

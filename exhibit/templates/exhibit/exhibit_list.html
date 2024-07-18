@@ -2,8 +2,7 @@
 {% load static %}
 {% block content %}
 <head>
-    <meta charset="UTF-8">
-    <title>Exhibit List</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
@@ -32,6 +31,13 @@
                             <a href="{% url 'exhibit:exhibit_detail' exhibit.id %}" class="custom-link">
                                 {{ exhibit.title }}
                             </a>
+                            <button class="bookmark-button" data-exhibit-id="{{ exhibit.id }}">
+                                {% if user.is_authenticated and exhibit.is_bookmarked %}
+                                    <span class="bookmarked">★</span>
+                                {% else %}
+                                    <span class="not-bookmarked">☆</span>
+                                {% endif %}
+                            </button>
                         </li>
                     {% endfor %}
                 </ul>
@@ -41,6 +47,7 @@
     </div>
     
     <script>
+        // 지도 보여주기
         var map = L.map('map').setView([37.551626712513254, 126.92812680069988], 12);  // 초기 위치 설정
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -56,6 +63,28 @@
             markers[location.title] = marker;
         });
 
+        // 북마크 클릭 버튼 작동
+        document.querySelectorAll('.bookmark-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const exhibitId = this.getAttribute('data-exhibit-id');
+                fetch(`/exhibit/bookmark/${exhibitId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.bookmarked) {
+                        this.innerHTML = '<span class="bookmarked">★</span>';
+                    } else {
+                        this.innerHTML = '<span class="not-bookmarked">☆</span>';
+                    }
+                });
+            });
+        });
     </script>
 
 </body>

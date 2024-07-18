@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+<head>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
 
 <style>
     #map {
@@ -15,6 +18,13 @@
 <body>
     <div class="container mt-5 mb-3">
         <h1 class="mb-5">{{ title }}</h1>
+        <button class="bookmark-button" data-exhibit-id="{{ exhibit.id }}">
+            {% if user.is_authenticated and is_bookmarked %}
+                <span class="bookmarked">★</span>
+            {% else %}
+                <span class="not-bookmarked">☆</span>
+            {% endif %}
+        </button>
         <div class="row">
             <div class="col-md-6">
                 <h2 class="mb-3">Poster</h2>
@@ -35,4 +45,27 @@
         </div>
     </div>
 </body>
+
+<script>
+    // 북마크 버튼
+    document.querySelector('.bookmark-button').addEventListener('click', function() {
+        const exhibitId = this.getAttribute('data-exhibit-id');
+        fetch(`/exhibit/bookmark/${exhibitId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.bookmarked) {
+                this.innerHTML = '<span class="bookmarked">★</span>';
+            } else {
+                this.innerHTML = '<span class="not-bookmarked">☆</span>';
+            }
+        });
+    });
+</script>
 {% endblock %}

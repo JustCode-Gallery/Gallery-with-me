@@ -93,12 +93,15 @@ def load_more_artworks(request):
             'id': artwork.id,
             'title': artwork.title,
             'price': artwork.price,
-            'image_url': artwork.artimage_set.first().image.url if artwork.artimage_set.first() else ''
+            'image_url': artwork.artimage_set.first().image_url.url if artwork.artimage_set.first() else ''
         }
         for artwork in page_obj
     ]
     
-    return JsonResponse({'artworks': artworks_data})
+    return JsonResponse({
+        'artworks': artworks_data,
+        'has_next': page_obj.has_next()  # 다음 페이지가 있는지 여부를 반환
+    })
     
 class ArtWorkDetailView(DetailView):
     model = ArtWork
@@ -132,7 +135,8 @@ def toggle_work_like(request, pk): # 좋아요 기능
         WorkLike.objects.create(user=user, art_work=artwork)
         liked = True
 
-    if request.is_ajax(): # AJAX로 좋아요 하기
+    # AJAX 요청인지 확인
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'liked': liked, 'count': artwork.worklike_set.count()})
 
     return redirect('artwork_detail', pk=pk)
@@ -144,12 +148,12 @@ def add_to_cart(request, pk): # 장바구니에 담기 기능
 
     # 장바구니에 추가
     Cart.objects.create(user=user, art_work=artwork)
-    return redirect('artwork_detail', pk=pk)
+    return redirect('artwork:artwork_detail', pk=pk)
 
 @login_required
 def buy_now(request, pk): # 바로 구매 기능
     # 추후 결제 페이지로 리다이렉트할 예정, 현재는 임시로 상세 페이지로 리다이렉트
-    return redirect('artwork_detail', pk=pk)
+    return redirect('artwork:artwork_detail', pk=pk)
 
 @login_required
 def add_inquiry(request, pk):  # 작가 문의하기 기능
@@ -179,10 +183,10 @@ def reserve_artwork(request, pk): # 예약하기 기능
     if artwork.is_reservable:
         # 구매 예약 생성
         Reservation.objects.create(user=user, art_work=artwork)
-        return redirect('artwork_detail', pk=pk)
+        return redirect('artwork:artwork_detail', pk=pk)
     else:
         # 예약이 불가능한 경우 처리(추가해야함)
-        return redirect('artwork_detail', pk=pk)
+        return redirect('artwork:artwork_detail', pk=pk)
 
 def tag_material_categories_api(request):
     tag_categories = TagCategory.objects.all()

@@ -29,7 +29,7 @@ class ArtistInquiryForm(forms.ModelForm):
         model = ArtistInquiry
         fields = ['question']
         widgets = {
-            'question': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
+            'question': forms.Textarea(attrs={'rows': 4, 'cols': 40, 'class': 'question-textarea'}),
         }
         labels = {
             'question': '문의 내용',

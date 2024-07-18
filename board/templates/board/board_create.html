@@ -1,194 +1,193 @@
 {% extends 'base.html' %}
 {% load static %}
     
-    <title>Board-create</title>
-    {% block extra-style %}
-    <script src="https://kit.fontawesome.com/a47086679e.js" crossorigin="anonymous"></script>
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-  
-    <!-- Plugin -->
-    <link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css" />
-    <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
+{% block extra-style %}
+<script src="https://kit.fontawesome.com/a47086679e.js" crossorigin="anonymous"></script>
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
-    <style>
-        body {
-        background: #EEE;
-        font-family: 'Roboto', sans-serif;
-        }
-        .container {
-            background: #fff;
-        }
-        .create-header {
-            padding: 20px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center; /* 세로 중앙 정렬 */
-        }
-        .create-header h1 {
-            margin: 0; /* margin 제거 */
-            display: flex; /* Flexbox 컨테이너로 설정 */
-            align-items: center; /* 세로 중앙 정렬 */
-        }
+<!-- Plugin -->
+<link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css" />
+<script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
 
-        .dropzone {
-            margin: 0 20px;
-            width: 98%;
-            margin: 1%;
-            border: 2px dashed #3498db !important;
-            border-radius: 5px;
-            -webkit-transition: .2s;
-            transition: .2s;
-        }
+<style>
+    body {
+    background: #EEE;
+    font-family: 'Roboto', sans-serif;
+    }
+    .container {
+        background: #fff;
+    }
+    .create-header {
+        padding: 20px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center; /* 세로 중앙 정렬 */
+    }
+    .create-header h1 {
+        margin: 0; /* margin 제거 */
+        display: flex; /* Flexbox 컨테이너로 설정 */
+        align-items: center; /* 세로 중앙 정렬 */
+    }
 
-        .dropzone.dz-drag-hover {
-            border: 2px solid #3498db !important;
-        }
+    .dropzone {
+        margin: 0 20px;
+        width: 98%;
+        margin: 1%;
+        border: 2px dashed #3498db !important;
+        border-radius: 5px;
+        -webkit-transition: .2s;
+        transition: .2s;
+    }
 
-        .dz-message.needsclick img {
-        width: 50px;
-        display: block;
-        margin: auto;
-        opacity: .6;
-        margin-bottom: 15px;
-        }
+    .dropzone.dz-drag-hover {
+        border: 2px solid #3498db !important;
+    }
 
-        span.plus {
-        display: none;
-        }
+    .dz-message.needsclick img {
+    width: 50px;
+    display: block;
+    margin: auto;
+    opacity: .6;
+    margin-bottom: 15px;
+    }
 
-        .dropzone.dz-started .dz-message {
-            display: inline-block !important;
-            width: 120px;
-            float: right;
-            border: 1px solid rgba(238, 238, 238, 0.36);
-            border-radius: 30px;
-            height: 120px;
-            margin: 16px;
-            -webkit-transition: .2s;
-            transition: .2s;
-        }
+    span.plus {
+    display: none;
+    }
 
-        .dropzone.dz-started .dz-message span.text {
-        display: none;
-        }
+    .dropzone.dz-started .dz-message {
+        display: inline-block !important;
+        width: 120px;
+        float: right;
+        border: 1px solid rgba(238, 238, 238, 0.36);
+        border-radius: 30px;
+        height: 120px;
+        margin: 16px;
+        -webkit-transition: .2s;
+        transition: .2s;
+    }
 
-        .dropzone.dz-started .dz-message span.plus {
-        display: block;
-        font-size: 70px;
-        color: #AAA;
-        line-height: 110px;
-        }        
+    .dropzone.dz-started .dz-message span.text {
+    display: none;
+    }
 
-        /* 미리보기 */
-        .preview-container {
-            padding: 20px 20px;
+    .dropzone.dz-started .dz-message span.plus {
+    display: block;
+    font-size: 70px;
+    color: #AAA;
+    line-height: 110px;
+    }        
 
-            
-        }
-        .preview-image-container {
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            flex-direction: column; 
-        }
+    /* 미리보기 */
+    .preview-container {
+        padding: 20px 20px;
 
-        .preview-image {
-            display: none;
-            max-width: 70%; /* 수정된 부분 */
-            height: auto;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        /* dropzone 기본제공 Remove file 문자열과 사용자커스텀 x버튼이 겹치는 이슈 */
-        .dz-remove {
-            display: none; /* 기본 텍스트를 숨김 */
-        }
-        /* 사용자 정의 x 버튼 스타일 조정 */
-        .dz-remove.custom-remove {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 25px;
-            height: 25px;
-            background: #373634;
-            color: white;
-            border-radius: 50%;
-            line-height: 25px;
-            text-align: center;
-            cursor: pointer;
-            z-index: 1000;
-            opacity: 0.8;
-
-            display: flex; /* 플렉스박스로 설정 */
-            justify-content: center; /* 가운데 정렬 */
-            align-items: center; /* 가운데 정렬 */
-
-        }
-
-        .dz-remove.custom-remove:hover {
-            background-color: rgb(90, 129, 151);
-        }
-
-        .dz-remove.custom-remove:before, .dz-remove.custom-remove:after {
-            content: ' ';
-            position: absolute;
-            width: 2px;
-            height: 20px;
-            background-color: #fff;
-        }
-
-        .dz-remove.custom-remove:before {
-            transform: rotate(45deg);
-            left: 11px;
-            top: 2px;
-        }
-
-        .dz-remove.custom-remove:after {
-            transform: rotate(-45deg);
-            left: 11px;
-            top: 2px;
-        }
-        .nextbutton {
-            border: none;
-        }
-    </style>
-    {% endblock %}
-
-    {% block content %}
-    <div class="container mt-5">
-        <div class="create-header">
-            <h1>새 포스트 생성</h1>
-            <form action="{% url 'board:board_create_form' %}" method="post" id="nextForm">
-                {% csrf_token%}
-                <button type="submit" class="btn btn-outline-secondary nextbutton">다음</button>
-                <input type="hidden" name = "" value="">
-            </form>
-        </div>
         
+    }
+    .preview-image-container {
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        flex-direction: column; 
+    }
 
-        <div id="dropzone">
-            <form action="{% url 'board:temp_upload' %}" id="demo-upload" class="dropzone needsclick" >
-                {% csrf_token%}
-                <div class="dz-message needsclick">
-                    <span class="text">
-                    <img src="http://www.freeiconspng.com/uploads/------------------------------iconpngm--22.png" alt="Camera" />
-                    👉  여기에 파일을 끌어다 놓거나 클릭하여 업로드하세요. 👈
-                    </span>
-                    <span class="plus">+</span>
-                </div>
-            </form>
-        </div>
+    .preview-image {
+        display: none;
+        max-width: 70%; /* 수정된 부분 */
+        height: auto;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    /* dropzone 기본제공 Remove file 문자열과 사용자커스텀 x버튼이 겹치는 이슈 */
+    .dz-remove {
+        display: none; /* 기본 텍스트를 숨김 */
+    }
+    /* 사용자 정의 x 버튼 스타일 조정 */
+    .dz-remove.custom-remove {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 25px;
+        height: 25px;
+        background: #373634;
+        color: white;
+        border-radius: 50%;
+        line-height: 25px;
+        text-align: center;
+        cursor: pointer;
+        z-index: 1000;
+        opacity: 0.8;
 
-        <div class="preview-container">
-            <h1>미리보기</h1>
-            <p>❕업로드한 이미지를 클릭하세요.</p>
-            <div id="preview-container" class="preview-image-container mt-3">
-                <img id="preview-image" class="preview-image" src="" alt="Preview">
-                
+        display: flex; /* 플렉스박스로 설정 */
+        justify-content: center; /* 가운데 정렬 */
+        align-items: center; /* 가운데 정렬 */
+
+    }
+
+    .dz-remove.custom-remove:hover {
+        background-color: rgb(90, 129, 151);
+    }
+
+    .dz-remove.custom-remove:before, .dz-remove.custom-remove:after {
+        content: ' ';
+        position: absolute;
+        width: 2px;
+        height: 20px;
+        background-color: #fff;
+    }
+
+    .dz-remove.custom-remove:before {
+        transform: rotate(45deg);
+        left: 11px;
+        top: 2px;
+    }
+
+    .dz-remove.custom-remove:after {
+        transform: rotate(-45deg);
+        left: 11px;
+        top: 2px;
+    }
+    .nextbutton {
+        border: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="create-header">
+        <h1>새 포스트 생성</h1>
+        <form action="{% url 'board:board_create_form' %}" method="post" id="nextForm">
+            {% csrf_token%}
+            <button type="submit" class="btn btn-outline-secondary nextbutton">다음</button>
+            <input type="hidden" name = "" value="">
+        </form>
+    </div>
+    
+
+    <div id="dropzone">
+        <form action="{% url 'board:temp_upload' %}" id="demo-upload" class="dropzone needsclick" >
+            {% csrf_token%}
+            <div class="dz-message needsclick">
+                <span class="text">
+                <img src="http://www.freeiconspng.com/uploads/------------------------------iconpngm--22.png" alt="Camera" />
+                👉  여기에 파일을 끌어다 놓거나 클릭하여 업로드하세요. 👈
+                </span>
+                <span class="plus">+</span>
             </div>
+        </form>
+    </div>
+
+    <div class="preview-container">
+        <h1>미리보기</h1>
+        <p>❕업로드한 이미지를 클릭하세요.</p>
+        <div id="preview-container" class="preview-image-container mt-3">
+            <img id="preview-image" class="preview-image" src="" alt="Preview">
+            
         </div>
     </div>
+</div>
 
 <script>
     // 사이즈가 큰 이미지 사이즈 줄이기

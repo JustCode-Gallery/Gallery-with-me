@@ -95,7 +95,7 @@
                     <img src="{{ artwork.artimage_set.first.image_url.url }}" class="artwork-card-img rounded-0">
                     <div class="artwork-card-img-overlay d-flex flex-column justify-content-center align-items-center">
                         <h5 class="artwork-card-title">{{ artwork.title }}</h5>
-                        <h5 class="artwork-card-title">{{ artwork.price }}</h5>
+                        <h5 class="artwork-card-title">{{ artwork.price|floatformat:0 }} 원</h5>
                     </div>
                 </a>
             </div>

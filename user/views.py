@@ -262,7 +262,7 @@ def change_address(request):
 
 def create_address(request):
     if request.method == 'POST':
-        if ShippingAddress.objects.filter(user=request.user).count() < 15:
+        if ShippingAddress.objects.filter(user=request.user).count() < 5:
             recipient = request.POST.get('recipient')
             phone_number = request.POST.get('phone_number')
             destination = request.POST.get('destination') if request.POST.get('destination') else None
@@ -299,7 +299,7 @@ def create_address(request):
             address_list = ShippingAddress.objects.filter(user_id=request.user.id)
             context = {
                 'address_list': address_list,
-                'error': '배송지 항목은 최대 15개까지 등록할 수 있습니다.'
+                'error': '배송지 항목은 최대 5개까지 등록할 수 있습니다.'
             }
             return render(request, 'change_address.html', context)
 

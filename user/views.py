@@ -260,6 +260,81 @@ def change_address(request):
     address_list = ShippingAddress.objects.filter(user_id=request.user.id)
     return render(request, 'change_address.html', {'address_list': address_list})
 
+def create_address(request):
+    if request.method == 'POST':
+        if ShippingAddress.objects.filter(user=request.user).count() < 15:
+            recipient = request.POST.get('recipient')
+            phone_number = request.POST.get('phone_number')
+            destination = request.POST.get('destination') if request.POST.get('destination') else None
+            postal_code = request.POST.get('postal_code')
+            address = request.POST.get('address')
+
+            if request.POST.get('extra_address'):
+                more_address = request.POST.get('more_address')
+                extra_address = request.POST.get('extra_address')
+                detail_address = more_address + extra_address
+            else: detail_address =  request.POST.get('more_address')
+
+            default = request.POST.get('is_default')
+            if default:
+                ShippingAddress.objects.filter(user=request.user, is_default=True).update(is_default=False)
+                is_default = True
+            else:
+                is_default = False
+            user = request.user
+
+            shipping_address = ShippingAddress.objects.create(
+                recipient = recipient,
+                phone_number = phone_number,
+                destination = destination,
+                postal_code = postal_code,
+                address = address,
+                detail_address = detail_address,
+                is_default = bool(is_default),
+                user = user
+            )
+            shipping_address.save()
+            return redirect('user:change_address')
+        else: 
+            address_list = ShippingAddress.objects.filter(user_id=request.user.id)
+            context = {
+                'address_list': address_list,
+                'error': '배송지 항목은 최대 15개까지 등록할 수 있습니다.'
+            }
+            return render(request, 'change_address.html', context)
+
+def delete_address(request, pk):
+    address = ShippingAddress.objects.get(pk=pk)
+    address.delete()
+    return redirect('user:change_address')
+
+def update_address(request, pk):
+    address = get_object_or_404(ShippingAddress, pk=pk)
+    if request.method == 'POST':
+        address.recipient = request.POST.get('recipient', address.recipient)
+        address.phone_number = request.POST.get('phone_number', address.phone_number)
+        address.destination = request.POST.get('destination', address.destination) if request.POST.get('destination') else None
+        address.postal_code = request.POST.get('postal_code', address.postal_code)
+        address.address = request.POST.get('address', address.address)
+
+        if request.POST.get('extra_address'):
+            more_address = request.POST.get('more_address')
+            extra_address = request.POST.get('extra_address')
+            address.detail_address = more_address + extra_address
+        else: address.detail_address =  request.POST.get('more_address')
+
+        is_default = request.POST.get('is_default')
+        if is_default:
+            ShippingAddress.objects.filter(user=request.user, is_default=True).update(is_default=False)
+            address.is_default = True
+        else:
+            address.is_default = False
+
+        address.save()
+        return redirect('user:change_address')
+
+
+
 
 
 

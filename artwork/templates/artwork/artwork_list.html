@@ -20,13 +20,12 @@
         padding: 10px;
         font-size: 16px;
         border: 1px solid #ffffff;
-        border-radius: 4px 0 0 4px;
         border-bottom: 1px solid black;
         outline: none;
+        margin-bottom: 15px;
     }
     
     #search-button {
-        /* background: url("{% static 'sample_images/search_icon.png' %}") no-repeat center; */
         background-color: #ffffff;
         background-size: contain;
         width: 50px;
@@ -46,22 +45,26 @@
         text-decoration: none;
         cursor: pointer;
     }
-    </style>
+    .btn-spacing {
+        margin-left: 10px;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-
 <!-- 정렬 -->
 <div class="head-container">
     <div class="direct-container">
         <p class="text-center">Artworks</p>
-        <div class="d-flex justify-content-center">
-
-            <!-- 모달을 여는 버튼 -->
-            <button onclick="openModal()">태그 검색</button>
-
-            <!-- 검색 폼 -->
+        <div class="d-flex justify-content-center" style="align-items: self-end; justify-content: flex-end;">
             <form id="search-form" action="" method="get">
+                <!-- 모달을 여는 버튼 -->
+                <button type="button" class="open-modal-button" onclick="openModal()" style="background-color: #ffffff; border: none;">
+                    <span class="material-symbols-outlined" style="font-size: 35px;">
+                        tune
+                    </span>
+                </button>
+            <!-- 검색 폼 -->
                 <input type="text" id="search-query" name="query" placeholder="작품 검색하기">
                 <button id="search-button" type="submit" style="padding: 0%;">
                     <span class="material-symbols-outlined" style="font-size: 35px;">
@@ -70,11 +73,15 @@
                 </button>
             </form>
         </div>
-    <!-- </div> -->
-    <div class="sort-container d-flex justify-content-end">
+    </div>
+
+    <!-- 정렬 -->
+    <div class="sort-container">
+        <div class=" d-flex justify-content-end">
         <a class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover" href="javascript:void(0)" onclick="updateSort('recent')">최근 등록순 |</a>
         <a class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover" href="javascript:void(0)" onclick="updateSort('high_price')">가격 높은순</a>
         <a class="link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover" href="javascript:void(0)" onclick="updateSort('low_price')">| 가격 낮은순</a>
+        </div>
     </div>
 </div>
 
@@ -125,7 +132,7 @@
         </div>
         <div class="button-container">
             <button onclick="resetTags()">초기화</button>
-            <button onclick="searchTags()">검색</button>
+            <button onclick="searchTags()" style="margin-left: 10px;">검색</button>
         </div>
     </div>
 </div>
@@ -144,7 +151,8 @@
         const button = document.createElement('button');
         button.innerText = tag.name;
         button.classList.add('tag-button');
-        button.onclick = () => {
+        button.onclick = (event) => {
+            event.preventDefault();  // 버튼 클릭 시 기본 동작을 막습니다.
             button.classList.toggle('selected');
         };
         return button;
@@ -245,7 +253,10 @@
         window.location.search = urlParams.toString();
     }
 
-    function openModal() {
+    function openModal(event) {
+        if (event) {
+            event.preventDefault();  // 모달을 열 때 폼 제출을 막습니다.
+        }
         document.getElementById('tagSearchModal').style.display = 'block';
         populateTagCategories(); // 모달이 열릴 때 태그 카테고리를 로드
     }
@@ -302,21 +313,24 @@
         // 다른 필터 파라미터를 유지하면서 URL 업데이트
         window.location.search = urlParams.toString();
     }
-    
+
     var page = 2;
     var loading = false;
-
+    var hasNextPage = true;
+    
     function loadMoreArtworks() {
-        if (loading) return;
-        loading = true;
+    if (loading || !hasNextPage) return;
+    loading = true;
 
-        $.ajax({
-            url: "{% url 'artwork:load_more_artworks' %}",
-            data: {
-                'page': page,
-            },
-            success: function(data) {
-                if (data.artworks.length > 0) {
+    $.ajax({
+        url: "{% url 'artwork:load_more_artworks' %}",
+        data: {
+            'page': page,
+        },
+        success: function(data) {
+            hasNextPage = data.has_next; // 다음 페이지 여부를 갱신
+            if (data.artworks.length > 0) {
+                if (hasNextPage) {
                     data.artworks.forEach(function(artwork) {
                         var cardHtml = `
                             <div class="col-4 artwork-card p-0 border-0 rounded-0">
@@ -330,19 +344,24 @@
                     });
                     page++;
                 }
-                loading = false;
-            },
-            error: function() {
-                loading = false;
             }
-        });
-    }
-
-    $(window).scroll(function() {
-        if ($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
-            loadMoreArtworks();
+            loading = false;
+        },
+        error: function() {
+            loading = false;
         }
     });
+}
+
+$(window).scroll(function() {
+    if ($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+        loadMoreArtworks();
+    }
+});
+
+$(document).ready(function() {
+        loadMoreArtworks();
+});
     
     $('#search-form').submit(function(event) {
         event.preventDefault();

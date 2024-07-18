@@ -1,28 +1,28 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block extra-style %}
+<link rel="stylesheet" href="{% static 'artwork/detail_style.css' %}">
+{% endblock %}
+
 {% block content %}
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>작가에게 문의하기</title>
-    <link rel="stylesheet" href="{% static 'path_to_your_css_file.css' %}">
-</head>
-<body style="margin-top: 100px;">
-    <h1>{{ artwork.title }} - 작가에게 문의하기</h1>
-    {% if messages %}
-        <div>
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
+<div class="Inquiry_container mt-5">
+    <h2>문의</h2>
+    <form method="post" enctype="multipart/form-data" class="row g-3">
+        <div class="col-12">
+            <label for="{{ form.question.id_for_label }}" class="form-label">{{ form.question.label|safe }}</label>
+            {% csrf_token %}
+            {{ form.question }}
         </div>
-    {% endif %}
-    <form method="post" id="inquiry-form">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">문의 보내기</button>
-        <button type="button" class="btn btn-secondary" id="close-button">닫기</button>
+        <div class="col-12 d-flex justify-content-end">
+            <form method="post" id="inquiry-form">
+                <button type="submit" class="btn btn-primary">문의 보내기</button>
+                <button type="button" class="btn btn-secondary" id="close-button" style="margin-left: 10p;">닫기</button>
+            </form>
+        </div>
+        <!-- 상품명, 상품 설명, 이미지 URL: 가로 한 칸 사용 -->
     </form>
+</div>
 
     <script>
         document.getElementById('close-button').addEventListener('click', function() {

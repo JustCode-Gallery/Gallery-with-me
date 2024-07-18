@@ -5,13 +5,15 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
 import os
-from .forms import PostForm
+from .forms import PostForm, PostSearchForm
 from django.utils import timezone
 from exhibit.models import ArtExhibit
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from io import BytesIO
 from django.http import HttpResponse
+from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
@@ -21,12 +23,19 @@ User = get_user_model()
 def board_list(request):
     post = Post.objects.all()
     post_img = PostImage.objects.filter(image_order=0)
+    search_form = PostSearchForm()
+    user = request.user
+
     context = {
         'posts' : post,
-        'post_img': post_img
+        'post_img': post_img,
+        'search_form': search_form,
+        'user':user,
     }
+
     return render(request, 'board/board_list.html', context)
 
+@login_required
 def board_create(request):
    
     return render(request, 'board/board_create.html')
@@ -129,10 +138,14 @@ def form_submit(request):
 def board_detail(request, pk):
     post = Post.objects.get(pk=pk)
     post_img = PostImage.objects.filter(post=post)
-    # 저장된
+    user = request.user
+    post.visitors += 1
+    post.save()
+    
     context = {
         'post' : post,
         'post_img': post_img,
+        'user': user,
     }
     return render(request, 'board/board_detail.html', context)
 
@@ -167,6 +180,7 @@ def refresh_session(request):
         return JsonResponse({'status': 'success'})
         
     return JsonResponse({'status': 'error'}, status=400)
+
 
 def board_detail_edit(request,pk):
     post = Post.objects.get(pk=pk)
@@ -206,3 +220,31 @@ def board_update(request, pk):
         return redirect('board:board_detail', pk=pk)
     form = PostForm(instance=post)
     return HttpResponse(status=405)
+
+def board_search(request):
+
+    context = {
+        'search_form': PostSearchForm(),
+    }
+
+    if request.method=="POST":
+        search_form = PostSearchForm(request.POST)
+        if search_form.is_valid():
+            searchWord = search_form.cleaned_data['search_word']
+            post_list = Post.objects.filter(
+                Q(post_title__icontains=searchWord) | 
+                Q(post_content__icontains=searchWord)
+            ).distinct()    # 기본정렬순서 db최신순
+            # ).order_by('').distinct() 정렬 순서 직접지정
+
+            context.update({
+                'search_term': searchWord,
+                'object_list': post_list,
+            })
+        else:
+            context.update({
+                'search_form': search_form,
+                'form_errors': search_form.errors
+            })
+    
+    return render(request, 'board/board_search.html', context)

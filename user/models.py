@@ -33,7 +33,7 @@ class ShippingAddress(models.Model):
     destination = models.CharField(max_length=50, null=True)
     postal_code = models.CharField(max_length=5)
     address = models.CharField(max_length=50)
-    detail_address = models.CharField(max_length=50)
+    detail_address = models.CharField(max_length=50, null=True)
     is_default = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 

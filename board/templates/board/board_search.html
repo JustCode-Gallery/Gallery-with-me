@@ -4,6 +4,7 @@
 {% block extra-style %}
 <link href="{% static 'css/board_list.css' %}" rel="stylesheet">
 <script src="https://kit.fontawesome.com/a47086679e.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <style>
 
@@ -15,32 +16,32 @@
     <div class="head-container">
         <div class="direct-container">
             <p class="text-center">Community</p>
-            <div class="row">
             <div class="d-flex justify-content-center">
                 <!-- 검색 폼 -->
                 <form id="search-form" action="{% url 'board:board_search' %}" method="post">
                     {% csrf_token %}
                     {{ search_form.search_word }}
-                    <button id="search-button" type="submit">
+                    <button id="search-button" type="submit" style="padding: 0%;">
                         <span class="material-symbols-outlined" style="font-size: 35px;">
                             search
                             </span>
                     </button>
                 </form>
             </div>
-            </div>
     </div>
 </div>
 <div class="container">
-    <div class="stats" style="display: flex; justify-content: flex-end; margin: 20px 0px;">
+    <div class="stats" style="display: flex; justify-content: flex-end; margin: 20px 0px;"">
         <form action="{% url 'board:board_create' %}" method="post">
             {% csrf_token %}
             <button type="submit" class="btn btn-outlne-secondary registration" style="border: none;"><i class="fa-solid fa-pencil"></i></button>
         </form>
+        
+
     </div>
-    
     <div class="row">
-        {% for post in posts %}
+        {% if object_list %}
+        {% for post in object_list %}
         <div class="col-6 col-md-4 col-lg-3 mb-3">
             <div class="img-container">
             <!-- seed 뒤 포스트 id 부여 seed/{{post.id}} -->
@@ -59,7 +60,7 @@
                             <i class="fa-solid fa-graduation-cap"></i>&nbsp;{{ post.exhibit }}
                         </span>
                         <span class="badge bg-light text-dark visitors">
-                            <i class="fa-solid fa-eye"></i>&nbsp;{{ post.visitors }}
+                            <i class="fa-solid fa-eye"></i>&nbsp;3345
                         </span>
                     </div>
                 </div>
@@ -70,6 +71,16 @@
             <p>{{ post.user }}</p>
         </div>
         {% endfor %}
+        {% elif search_term %}
+        <div class="no-search text-center" style="margin: 20px 0;">
+            <span class="material-symbols-outlined" style="font-size: 80px; ">
+                campaign
+                </span>
+            <div>
+                <b><i>({{search_term}}) 검색어를 찾을 수 없습니다 !</i></b>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 

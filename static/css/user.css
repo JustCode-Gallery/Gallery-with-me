@@ -142,4 +142,25 @@
 .address-container {
     width: 800px;
 }
+
+.register-address-btn,
+.update-address-btn,
+.delete-btn {
+    border-color: #ced4da;
+}
+
+.update-address-btn:hover,
+.delete-btn:hover {
+    border-color: #ced4da;
+}
+
+.register-address-btn:hover {
+    background-color: transparent;
+    border-color: #ced4da;
+    color: #6c757d;
+}
+
+.basic-badge {
+    font-size: 0.75rem;
+}
 /* end change_address */

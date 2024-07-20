@@ -9,7 +9,6 @@ geopy==2.4.1
 idna==3.7
 Jinja2==3.1.4
 MarkupSafe==2.1.5
-numpy==2.0.0
 pillow==10.4.0
 psycopg2-binary==2.9.9
 python-dotenv==1.0.1

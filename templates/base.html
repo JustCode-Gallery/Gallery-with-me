@@ -1,5 +1,5 @@
 ﻿{% load static %}
-
+{% load user_tags %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -110,7 +110,8 @@
         <div class="collapse" id="profile-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
             <li>
-              {% if seller %}
+              {% verify_seller user.id as is_seller %}
+               {% if is_seller %}
               <a href="{% url 'user:update_seller_profile' %}"
                 class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">회원정보 수정</a>
               {% else %}

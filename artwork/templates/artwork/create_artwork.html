@@ -1,0 +1,230 @@
+﻿{% extends "base.html" %}
+{% load static %}
+{% load user_tags %}
+
+{% block extra-style %}
+<link rel="stylesheet" href="{% static 'artwork/detail_style.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link href="{% static 'css/seller_artwork.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<!-- 입력폼 -->
+{% if error_message %}
+<div style="color: red;">{{ error_message }}</div>
+{% endif %}
+
+
+<form id="artworkForm" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div id="carouselExampleIndicators" class="carousel slide">
+        <div class="carousel-inner">
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+            data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+            data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <div class="d-flex flex-column align-items-center mt-4">
+        <p>작품 사진 넣기</p>
+        <div id="image-inputs">
+            <div class="image-input-row">
+                <input type="file" class="image-input" multiple accept="image/*" onchange="previewImages(event)">
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="card mt-3 mx-2 py-3 px-4">
+            <div class="card-body d-flex flex-row">
+                <!-- 왼쪽 div -->
+                <div class="card-caption d-flex flex-column flex-fill px-1" style="width: 50%;">
+                    <h3 class="caption-card-title">
+                        <input type="text" name="title" maxlength="100" placeholder="작품명" required>
+                    </h3>
+                    <h5 class="caption-card-subtitle">{{ seller.name }}</h5>
+                    <h6 class="caption-card-subtitle text-body-secondary">
+                        <input type="number" name="year" placeholder="작품 완성 년도">,<br>
+
+                        <input type="number" name="width" placeholder="넓이" required>x
+                        <input type="number" name="height" placeholder="높이" required>x
+                        <input type="number" name="depth" placeholder="두께" required>cm
+                    </h6>
+                </div>
+
+                <!-- 세로줄 -->
+                <div class="d-flex align-items-center mx-2" style="height: auto;">
+                    <div class="vr"></div>
+                </div>
+
+                <!-- 오른쪽 div -->
+                <div class="d-flex flex-column px-1" style="width: 50%;">
+                    <p class="ms-2"><input type="number" step="0.01" name="price" placeholder="가격"
+                            required></p>
+                    <label for="id_exhibit">Exhibit:</label>
+                    <select name="exhibit" id="id_exhibit">
+                        <option value="">None</option>
+                        {% for exhibit in exhibits %}
+                        <option value="{{ exhibit.id }}">{{ exhibit.title }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <!-- 좋아요 버튼 -->
+                    <div class="hstack gap-1 mt-2">
+                        <button type="button" class="btn" id="like-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-suit-heart" viewBox="0 0 16 16">
+                                <path
+                                    d="m8 6.236-.894-1.789c-.222-.443-.607-1.08-1.152-1.595C5.418 2.345 4.776 2 4 2 2.324 2 1 3.326 1 4.92c0 1.211.554 2.066 1.868 3.37.337.334.721.695 1.146 1.093C5.122 10.423 6.5 11.717 8 13.447c1.5-1.73 2.878-3.024 3.986-4.064.425-.398.81-.76 1.146-1.093C14.446 6.986 15 6.131 15 4.92 15 3.326 13.676 2 12 2c-.777 0-1.418.345-1.954.852-.545.515-.93 1.152-1.152 1.595zm.392 8.292a.513.513 0 0 1-.784 0c-1.601-1.902-3.05-3.262-4.243-4.381C1.3 8.208 0 6.989 0 4.92 0 2.755 1.79 1 4 1c1.6 0 2.719 1.05 3.404 2.008.26.365.458.716.596.992a7.6 7.6 0 0 1 .596-.992C9.281 2.049 10.4 1 12 1c2.21 0 4 1.755 4 3.92 0 2.069-1.3 3.288-3.365 5.227-1.193 1.12-2.642 2.48-4.243 4.38z" />
+                            </svg>
+                        </button>
+                        <span id="like-count">100 likes</span>
+                    </div>
+
+                    <!-- 작가에게 문의하기 버튼, 예약, 구매하기 및 장바구니에 추가하기 버튼 -->
+                    <div class="hstack gap-2">
+                        <button id="inquiry-button" type="button" class="btn">
+                            <h6><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-chat-square-dots-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2zm5 4a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
+                                </svg></h6>
+                        </button>
+                    </div>
+                    <div>
+                        <label for="id_is_sold">판매가능 여부:</label>
+                        <input type="checkbox" name="is_sold" id="id_is_sold">
+                        <br>
+                        <label for="id_is_reservable">예약가능 여부:</label>
+                        <input type="checkbox" name="is_reservable" id="id_is_reservable">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container container-description">
+        <h4 class="mt-5">작가의 말</h4>
+        <textarea name="description" class="form-control" rows="5" required></textarea>
+    </div>
+    <div class="d-flex justify-content-center mt-3">
+        <button type="submit" class="btn btn-warning ">생성</button>
+    </div>
+
+</form>
+<!-- 입력폼 end -->
+<script>
+    let imageFiles = []; // 선택된 이미지 파일들을 저장하는 배열
+
+    function previewImages(event) {
+        const input = event.target; // 파일 입력 요소
+        const files = input.files; // 선택된 파일들
+
+        const carouselInner = document.querySelector('.carousel-inner'); // 캐러셀 내부
+
+        for (let i = 0; i < files.length; i++) {
+            imageFiles.push(files[i]); // 이미지 파일 배열에 추가
+            const reader = new FileReader(); // 파일 읽기 객체
+
+            reader.onload = function (e) {
+                // 캐러셀 아이템 생성
+                const carouselItem = document.createElement('div');
+                carouselItem.className = 'carousel-item position-relative'; // 상대적 위치 설정
+
+                const img = document.createElement('img');
+                img.src = e.target.result; // 파일 읽기 결과를 이미지 소스로 설정
+                img.className = 'd-block w-100'; // 스타일 적용
+
+                // 삭제 버튼 생성
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger btn-sm position-absolute'; // 버튼 스타일
+                deleteBtn.innerText = 'X'; // 버튼 텍스트
+                deleteBtn.style.top = '10px'; // 버튼 위치
+                deleteBtn.style.right = '10px'; // 버튼 위치
+                deleteBtn.style.zIndex = '100'; // 버튼 레이어 조정
+                deleteBtn.onclick = function (event) {
+                    event.stopPropagation(); // 클릭 이벤트 전파 중지
+                    removeImage(carouselItem, files[i]); // 이미지 제거 함수 호출
+                };
+
+                carouselItem.appendChild(img); // 이미지 추가
+                carouselItem.appendChild(deleteBtn); // 삭제 버튼 추가
+                carouselInner.appendChild(carouselItem); // 캐러셀 내부에 아이템 추가
+
+                // 캐러셀 인디케이터 생성
+                const indicator = document.createElement('button');
+                indicator.type = 'button';
+                indicator.dataset.bsTarget = '#carouselExampleIndicators'; // 캐러셀 타겟 설정
+                indicator.dataset.bsSlideTo = carouselInner.children.length - 1; // 인디케이터 슬라이드 설정
+
+                if (carouselInner.children.length === 1) {
+                    carouselItem.classList.add('active'); // 첫 번째 아이템 활성화
+                    indicator.classList.add('active'); // 첫 번째 인디케이터 활성화
+                    indicator.ariaCurrent = 'true'; // 현재 슬라이드 표시
+                }
+
+                indicator.ariaLabel = 'Slide ' + carouselInner.children.length; // 인디케이터 레이블 설정
+            };
+
+            reader.readAsDataURL(files[i]); // 파일을 데이터 URL로 읽기
+        }
+    }
+
+    function removeImage(carouselItem, file) {
+        // 이미지 파일 배열에서 파일 제거
+        const index = imageFiles.indexOf(file);
+        if (index > -1) {
+            imageFiles.splice(index, 1);
+        }
+
+        // 캐러셀 아이템 제거
+        carouselItem.remove();
+
+
+        // 첫 번째 캐러셀 아이템 활성화
+        const carouselItems = document.querySelectorAll('.carousel-item');
+        if (carouselItems.length > 0) {
+            carouselItems.forEach((item, i) => {
+                if (i === 0) {
+                    item.classList.add('active'); // 첫 번째 아이템 활성화
+                } else {
+                    item.classList.remove('active'); // 나머지 아이템 비활성화
+                }
+            });
+        }
+    }
+
+    // 제출
+    document.getElementById('artworkForm').onsubmit = function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        imageFiles.forEach((image, index) => {
+            formData.append('images', image);
+        });
+
+        fetch("{% url 'artwork:create_artwork' %}", {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                window.location.href = "{% url 'artwork:seller_artwork_list' %}";
+            } else {
+                alert('Error creating artwork');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    };
+</script>
+{% endblock %}

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load user_tags %}
 
 {% block extra-style %}
 <link rel="stylesheet" href="{% static 'artwork/detail_style.css' %}">
@@ -56,6 +57,19 @@
               {{ artwork.width }} x {{ artwork.height }} x {{ artwork.depth }} cm
               {% endif %}
             </h6>
+            <!-- 판매자 페이지(판매자에게만 보임) -재헌 -->
+            {% verify_owner artwork.id user.id as is_owner %}
+            {% if is_owner %}
+            <div class="mt-4 d-flex justify-content-start">
+                <button type="button" class="btn btn-warning">
+                    <a href="{% url 'artwork:update_artwork' artwork.id %}" class="text-dark text-decoration-none">수정하기</a>
+                </button>
+                <button type="button" class="btn btn-danger mx-2">
+                    <a href="{% url 'artwork:delete_artwork' artwork.id %}" class="text-dark text-decoration-none">삭제하기</a>
+                </button>
+            </div>
+            {% endif %}            
+            <!-- 판매자 페이지(판매자에게만 보임) -재헌 -->
       </div>
 
       <!-- 세로줄 -->
@@ -107,7 +121,6 @@
     <h4 class="mt-5">작가의 말</h4>
     <p>{{ artwork.description }}</p>
 </div>
-
 
     <!-- 좋아요 기능 AJAX로 요청 -->
     <script>

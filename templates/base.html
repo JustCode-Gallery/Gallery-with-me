@@ -1,5 +1,5 @@
 ﻿{% load static %}
-
+{% load user_tags %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -93,7 +93,8 @@
         <div class="collapse" id="profile-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
             <li>
-              {% if seller %}
+              {% verify_seller user.id as is_seller %}
+              {% if is_seller %}
               <a href="{% url 'user:update_seller_profile' %}"
                 class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">회원정보 수정</a>
               {% else %}
@@ -149,6 +150,9 @@
         </form>
       </li>
 
+      <!-- 판매자 페이지(판매자에게만 보임) -재헌 -->
+      {% verify_seller user.id as is_seller %}
+      {% if is_seller %}
       <li class="border-top "></li>
       <li class="mb-2">
         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
@@ -157,8 +161,9 @@
         </button>
         <div class="collapse" id="seller-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">내 작품 관리</a>
+            <li><a href="{% url 'artwork:seller_artwork_list' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">내 작품 관리</a>
             </li>
+            <li><a href="{% url 'artwork:create_artwork' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">작품 등록</a>
             <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">판매내역</a>
             <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">예약현황</a>
             <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">받은 문의내역</a>
@@ -166,6 +171,8 @@
           </ul>
         </div>
       </li>
+      {% endif %}
+      <!-- 판매자 페이지(판매자에게만 보임) -재헌 -->
 
       {% else %}
       <ul class="list-unstyled ps-0 mt-5">

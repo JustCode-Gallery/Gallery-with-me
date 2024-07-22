@@ -9,7 +9,44 @@ from django.contrib.auth.hashers import make_password
 from artwork.models import *
 from django.http import JsonResponse
 from .utils import generate_verification_code, send_verification_email
-import json
+import json 
+from django.contrib import messages
+
+def find_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        email_verification_code = request.POST.get('email_verification_code')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        phone_number = request.POST.get('phone_number')
+        new_password1 = request.POST.get('new_password1')
+        new_password2 = request.POST.get('new_password2')
+
+        # 인증 코드 확인
+        if email_verification_code == request.session.get('email_verification_code'):
+            try:
+                # 사용자 검색
+                user = User.objects.get(email=email, first_name=first_name, last_name=last_name, phone_number=phone_number)
+
+                # 비밀번호 확인
+                if new_password1 == new_password2:
+                    user.set_password(new_password1)  # 비밀번호 암호화
+                    user.save()  # 사용자 객체 저장
+                    login(request, user)  # 사용자 로그인
+                    return redirect('home')
+                else:
+                    messages.error(request, '새 비밀번호를 다시 입력해주세요.')
+                    return render(request, 'find_password.html')
+
+            except User.DoesNotExist:
+                messages.error(request, '등록되지 않은 회원입니다.')
+                return render(request, 'find_password.html')
+
+        else:
+            messages.error(request, '유효하지 않은 인증 코드입니다.')
+            return render(request, 'find_password.html')
+
+    return render(request, 'find_password.html')
 
 def register(request):
     if request.method == 'POST':
@@ -44,6 +81,9 @@ def register(request):
                 last_name=last_name
             )
             user.save()
+            user.set_password(password1)
+            user.save()
+
             login(request, user)
             return redirect('user:select_artworks')
         else:
@@ -255,6 +295,7 @@ def select_artworks(request):
         return redirect('home')  # 선택 완료 후 이동할 URL 설정
         
     return render(request, 'select_artworks.html', {'artworks': artworks})
+
 
 def change_address(request):
     address_list = ShippingAddress.objects.filter(user_id=request.user.id)

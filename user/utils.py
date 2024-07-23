@@ -6,8 +6,8 @@ def generate_verification_code():
     return str(random.randint(100000, 999999))
 
 def send_verification_email(email, code):
-    subject = 'Your Email Verification Code'
-    message = f'Your verification code is: {code}'
+    subject = '인증코드 발송 -Gallery With Me'
+    message = f'인증코드 : {code}'
     from_email = settings.DEFAULT_FROM_EMAIL
     recipient_list = [email]
     

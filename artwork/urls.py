@@ -13,4 +13,11 @@ urlpatterns = [
     path('<int:pk>/add_inquiry/', views.add_inquiry, name='add_inquiry'),
     path('<int:pk>/reserve/', views.reserve_artwork, name='reserve_artwork'),
     path('load_more_artworks/', views.load_more_artworks, name='load_more_artworks'),
+    
+    # 재헌
+    path('create/', views.create_artwork, name='create_artwork'),
+    path('update/<int:artwork_id>/', views.update_artwork, name='update_artwork'),
+    path('delete/<int:artwork_id>/', views.delete_artwork, name='delete_artwork'),
+    path('artwork_list/seller/', views.seller_artwork_list, name='seller_artwork_list'),
+    # 재헌
 ]

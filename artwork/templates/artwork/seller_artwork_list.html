@@ -1,0 +1,40 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block extra-style %}
+<link rel="stylesheet" href="{% static 'artwork/list_style.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@40,400,0,0" />
+
+{% endblock %}
+
+{% block content %}
+<div class="mt-5 mb-5 text-center">
+    <h3 class="mt-5 mb-5">{{ seller.nickname }}님의 작품들입니다.</h3>
+</div>
+
+
+<!-- 작품들 -->
+<div class="container-fluid" id="artwork-container">
+    <div class="row" style="margin-top: 20px;">
+        {% for artwork in artworks %}
+        <div class="col-4 artwork-card p-0 border-0 rounded-0">
+            <div class="ratio ratio-1x1">
+                <a href="{% url 'artwork:artwork_detail' artwork.pk %}">
+                    <img src="{{ artwork.artimage_set.first.image_url.url }}" class="artwork-card-img rounded-0">
+                    <div class="artwork-card-img-overlay d-flex flex-column justify-content-center align-items-center">
+                        <h5 class="artwork-card-title">{{ artwork.title }}</h5>
+                        <h5 class="artwork-card-title">{{ artwork.price|floatformat:0 }} 원</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<!-- 작품들end -->
+
+
+{% endblock %}

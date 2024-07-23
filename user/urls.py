@@ -15,8 +15,12 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'), 
     path('delete_account/', views.delete_account, name='delete_account'),
+    path('find_password/', views.find_password, name='find_password'),
     path('change_password/', views.change_password, name='change_password'),
     path('select_artworks/', views.select_artworks, name='select_artworks'),
-    path('change_address/', views.change_address, name='change_address')
+    path('change_address/', views.change_address, name='change_address'),
+    path('change_address/create/', views.create_address, name='create_address'),
+    path('change_address/delete/<int:pk>/', views.delete_address, name='delete_address'),
+    path('change_address/update/<int:pk>/', views.update_address, name='update_address'),
 
 ]

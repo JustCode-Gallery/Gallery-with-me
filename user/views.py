@@ -9,7 +9,44 @@ from django.contrib.auth.hashers import make_password
 from artwork.models import *
 from django.http import JsonResponse
 from .utils import generate_verification_code, send_verification_email
-import json
+import json 
+from django.contrib import messages
+
+def find_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        email_verification_code = request.POST.get('email_verification_code')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        phone_number = request.POST.get('phone_number')
+        new_password1 = request.POST.get('new_password1')
+        new_password2 = request.POST.get('new_password2')
+
+        # 인증 코드 확인
+        if email_verification_code == request.session.get('email_verification_code'):
+            try:
+                # 사용자 검색
+                user = User.objects.get(email=email, first_name=first_name, last_name=last_name, phone_number=phone_number)
+
+                # 비밀번호 확인
+                if new_password1 == new_password2:
+                    user.set_password(new_password1)  # 비밀번호 암호화
+                    user.save()  # 사용자 객체 저장
+                    login(request, user)  # 사용자 로그인
+                    return redirect('home')
+                else:
+                    messages.error(request, '새 비밀번호를 다시 입력해주세요.')
+                    return render(request, 'find_password.html')
+
+            except User.DoesNotExist:
+                messages.error(request, '등록되지 않은 회원입니다.')
+                return render(request, 'find_password.html')
+
+        else:
+            messages.error(request, '유효하지 않은 인증 코드입니다.')
+            return render(request, 'find_password.html')
+
+    return render(request, 'find_password.html')
 
 def register(request):
     if request.method == 'POST':
@@ -44,6 +81,9 @@ def register(request):
                 last_name=last_name
             )
             user.save()
+            user.set_password(password1)
+            user.save()
+
             login(request, user)
             return redirect('user:select_artworks')
         else:
@@ -256,9 +296,85 @@ def select_artworks(request):
         
     return render(request, 'select_artworks.html', {'artworks': artworks})
 
+
 def change_address(request):
     address_list = ShippingAddress.objects.filter(user_id=request.user.id)
     return render(request, 'change_address.html', {'address_list': address_list})
+
+def create_address(request):
+    if request.method == 'POST':
+        if ShippingAddress.objects.filter(user=request.user).count() < 5:
+            recipient = request.POST.get('recipient')
+            phone_number = request.POST.get('phone_number')
+            destination = request.POST.get('destination') if request.POST.get('destination') else None
+            postal_code = request.POST.get('postal_code')
+            address = request.POST.get('address')
+
+            if request.POST.get('extra_address'):
+                more_address = request.POST.get('more_address')
+                extra_address = request.POST.get('extra_address')
+                detail_address = more_address + extra_address
+            else: detail_address =  request.POST.get('more_address')
+
+            default = request.POST.get('is_default')
+            if default:
+                ShippingAddress.objects.filter(user=request.user, is_default=True).update(is_default=False)
+                is_default = True
+            else:
+                is_default = False
+            user = request.user
+
+            shipping_address = ShippingAddress.objects.create(
+                recipient = recipient,
+                phone_number = phone_number,
+                destination = destination,
+                postal_code = postal_code,
+                address = address,
+                detail_address = detail_address,
+                is_default = bool(is_default),
+                user = user
+            )
+            shipping_address.save()
+            return redirect('user:change_address')
+        else: 
+            address_list = ShippingAddress.objects.filter(user_id=request.user.id)
+            context = {
+                'address_list': address_list,
+                'error': '배송지 항목은 최대 5개까지 등록할 수 있습니다.'
+            }
+            return render(request, 'change_address.html', context)
+
+def delete_address(request, pk):
+    address = ShippingAddress.objects.get(pk=pk)
+    address.delete()
+    return redirect('user:change_address')
+
+def update_address(request, pk):
+    address = get_object_or_404(ShippingAddress, pk=pk)
+    if request.method == 'POST':
+        address.recipient = request.POST.get('recipient', address.recipient)
+        address.phone_number = request.POST.get('phone_number', address.phone_number)
+        address.destination = request.POST.get('destination', address.destination) if request.POST.get('destination') else None
+        address.postal_code = request.POST.get('postal_code', address.postal_code)
+        address.address = request.POST.get('address', address.address)
+
+        if request.POST.get('extra_address'):
+            more_address = request.POST.get('more_address')
+            extra_address = request.POST.get('extra_address')
+            address.detail_address = more_address + extra_address
+        else: address.detail_address =  request.POST.get('more_address')
+
+        is_default = request.POST.get('is_default')
+        if is_default:
+            ShippingAddress.objects.filter(user=request.user, is_default=True).update(is_default=False)
+            address.is_default = True
+        else:
+            address.is_default = False
+
+        address.save()
+        return redirect('user:change_address')
+
+
 
 
 

@@ -1,0 +1,28 @@
+﻿.preview {
+    display: inline-block;
+    position: relative;
+}
+.preview img {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+}
+.preview .remove-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+}
+.image-input-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}

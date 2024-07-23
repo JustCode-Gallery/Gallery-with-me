@@ -2,8 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
-from .models import ArtWork, WorkLike, ArtistInquiry, TagCategory, Material
+from .models import ArtWork, WorkLike, ArtistInquiry, TagCategory, Material, ArtImage
 from order.models import Cart, Reservation
+from user.models import User,Seller
+from exhibit.models import ArtExhibit
 from .forms import ArtWorkFilterForm, ArtistInquiryForm, ArtWorkSearchForm
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -93,12 +95,15 @@ def load_more_artworks(request):
             'id': artwork.id,
             'title': artwork.title,
             'price': artwork.price,
-            'image_url': artwork.artimage_set.first().image.url if artwork.artimage_set.first() else ''
+            'image_url': artwork.artimage_set.first().image_url.url if artwork.artimage_set.first() else ''
         }
         for artwork in page_obj
     ]
     
-    return JsonResponse({'artworks': artworks_data})
+    return JsonResponse({
+        'artworks': artworks_data,
+        'has_next': page_obj.has_next()  # 다음 페이지가 있는지 여부를 반환
+    })
     
 class ArtWorkDetailView(DetailView):
     model = ArtWork
@@ -132,7 +137,8 @@ def toggle_work_like(request, pk): # 좋아요 기능
         WorkLike.objects.create(user=user, art_work=artwork)
         liked = True
 
-    if request.is_ajax(): # AJAX로 좋아요 하기
+    # AJAX 요청인지 확인
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'liked': liked, 'count': artwork.worklike_set.count()})
 
     return redirect('artwork_detail', pk=pk)
@@ -144,12 +150,12 @@ def add_to_cart(request, pk): # 장바구니에 담기 기능
 
     # 장바구니에 추가
     Cart.objects.create(user=user, art_work=artwork)
-    return redirect('artwork_detail', pk=pk)
+    return redirect('artwork:artwork_detail', pk=pk)
 
 @login_required
 def buy_now(request, pk): # 바로 구매 기능
     # 추후 결제 페이지로 리다이렉트할 예정, 현재는 임시로 상세 페이지로 리다이렉트
-    return redirect('artwork_detail', pk=pk)
+    return redirect('artwork:artwork_detail', pk=pk)
 
 @login_required
 def add_inquiry(request, pk):  # 작가 문의하기 기능
@@ -179,10 +185,10 @@ def reserve_artwork(request, pk): # 예약하기 기능
     if artwork.is_reservable:
         # 구매 예약 생성
         Reservation.objects.create(user=user, art_work=artwork)
-        return redirect('artwork_detail', pk=pk)
+        return redirect('artwork:artwork_detail', pk=pk)
     else:
         # 예약이 불가능한 경우 처리(추가해야함)
-        return redirect('artwork_detail', pk=pk)
+        return redirect('artwork:artwork_detail', pk=pk)
 
 def tag_material_categories_api(request):
     tag_categories = TagCategory.objects.all()
@@ -200,3 +206,120 @@ def tag_material_categories_api(request):
     }
     
     return JsonResponse(data, safe=False)
+
+
+#작품 생성하기
+@login_required
+def create_artwork(request):
+    if request.method == 'POST':
+        #판매자가 입력한 값들 받아오기
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        width = request.POST.get('width')
+        height = request.POST.get('height')
+        depth = request.POST.get('depth')
+        year = request.POST.get('year')
+        price = request.POST.get('price')
+        exhibit_id = request.POST.get('exhibit')
+        is_sold = request.POST.get('is_sold') == 'on'
+        is_reservable = request.POST.get('is_reservable') == 'on'
+        images = request.FILES.getlist('images')
+
+        user = request.user
+
+        #등록된 판매자인지 판단하기
+        try:
+            seller = Seller.objects.get(id=user.id)
+        except Seller.DoesNotExist:
+            return render(request, 'artwork/create_artwork.html', {
+                'error_message': '등록된 판매자를 찾을 수 없습니다'
+            })
+
+        #등록된 전시회인지 판단하기
+        exhibit = ArtExhibit.objects.get(id=exhibit_id) if exhibit_id else None
+
+        #artwork생성
+        try:
+            artwork = ArtWork(
+                title=title,
+                description=description,
+                width=int(width),
+                height=int(height),
+                depth=int(depth),
+                year=int(year),
+                price=price,
+                seller=seller,
+                exhibit=exhibit,
+                is_sold=is_sold,
+                is_reservable=is_reservable,
+            )
+            artwork.save()
+            
+            #artimage생성
+            for image in images:
+                ArtImage.objects.create(artwork=artwork, image_url=image)
+
+            #성공시 리디헥션
+            return redirect('artwork:seller_artwork_list')
+        except ValueError:
+            return render(request, 'artwork/create_artwork.html', {
+                'error_message': '잘못된 정보가 들어가 있습니다. 다시 시도해주세요.'
+            })
+
+    seller = Seller.objects.filter(id=request.user.id)
+    exhibits = ArtExhibit.objects.all()
+    return render(request, 'artwork/create_artwork.html', {'seller': seller, 'exhibits': exhibits})
+
+
+@login_required
+def update_artwork(request, artwork_id):
+    artwork = get_object_or_404(ArtWork, id=artwork_id)
+    images = ArtImage.objects.filter(artwork=artwork)
+    exhibits = ArtExhibit.objects.all()
+
+    if request.method == 'POST':
+        # 판매자가 입력한 값들 받아오기
+        artwork.title = request.POST.get('title')
+        artwork.description = request.POST.get('description')
+        artwork.width = request.POST.get('width')
+        artwork.height = request.POST.get('height')
+        artwork.depth = request.POST.get('depth')
+        artwork.year = request.POST.get('year')
+        artwork.price = request.POST.get('price')
+        artwork.exhibit_id = request.POST.get('exhibit')
+        artwork.is_sold = request.POST.get('is_sold') == 'on'
+        artwork.is_reservable = request.POST.get('is_reservable') == 'on'
+        artwork.save()
+
+        # 삭제할 이미지 처리
+        deleted_images = request.POST.get('deleted_images')
+        if deleted_images:
+            image_ids_list = [img_id for img_id in deleted_images.split(',') if img_id]
+            ArtImage.objects.filter(id__in=image_ids_list).delete()
+
+        # 새로운 ArtImage 생성
+        for file in request.FILES.getlist('images'):
+            ArtImage.objects.create(artwork=artwork, image_url=file)
+
+        return redirect('artwork:seller_artwork_list')
+
+    context = {
+        'artwork': artwork,
+        'images': images,
+        'exhibits': exhibits,
+    }
+    return render(request, 'artwork/update_artwork.html', context)
+
+@login_required
+def seller_artwork_list(request):
+    seller = get_object_or_404(Seller, id=request.user.id)
+    artworks= ArtWork.objects.filter(seller=seller)
+    return render(request,  'artwork/seller_artwork_list.html', {'artworks':artworks,'seller':seller})
+
+@login_required
+def delete_artwork(request, artwork_id):
+    seller = get_object_or_404(Seller, id=request.user.id)
+    artwork = ArtWork.objects.filter(id=artwork_id,seller=seller)
+    artwork.delete()
+    return redirect('artwork:seller_artwork_list')
+

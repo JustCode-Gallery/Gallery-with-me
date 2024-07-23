@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 import folium
-from .models import ArtExhibit
+from .models import ArtExhibit, ExhibitBookmark
 from .forms import ArtExhibitForm
 from django.core.paginator import Paginator
 import json
@@ -62,3 +62,10 @@ def create_exhibit(request):
     else:
         form = ArtExhibitForm()
     return render(request, 'exhibit/form.html', {'form': form})
+
+def exhibit_like_list(request):
+    like_list = ExhibitBookmark.objects.filter(user=request.user)
+    context = {
+        'like_list': like_list,
+    }
+    return render(request, 'exhibit/exhibit_like_list.html', context)

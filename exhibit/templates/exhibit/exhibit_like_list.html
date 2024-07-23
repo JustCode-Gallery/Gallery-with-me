@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra-style %}
+<link href="{% static 'exhibit/exhibit_like.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="d-flex justify-content-center mb-5">
+        <div class="border p-4 rounded mt-4 exhibit-like-container">
+            <h2 class="text-center mb-4">전시회 북마크</h2>
+
+            <div class="container d-flex justify-content-center">
+                {% if like_list %}
+                <div class="row">
+                    {% for like in like_list %}
+                    <div class="col-3 mb-3">
+                        <a href="{% url 'exhibit:exhibit_detail' like.art_exhibit.pk %}" class="">
+                            <img src="{{ like.art_exhibit.artexhibitposter_set.first.image_url.url }}" class="img-thumbnail like-thumbnail-img" alt="{{ like.art_exhibit.name }}">
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="row">
+                    <p class="text-center">북마크한 전시회가 없습니다.</p>
+                    <a class="btn btn-outline-secondary" href="{% url 'exhibit:exhibit_list' %}" role="button">Exhibition map 바로가기</a>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra-style %}
+<link href="{% static 'artwork/artwork_like.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="d-flex justify-content-center mb-5">
+        <div class="border p-4 rounded mt-4 artwork-like-container">
+            <h2 class="text-center mb-4">찜한 작품</h2>
+
+            <div class="container d-flex justify-content-center">
+                {% if like_list %}
+                <div class="row">
+                    {% for like in like_list %}
+                    <div class="col-3 mb-3">
+                        <a href="{% url 'artwork:artwork_detail' like.art_work.pk %}" class="">
+                            <img src="{{ like.art_work.artimage_set.first.image_url.url }}" class="img-thumbnail like-thumbnail-img" alt="{{ like.art_work.name }}">
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="row">
+                    <p class="text-center">찜한 상품이 없습니다.</p>
+                    <a class="btn btn-outline-secondary" href="{% url 'artwork:artwork_list' %}" role="button">Artworks
+                        바로가기</a>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

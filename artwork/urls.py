@@ -20,4 +20,6 @@ urlpatterns = [
     path('delete/<int:artwork_id>/', views.delete_artwork, name='delete_artwork'),
     path('artwork_list/seller/', views.seller_artwork_list, name='seller_artwork_list'),
     # 재헌
+    path('artwork_like_list/', views.artwork_like_list, name='artwork_like_list'),
+
 ]

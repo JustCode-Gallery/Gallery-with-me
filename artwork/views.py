@@ -323,3 +323,9 @@ def delete_artwork(request, artwork_id):
     artwork.delete()
     return redirect('artwork:seller_artwork_list')
 
+def artwork_like_list(request):
+    like_list = WorkLike.objects.filter(user=request.user)
+    context = {
+        'like_list': like_list,
+    }
+    return render(request, 'artwork/artwork_like_list.html', context)

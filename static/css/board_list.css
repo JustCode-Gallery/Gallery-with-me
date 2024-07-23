@@ -26,28 +26,7 @@
     height: 100%;
     object-fit: cover;
 }
-/* .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-end;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    cursor: pointer;
-    border-radius: 12px;
-    pointer-events: auto;
-}
-.university-cap, .visitors{
-    margin: 10px 10px;
-    pointer-events: auto;
-} */
+
 .overlay {
     position: absolute;
     top: 0;
@@ -119,4 +98,3 @@
 .registration:hover{
     background:#F0BA32;
 }
-

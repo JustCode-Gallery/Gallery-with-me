@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'exhibit',
     'order',
     'payment',
+    'seller',
 ]
 
 MIDDLEWARE = [

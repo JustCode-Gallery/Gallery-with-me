@@ -9,8 +9,14 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 
 def exhibit_list(request):
-    exhibits = ArtExhibit.objects.all()
-    user = request.user
+    query = request.GET.get('query', '')
+    user = request.user if request.user.is_authenticated else None
+
+    # 검색을 한 경우 관련 결과 출력
+    if query:
+            exhibits = ArtExhibit.objects.filter(title__icontains=query)
+    else:
+        exhibits = ArtExhibit.objects.all()
 
     # 페이지네이션 설정
     paginator = Paginator(exhibits, 10)  # 한 페이지에 10개씩 보이도록 설정
@@ -24,12 +30,13 @@ def exhibit_list(request):
             'id': exhibit.id,
             'title': exhibit.title,
             'latitude': float(exhibit.latitude),  # Decimal을 float로 변환
-            'longitude': float(exhibit.longitude)
+            'longitude': float(exhibit.longitude),
+            'is_bookmarked': ExhibitBookmark.objects.filter(user=user, exhibit=exhibit).exists() if user else False  # 북마크 상태 추가
         })
 
-    # 각 전시에 북마크 상태 추가
-    for exhibit in page_obj:
-        exhibit.is_bookmarked = ExhibitBookmark.objects.filter(user=user, exhibit=exhibit).exists()
+    # # 각 전시에 북마크 상태 추가
+    # for exhibit in page_obj:
+    #     exhibit.is_bookmarked = ExhibitBookmark.objects.filter(user=user, exhibit=exhibit).exists()
 
     context = {
         'exhibits': page_obj,
@@ -40,10 +47,10 @@ def exhibit_list(request):
 def exhibit_detail(request, exhibit_id):
     # ArtExhibit 객체 가져오기
     exhibit = ArtExhibit.objects.get(id=exhibit_id)
-    user = request.user
+    user = request.user if request.user.is_authenticated else None
 
     # 해당 전시의 북마크 여부 가져오기
-    is_bookmarked = ExhibitBookmark.objects.filter(user=user, exhibit=exhibit).exists()
+    is_bookmarked = ExhibitBookmark.objects.filter(user=user, exhibit=exhibit).exists() if user else False 
 
     # folium 객체 생성, Marker 추가
     figure = folium.Map(location=[exhibit.latitude, exhibit.longitude], zoom_start=17)
@@ -76,7 +83,7 @@ def create_exhibit(request):
         form = ArtExhibitForm()
     return render(request, 'exhibit/form.html', {'form': form})
 
-#사용자가 해당 전시를 북마크할 수 있음
+# 사용자가 해당 전시를 북마크할 수 있음
 @login_required
 def exhibit_bookmark(request, exhibit_id):
     user = request.user
@@ -89,10 +96,10 @@ def exhibit_bookmark(request, exhibit_id):
         exhibit_bookmark.delete()
         is_bookmarked = False
 
-    # AJAX 요청 처리
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        print("this is ajax")
-        return JsonResponse({'is_bookmarked': is_bookmarked})
+    # # AJAX 요청 처리
+    # if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+    #     print("this is ajax")
+    #     return JsonResponse({'is_bookmarked': is_bookmarked})
 
     print("This was not a ajax function")
     #return redirect('exhibit:exhibit_detail', exhibit_id=exhibit_id)

@@ -41,8 +41,7 @@
     }
     
     #search-button {
-        /* background: url("{% static 'sample_images/search_icon.png' %}") no-repeat center; */
-        background-color: #ffffff;
+        background-color: transparent;
         background-size: contain;
         width: 50px;
         height: 50px;
@@ -50,6 +49,23 @@
         cursor: pointer;
         border-radius: 0 4px 4px 0;
         outline: none;
+    }
+
+    .map-container {
+        position: relative;
+    }
+    #bookmark-toggle.active {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .list-group-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .bookmark-container {
+        margin-left: 10px;
     }
 </style>
 
@@ -59,38 +75,65 @@
             <div class="col-md-6 px-5">
                 <h1 class="mb-4">Exhibit List</h1>
                  <!-- 전시 검색 폼 -->
-                <form id="search-form" action="" method="get">
+                <form id="search-form" action="" method="get" class="mb-3">
                     <input type="text" id="search-query" name="query" placeholder="전시 검색하기">
                     <button id="search-button" type="submit" style="padding: 0%;">
                         <span class="material-symbols-outlined" style="font-size: 35px;">
-                            search
+                            <i class="bi bi-search"></i>
                             </span>
                     </button>
                 </form>
                 <!-- 전시 리스트 -->
                 <ul class="list-group">
                     {% for exhibit in exhibits %}
-                        <li class="list-group-item">
+                        <li class="list-group-item">    
                             <!-- 전시 제목 -->
-                            <a href="{% url 'exhibit:exhibit_detail' exhibit.id %}" class="custom-link">
+                            <a href="{% url 'exhibit:exhibit_detail' exhibit.id %}" class="custom-link" data-exhibit-id="{{ exhibit.id }}">
                                 {{ exhibit.title }}
                             </a>
-                            <!-- 북마크 버튼 -->
-                            <button class="bookmark-btn" data-exhibit-id="{{ exhibit.id }}">
-                                {% if exhibit.is_bookmarked %}
-                                    <!-- Bookmark  -->                                    
-                                    <i class="bi bi-bookmark-star-fill"></i>
-                                {% else %}
-                                    <!-- Unbookmark  -->
-                                    <i class="bi bi-bookmark"></i>
-                                {% endif %}
-                            </button>
+                            <!-- 북마크 버튼 동적 생성-->
+                            <div id="bookmark-container-{{ exhibit.id }}" class="bookmark-container"></div>
                         </li>
                     {% endfor %}
                 </ul>
+                <!-- 페이지네이션 버튼 -->
+                <nav aria-label="Page navigation" class="mt-3">
+                    <ul class="pagination justify-content-center">
+                        {% if exhibits.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?query={{ request.GET.query }}&page=1" aria-label="First">
+                                    &laquo;
+                                </a>
+                            </li>
+                        {% endif %}
+                
+                        {% for num in exhibits.paginator.page_range %}
+                            {% if exhibits.number == num %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">{{ num }}</a>
+                                </li>
+                            {% elif num > exhibits.number|add:'-3' and num < exhibits.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?query={{ request.GET.query }}&page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                
+                        {% if exhibits.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?query={{ request.GET.query }}&page={{ exhibits.paginator.num_pages }}" aria-label="Last">
+                                    &raquo;
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>          
             </div>
+            
             <!-- 전시 지도 -->
-            <div id="map" class="col-md-6 px-5" style="height: 500px;"></div>
+            <div id="map" class="map-container col-md-6 px-5">
+                <button id="bookmark-toggle" style="position: absolute; top: 10px; right: 10px; z-index: 1000;">북마크</button>
+            </div>
         </div>
     </div>
     
@@ -103,20 +146,69 @@
 
         var locations = JSON.parse('{{ locations|escapejs }}');
         var markers = {};
-        locations.forEach(function(location) {
-            var url = '/exhibit/exhibit_detail/' + location.id + '/';
-            var popupContent = '<a href="' + url + '">' + location.title + '</a>';
-            var marker = L.marker([location.latitude, location.longitude]).addTo(map)
-                .bindPopup(popupContent);
-            markers[location.title] = marker;
-        });
+        var bookmarkMarkers = {};
 
-        // 북마크 클릭 버튼 작동
-        document.addEventListener('DOMContentLoaded', function() { // HTML 문서가 완전히 로드되고 DOM 트리가 완성된 후에 실행
-            const buttons = document.querySelectorAll('.bookmark-btn');
-            buttons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const exhibitId = this.getAttribute('data-exhibit-id');
+        document.addEventListener('DOMContentLoaded', function() {
+            // 지도에 전시 마커 추가 (북마크 여부로 나눠서 저장)
+            locations.forEach(function(location) {
+                var url = '/exhibit/exhibit_detail/' + location.id + '/';
+                var popupContent = '<a href="' + url + '">' + location.title + '</a>';
+                var marker = L.marker([location.latitude, location.longitude]).addTo(map)
+                    .bindPopup(popupContent);
+                if (location.is_bookmarked) {
+                    // 북마크 된 전시 마크 모음
+                    bookmarkMarkers[location.id] = marker;
+                } else {
+                    // 북마크 안 된 전시 마크 모음
+                    markers[location.id] = marker;
+                }
+
+                // 전시 이름 옆 북마크 여부 표시
+                var button = document.createElement('button');
+                button.className = 'bookmark-btn';
+                button.dataset.exhibitId = location.id;
+
+                var icon = document.createElement('i');
+                if (location.is_bookmarked) {
+                    icon.className = 'bi bi-bookmark-star-fill';
+                } else {
+                    icon.className = 'bi bi-bookmark';
+                }
+                button.appendChild(icon);
+
+                // 북마크 여부에 따라 서로 다른 버튼 호출
+                var container = document.getElementById('bookmark-container-' + location.id);
+                if (container) {
+                    container.appendChild(button);
+                }
+            });
+
+            // 전시 제목에 마우스 호버 이벤트 추가 (매핑된 마커 팝업 활성화)
+            document.querySelectorAll('.custom-link').forEach(function(link) {
+                link.addEventListener('mouseover', function() {
+                    var exhibitId = this.getAttribute('data-exhibit-id');
+                    if (markers[exhibitId]) {
+                        markers[exhibitId].openPopup();
+                    } else if (bookmarkMarkers[exhibitId]) {
+                        bookmarkMarkers[exhibitId].openPopup();
+                    }
+                });
+                // 마우스 치우면 전시마커의 팝업도 꺼짐
+                link.addEventListener('mouseout', function() {
+                    var exhibitId = this.getAttribute('data-exhibit-id');
+                    if (markers[exhibitId]) {
+                        markers[exhibitId].closePopup();
+                    } else if (bookmarkMarkers[exhibitId]) {
+                        bookmarkMarkers[exhibitId].closePopup();
+                    }
+                });
+            });
+
+            // 리스트의 북마크 버튼 클릭시 북마크 생성/삭제
+            document.body.addEventListener('click', function(event) {
+                if (event.target.closest('.bookmark-btn')) {
+                    var button = event.target.closest('.bookmark-btn');
+                    var exhibitId = button.getAttribute('data-exhibit-id');
                     fetch(`/exhibit/exhibit_bookmark/${exhibitId}/`, {
                         method: 'POST',
                         headers: {
@@ -128,14 +220,64 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.is_bookmarked) {
-                            this.innerHTML = '<i class="bi bi-bookmark-star-fill"></i>';
+                            button.innerHTML = '<i class="bi bi-bookmark-star-fill"></i>';
+                            // 마커를 bookmarkMarkers로 이동
+                            if (markers[exhibitId]) {
+                                var marker = markers[exhibitId];
+                                map.removeLayer(marker);
+                                bookmarkMarkers[exhibitId] = marker;
+                                delete markers[exhibitId];
+                            }
                         } else {
-                            this.innerHTML = '<i class="bi bi-bookmark"></i>';
+                            button.innerHTML = '<i class="bi bi-bookmark"></i>';
+                            // 마커를 markers로 이동
+                            if (bookmarkMarkers[exhibitId]) {
+                                var marker = bookmarkMarkers[exhibitId];
+                                map.removeLayer(marker);
+                                markers[exhibitId] = marker;
+                                delete bookmarkMarkers[exhibitId];
+                            }
+                        }
+                        // 마커를 다시 추가하여 업데이트
+                        if (data.is_bookmarked) {
+                            map.addLayer(bookmarkMarkers[exhibitId]);
+                        } else {
+                            map.addLayer(markers[exhibitId]);
                         }
                     });
-                });
+                }
+            });
+
+            // 지도 위 북마크 토글 버튼 작동
+            document.getElementById('bookmark-toggle').addEventListener('click', function() {
+                var showBookmarks = this.classList.toggle('active');
+                // 북마크 안 된 전시의 마크는 북마크토글이 눌리면 숨겨짐
+                for (var title in markers) {
+                    if (markers.hasOwnProperty(title)) {
+                        if (showBookmarks) { // 북마크 토글 눌리면
+                            // 북마크 안 되어있는 마커 감추기
+                            map.removeLayer(markers[title]);
+                        } else { // 북마크 토글 안 눌리면
+                            // 북마크 안 되어있는 마커 보이기
+                            map.addLayer(markers[title]);
+                        }
+                    }
+                } // 북마크 된 전시의 마크는 언제나 보임
+                for (var title in bookmarkMarkers) {
+                    if (bookmarkMarkers.hasOwnProperty(title)) {
+                        if (showBookmarks) { // 북마크 토글 눌리면
+                            // 북마크 되어있는 마커 보이기
+                            map.addLayer(bookmarkMarkers[title]);
+                        } else { // 북마크 토글 안 눌리면
+                            // 북마크 되어있는 마커 보이기
+                            map.addLayer(bookmarkMarkers[title]);
+                        }
+                    }
+                }
             });
         });
+
+        
     </script>
 
 </body>

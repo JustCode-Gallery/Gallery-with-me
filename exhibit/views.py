@@ -34,10 +34,6 @@ def exhibit_list(request):
             'is_bookmarked': ExhibitBookmark.objects.filter(user=user, exhibit=exhibit).exists() if user else False  # 북마크 상태 추가
         })
 
-    # # 각 전시에 북마크 상태 추가
-    # for exhibit in page_obj:
-    #     exhibit.is_bookmarked = ExhibitBookmark.objects.filter(user=user, exhibit=exhibit).exists()
-
     context = {
         'exhibits': page_obj,
         'locations': json.dumps(locations, cls=DjangoJSONEncoder) # json으로 명시적으로 변환해서 보내야 오류 없음
@@ -96,11 +92,5 @@ def exhibit_bookmark(request, exhibit_id):
         exhibit_bookmark.delete()
         is_bookmarked = False
 
-    # # AJAX 요청 처리
-    # if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-    #     print("this is ajax")
-    #     return JsonResponse({'is_bookmarked': is_bookmarked})
-
     print("This was not a ajax function")
-    #return redirect('exhibit:exhibit_detail', exhibit_id=exhibit_id)
     return JsonResponse({'is_bookmarked': is_bookmarked})

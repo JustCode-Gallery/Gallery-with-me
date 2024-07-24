@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra-style %}
+<link href="{% static 'exhibit/exhibit_like.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+
+<div class="container-fluid mt-5">
+    <div class="d-flex justify-content-center mb-5">
+        <div class="border p-4 rounded mt-4 exhibit-like-container">
+            <h2 class="text-center mb-4">전시회 북마크</h2>
+
+            <div class="container">
+                {% if like_list %}
+                <div class="row">
+                    {% for like in like_list %}
+                    <div class="col-lg-3 col-sm-6 mb-3">
+                        <a href="{% url 'exhibit:exhibit_detail' like.exhibit.pk %}" class="">
+                            <img src="{{ like.exhibit.images.first.poster_url.url }}"
+                                class="img-thumbnail like-thumbnail-img" alt="{{ like.art_exhibit.name }}">
+                        </a>
+
+                        <button type="button" class="btn like-button" id="like-button{{ like.exhibit.pk }}"
+                            data-exhibit-id="{{ like.exhibit.pk }}">
+                            <i class="bi bi-bookmark-star-fill"></i>
+                        </button>
+
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="row">
+                    <p class="text-center">북마크한 전시회가 없습니다.</p>
+                    <a class="btn btn-outline-secondary" href="{% url 'exhibit:exhibit_list' %}"
+                        role="button">Exhibition map 바로가기</a>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // 모든 like-button 클래스를 가진 버튼에 대해 클릭 이벤트 핸들러를 설정
+        $('button[id^="like-button"]').click(function () {
+            var button = $(this);
+            var exhibitId = button.data('exhibit-id');
+            var currentUrl = '{% url "exhibit:exhibit_bookmark" 0 %}'.replace('0', exhibitId);
+            $.ajax({
+                url: currentUrl,
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                success: function (response) {
+                    var likeIcon = button.find('i');
+                    if (response.is_bookmarked) {
+                        likeIcon.removeClass('bi-bookmark').addClass('bi-bookmark-star-fill');
+                    } else {
+                        likeIcon.removeClass('bi-bookmark-star-fill').addClass('bi-bookmark');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('Error:', error);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

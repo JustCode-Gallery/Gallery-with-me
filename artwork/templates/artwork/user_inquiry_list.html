@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra-style %}
+<link href="{% static 'artwork/user_inquiry.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="d-flex justify-content-center mb-5">
+        <div class="border p-4 rounded mt-4 inquiry-container">
+            <h2 class="text-center mb-4">문의내역</h2>
+
+            <!-- 문의 리스트 -->
+            {% if inquiry_list %}
+            {% for inquiry in inquiry_list %}
+            <div class="card inquiry-list-card mb-2 d-flex justify-content-center">
+                <div class="card-body mx-3">
+                    <div class="d-flex">
+                        <h5 class="me-auto">{{ inquiry.quiestion }}</h5>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="row">
+                <p class="text-center">문의하신 내용이 없습니다.</p>
+                <a class="btn btn-outline-secondary" href="{% url 'artwork:artwork_list' %}" role="button">Artworks
+                    바로가기</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+</div>
+{% endblock %}

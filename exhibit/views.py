@@ -79,6 +79,13 @@ def create_exhibit(request):
         form = ArtExhibitForm()
     return render(request, 'exhibit/form.html', {'form': form})
 
+def exhibit_like_list(request):
+    like_list = ExhibitBookmark.objects.filter(user=request.user)
+    context = {
+        'like_list': like_list,
+    }
+    return render(request, 'exhibit/exhibit_like_list.html', context)
+
 # 사용자가 해당 전시를 북마크할 수 있음
 @login_required
 def exhibit_bookmark(request, exhibit_id):

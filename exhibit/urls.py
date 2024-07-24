@@ -9,4 +9,6 @@ urlpatterns = [
     path('exhibit_detail/<int:exhibit_id>/', exhibit_detail, name='exhibit_detail'),
     path('exhibit_bookmark/<int:exhibit_id>/', exhibit_bookmark, name='exhibit_bookmark'),
     path('create/', create_exhibit, name='create_exhibit'),
+    path('exhibit_like_list/', exhibit_like_list, name='exhibit_like_list'),
+
 ]

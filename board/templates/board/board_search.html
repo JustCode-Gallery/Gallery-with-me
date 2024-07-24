@@ -60,7 +60,7 @@
                             <i class="fa-solid fa-graduation-cap"></i>&nbsp;{{ post.exhibit }}
                         </span>
                         <span class="badge bg-light text-dark visitors">
-                            <i class="fa-solid fa-eye"></i>&nbsp;3345
+                            <i class="fa-solid fa-eye"></i>&nbsp;{{ post.visitors }}
                         </span>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
             
             </div>
             <h4>{{ post.post_title }}</h4>
-            <p>{{ post.user }}</p>
+            <p><i class="fa-solid fa-circle-user" style="font-size: 1.2em; vertical-align: middle;"></i>&nbsp;{{ post.user }}</p>
         </div>
         {% endfor %}
         {% elif search_term %}

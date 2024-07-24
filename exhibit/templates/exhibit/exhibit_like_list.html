@@ -52,7 +52,6 @@
         $('button[id^="like-button"]').click(function () {
             var button = $(this);
             var exhibitId = button.data('exhibit-id');
-            console.log('exhibitId: ', exhibitId);
             var currentUrl = '{% url "exhibit:exhibit_bookmark" 0 %}'.replace('0', exhibitId);
             $.ajax({
                 url: currentUrl,

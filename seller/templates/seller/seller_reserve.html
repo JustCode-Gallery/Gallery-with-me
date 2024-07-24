@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra-style %}
+<style>
+    
+    .artwork-images {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px; /* 이미지 간격 조정 */
+    }
+    .artwork-images img {
+        width: 150px; /* 이미지의 고정 너비 */
+        height: 100px; /* 이미지의 고정 높이 */
+        border-radius: 5px;
+    }
+
+</style>
+{% endblock %}
+    
+{% block content %}
+<div class="container">
+<h1>판매자예약조회</h1>
+{{reservation.created_at}}
+{{reservation.user}}
+작품명 - {{reservation.art_work.title}}
+
+{% for artwork_info in artworks_with_images %}
+    {% if artwork_info.images %}
+        <div class="artwork-images">
+            {% for image in artwork_info.images %}
+                <img src="{{ image.image_url.url }}" alt="{{ artwork_info.artwork.title }}">
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>이미지가 없습니다.</p>
+    {% endif %}
+{% endfor %}
+
+예약중
+{{artwork.is_reservable}}
+<form action="{% url 'seller:reserve_cancel' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">예약취소</button>
+</form>
+
+
+
+</div>
+{% endblock %}

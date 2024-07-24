@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+<head>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
 
 <style>
     #map {
@@ -10,11 +14,24 @@
     body {
         padding-top: 50px;
     }
+    .bookmark-btn {
+        border: none;
+        background-color: transparent;
+    }
 </style>
 
 <body>
     <div class="container mt-5 mb-3">
         <h1 class="mb-5">{{ title }}</h1>
+        <button class="bookmark-btn" data-exhibit-id="{{ id }}">
+            {% if is_bookmarked %}
+                <!-- Bookmark  -->                                    
+                <i class="bi bi-bookmark-star-fill"></i>
+            {% else %}
+                <!-- Unbookmark  -->
+                <i class="bi bi-bookmark"></i>
+            {% endif %}
+        </button>
         <div class="row">
             <div class="col-md-6">
                 <h2 class="mb-3">Poster</h2>
@@ -35,4 +52,29 @@
         </div>
     </div>
 </body>
+
+<script>
+    // 북마크 버튼
+    // document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.bookmark-btn').addEventListener('click', function() {
+            const exhibitId = this.getAttribute('data-exhibit-id');
+            fetch(`/exhibit/exhibit_bookmark/${exhibitId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.is_bookmarked) {
+                    this.innerHTML = '<i class="bi bi-bookmark-star-fill"></i>';
+                } else {
+                    this.innerHTML = '<i class="bi bi-bookmark"></i>';
+                }
+            });
+        });
+    // });
+</script>
 {% endblock %}

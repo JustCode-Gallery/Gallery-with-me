@@ -7,6 +7,19 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<style>
+  #cart-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      z-index: 1000;
+  }
+</style>
 {% endblock %}
 {% block content %}
 
@@ -36,6 +49,8 @@
       <span class="visually-hidden">Next</span>
     </button>
   </div>
+
+  <div id="cart-message" class="alert" style="display: none;"></div>
 
 <div class="container-fluid">
   <div class="card mt-3 mx-2 py-3 px-4">
@@ -153,6 +168,23 @@
 
         $('#inquiry-button').click(function() {
             window.location.href = '{% url "artwork:add_inquiry" artwork.id %}';
+        });
+
+        // 장바구니 안내 메세지
+        document.addEventListener('DOMContentLoaded', function() {
+            const message = "{{ request.session.cart_message|default:'' }}";
+            const messageType = "{{ request.session.cart_message_type|default:'' }}";
+            if (message) {
+                const messageDiv = document.getElementById('cart-message');
+                messageDiv.innerText = message;
+                messageDiv.classList.add('alert-' + messageType);
+                messageDiv.style.display = 'block';
+
+                // Hide the message after 3 seconds
+                setTimeout(function() {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            }
         });
     </script>
 {% endblock %}

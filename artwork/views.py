@@ -148,8 +148,16 @@ def add_to_cart(request, pk): # 장바구니에 담기 기능
     artwork = get_object_or_404(ArtWork, pk=pk)
     user = request.user
 
-    # 장바구니에 추가
-    Cart.objects.create(user=user, art_work=artwork)
+    # 기존에 담겨있는 항목인지 확인
+    if Cart.objects.filter(user=user, art_work=artwork).exists():
+        request.session['cart_message'] = '이미 장바구니에 있는 아이템입니다.'
+        request.session['cart_message_type'] = 'info'
+    else:
+        # 장바구니에 추가
+        Cart.objects.create(user=user, art_work=artwork)
+        request.session['cart_message'] = '장바구니에 추가되었습니다.'
+        request.session['cart_message_type'] = 'success'
+        
     return redirect('artwork:artwork_detail', pk=pk)
 
 @login_required

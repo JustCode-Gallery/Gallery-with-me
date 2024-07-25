@@ -1,24 +1,22 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 from .models import Cart
 # Create your views here.
 
-# @login_required
-# def cart(request):
-#     if request.method == 'POST':
-#         selected_items = request.POST.getlist('selected_items')
-#         if not selected_items:
-#             return render(request, 'order/cart.html', {'error': 'No items selected', 'cart_items': Cart.objects.filter(user=request.user)})
+@login_required
+def cart_list(request):
+    user = request.user
+    carts = Cart.objects.filter(user=user).select_related('art_work').prefetch_related('art_work__artimage_set')
 
-#         # Process the selected items for checkout
-#         # This is where you would handle the payment process, create an order, etc.
-#         # For now, we'll just redirect to a success page
+    content = {
+        'carts' : carts
+    }
+    return render(request, 'order/cart.html', content)
 
-#         # Example: Create an order and redirect to a success page
-#         # order = Order.objects.create(user=request.user, ...)
-#         # for item_id in selected_items:
-#         #     cart_item = Cart.objects.get(id=item_id)
-#         #     OrderItem.objects.create(order=order, art_work=cart_item.art_work, quantity=cart_item.quantity, ...)
-#         # cart_item.delete()
-
-#         return redirect('order:checkout_success')
+@login_required
+def delete_cart_item(request, cart_id):
+    cart_item = get_object_or_404(Cart, id=cart_id, user=request.user)
+    cart_item.delete()
+    return JsonResponse({'success': True})

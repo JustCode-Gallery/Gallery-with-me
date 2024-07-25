@@ -127,6 +127,7 @@
         $('#like-button').click(function() {
             var button = $(this);
             var artworkId = button.data('artwork-id');
+            console.log('artworkId :', artworkId);
             $.ajax({
                 url: '{% url "artwork:toggle_work_like" artwork.id %}',
                 method: 'POST',

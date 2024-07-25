@@ -2,7 +2,7 @@ from django.db import models
 
 class ArtWork(models.Model):
     title = models.CharField(max_length=100)
-    description = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000)
     width = models.IntegerField()
     height = models.IntegerField()
     depth = models.IntegerField()

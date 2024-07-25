@@ -4,6 +4,9 @@ from user.models import ShippingAddress
 class OrderStatus(models.Model):
     status = models.CharField(max_length=10)
 
+    def __str__(self):
+        return self.status
+
 class OrderItem(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)  # 금액은 DecimalField로 처리
     art_work = models.ForeignKey('artwork.ArtWork', on_delete=models.SET_NULL, null=True)  # 문자열 기반 참조

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>결제 실패</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">결제 실패</h4>
+            <p>결제가 실패했습니다. 다시 시도해 주세요.</p>
+            <hr>
+            <p class="mb-0">문제가 지속되면 고객 지원팀에 문의해 주세요.</p>
+            {% if error %}
+                <p>오류 메시지: {{ error }}</p>
+            {% endif %}
+        </div>
+        <a href="/" class="btn btn-primary">홈으로 이동</a>
+    </div>
+</body>
+</html>

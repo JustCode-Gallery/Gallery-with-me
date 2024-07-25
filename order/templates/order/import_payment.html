@@ -85,7 +85,7 @@
         <div class="order-container">
             <div class="section-title">
                 <h2>받는 사람 정보</h2>
-                <button class="btn btn-primary" id="change-address-button">배송지 변경</button>
+                <button id="change-address-button" class="btn btn-primary">배송지 변경</button>
             </div>
             <table class="info-table">
                 <tr>
@@ -217,9 +217,11 @@
             });
         });
 
-            document.getElementById('change-address-button').addEventListener('click', function () {
-                window.open('{% url "order:order_change_address" %}', '배송지 변경', 'width=500,height=500');
-            });
+        document.getElementById('change-address-button').addEventListener('click', function () {
+            var paymentId = "{{ payment.id }}";  // 템플릿 변수를 사용하여 payment_id 가져오기
+            var url = '{% url "order:order_change_address" payment.id %}';
+            window.open(url, '배송지 변경', 'width=500,height=500');
+        });
     </script>
 </body>
 </html>

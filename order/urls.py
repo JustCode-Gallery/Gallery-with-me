@@ -10,9 +10,9 @@ urlpatterns = [
     path('order_success/<int:payment_id>/', views.order_success, name='order_success'),
     path('order_fail/<int:payment_id>/', views.order_fail, name='order_fail'),
     path('remove_item/<int:item_id>/', views.remove_item, name='remove_item'),
-    path('order_change_address/', views.order_change_address, name='order_change_address'),
+    path('order_change_address/<int:payment_id>/', views.order_change_address, name='order_change_address'),
     path('order_change_address/create/', views.create_address, name='create_address'),
     path('order_change_address/delete/<int:pk>/', views.delete_address, name='delete_address'),
     path('order_change_address/update/<int:pk>/', views.update_address, name='update_address'),
-
+    path('set_order_address/', views.set_order_address, name='set_order_address'),
 ]

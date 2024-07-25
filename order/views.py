@@ -16,6 +16,7 @@ from user.models import User
 from user.models import ShippingAddress
 from django.conf import settings
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
@@ -186,12 +187,9 @@ def remove_item(request, item_id):
         return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
     return redirect('order:order_detail', payment_id)
 
-def order_change_address(request):
-    return render(request, 'order/order_change_address.html')
-
-def order_change_address(request):
-    address_list = ShippingAddress.objects.filter(user_id=request.user.id)
-    return render(request, 'order/order_change_address.html', {'address_list': address_list})
+def order_change_address(request, payment_id):
+    address_list = ShippingAddress.objects.filter(user_id=request.user.id, is_deleted=False)
+    return render(request, 'order/order_change_address.html', {'address_list': address_list, 'payment_id': payment_id})
 
 def create_address(request):
     if request.method == 'POST':
@@ -228,19 +226,21 @@ def create_address(request):
                 user = user
             )
             shipping_address.save()
-            return redirect('order:order_change_address')
+            return redirect('order:order_change_address', payment_id=request.POST.get('payment_id'))
         else: 
-            address_list = ShippingAddress.objects.filter(user_id=request.user.id)
+            address_list = ShippingAddress.objects.filter(user_id=request.user.id, is_deleted=False)
             context = {
                 'address_list': address_list,
-                'error': '배송지 항목은 최대 5개까지 등록할 수 있습니다.'
+                'error': '배송지 항목은 최대 5개까지 등록할 수 있습니다.',
+                'payment_id': request.POST.get('payment_id')
             }
             return render(request, 'order/order_change_address.html', context)
 
 def delete_address(request, pk):
-    address = ShippingAddress.objects.get(pk=pk)
-    address.delete()
-    return redirect('order:order_change_address')
+    address = get_object_or_404(ShippingAddress, pk=pk)
+    address.is_deleted = True
+    address.save()
+    return redirect('order:order_change_address', payment_id=request.GET.get('payment_id'))
 
 def update_address(request, pk):
     address = get_object_or_404(ShippingAddress, pk=pk)
@@ -267,3 +267,23 @@ def update_address(request, pk):
 
         address.save()
         return redirect('order:order_change_address')
+
+
+@csrf_exempt
+def set_order_address(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        payment_id = data.get('payment_id')
+        address_id = data.get('address_id')
+
+        if not payment_id or not address_id:
+            return JsonResponse({'success': False, 'error': 'Missing payment_id or address_id'})
+
+        try:
+            address = ShippingAddress.objects.get(id=address_id)
+            OrderItem.objects.filter(payment_id=payment_id).update(address=address)
+            return JsonResponse({'success': True})
+        except ShippingAddress.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Invalid address ID'})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})

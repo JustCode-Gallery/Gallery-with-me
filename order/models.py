@@ -1,4 +1,5 @@
 from django.db import models
+from user.models import ShippingAddress
 
 class OrderStatus(models.Model):
     status = models.CharField(max_length=10)
@@ -9,6 +10,7 @@ class OrderItem(models.Model):
     user = models.ForeignKey('user.User', on_delete=models.SET_NULL, null=True)  # 문자열 기반 참조
     payment = models.ForeignKey('payment.Payment', on_delete=models.PROTECT)  # 문자열 기반 참조
     order_status = models.ForeignKey(OrderStatus, on_delete=models.PROTECT)
+    address = models.ForeignKey(ShippingAddress, on_delete=models.PROTECT, null=True)
 
 class RefundRequest(models.Model):
     reason = models.CharField(max_length=500)
@@ -23,6 +25,10 @@ class Reservation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey('user.User', on_delete=models.CASCADE)  # 문자열 기반 참조
     art_work = models.ForeignKey('artwork.ArtWork', on_delete=models.CASCADE)  # 문자열 기반 참조
+    updated_at = models.DateTimeField(auto_now=True)
+    cancel_reason = models.CharField(max_length=500, null=True)
+    status = models.BooleanField(default=False)
+
 
 class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)

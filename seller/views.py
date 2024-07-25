@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from order.models import Reservation
 from artwork.models import ArtWork, ArtImage
 from user.models import User,Seller
@@ -52,5 +52,38 @@ def seller_reserve(request):
 def seller_noreserve(request): 
     return render(request,'seller/seller_noreserve')
 
-def reserve_cancel(request): 
-    return render(request,'seller/reserve_cancel.html')
+def reserve_cancel(request,pk): 
+    # if request.method=="POST":
+
+        # reason = request.POST.get('reason')
+
+        # # 예약 가져옴
+        # reservation = Reservation.object.get(pk=pk)
+
+        # # reservation 취소사유 저장 
+        # # updated_at = models.DateTimeField(auto_now_add=True)
+        # # cancel_reason = models.CharField(max_length=200)
+        # reservation.cancel_reason = reason
+        # reservation.save()
+
+        
+        # # 예약상태 취소 artwork is_reservable 상태변경
+        # artwork = ArtWork.objects.get(id=reservation.art_work_id)
+        # artwork.is_reservable = False
+        # artwork.save()
+            
+        # # 구매자에게 알림 뱃지 / 이메일
+        # # 시그널
+        # # 어떻게 유저에게 신호를 뱃지 표시
+        # # 실시간 반영
+        # reservation.user_id
+        
+
+
+        # return redirect('seller:seller_reserve')
+    
+    
+        
+        
+
+    return render(request,'seller/seller_reserve.html')

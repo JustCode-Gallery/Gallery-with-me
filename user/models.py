@@ -36,6 +36,9 @@ class ShippingAddress(models.Model):
     detail_address = models.CharField(max_length=50, null=True)
     is_default = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_deleted = models.BooleanField(default=False)
+
+    
 
 class UserPreferArt(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)

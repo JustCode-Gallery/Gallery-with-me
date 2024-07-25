@@ -67,7 +67,7 @@
     }
     .status-badge-reservation,
     .status-badge-cancel {
-        background-color: #c82333; /* #F0BA32;*/
+        background-color: #F0BA32; /* #F0BA32;*/
         color: white;
         border-radius: 12px;
         padding: 5px 10px;
@@ -195,11 +195,15 @@
                 <div class="status-info">
                     <div>
                         <h3>예약번호 - 80230564890</h3>
+                        {% if reservation.status %}
                         {{reservation.created_at|date:"y/m/d H:i"}}
+                        {% else %}
+                        {{reservation.updated_at|date:"y/m/d H:i"}}
+                        {% endif %}
                     </div>
-                    {% if artwork_info.artwork.is_reservable %}
+                    {% if reservation.status %}
                     <div>
-                        <div class="status-badge-reservation">예약취소</div>
+                        <div class="status-badge-reservation">예약중</div>
                     </div>
                     {% else %}
                     <div>
@@ -211,10 +215,12 @@
                     <div class="artwork-name">{{ artwork_info.artwork.title }}</div>
                     <p class="artwork-price">{{ artwork_info.artwork.price|intcomma }}원</p>
                 </div>
+                {% if reservation.status %}
                 <form class="cancel-form" action="" method="post">
                     {% csrf_token %}
                     <button class="cancel" type="button">예약 취소</button>
                 </form> 
+                
                 <!-- 취소사유 모달 -->
                 <div id="cancel-modal" class="modal">
                     <div class="modal-content">
@@ -228,6 +234,7 @@
                         </form>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
         {% endfor %}

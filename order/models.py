@@ -30,7 +30,7 @@ class Reservation(models.Model):
     art_work = models.ForeignKey('artwork.ArtWork', on_delete=models.CASCADE)  # 문자열 기반 참조
     updated_at = models.DateTimeField(auto_now=True)
     cancel_reason = models.CharField(max_length=500, null=True)
-    status = models.BooleanField(default=False)
+    status = models.BooleanField(default=True)
 
 
 class Cart(models.Model):

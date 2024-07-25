@@ -19,5 +19,7 @@ urlpatterns = [
     path('update/<int:artwork_id>/', views.update_artwork, name='update_artwork'),
     path('delete/<int:artwork_id>/', views.delete_artwork, name='delete_artwork'),
     path('artwork_list/seller/', views.seller_artwork_list, name='seller_artwork_list'),
+    path('seller/inquiry_list/', views.seller_inquiry_list, name='seller_inquiry_list'),
+    path('answer_inquiry/<int:inquiry_id>/', views.answer_inquiry, name='answer_inquiry'),
     # 재헌
 ]

@@ -1,0 +1,36 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block extra-style %}
+<link rel="stylesheet" href="{% static 'artwork/detail_style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="Inquiry_container mt-5">
+    <h4>{{ inquiry.question }}</h4>
+    <form method="post" enctype="multipart/form-data" class="row g-3">
+        {% csrf_token %}
+        <div class="col-12">
+            {% if inquiry.answer %}
+            <textarea name="answer" value="{{ inquiry.answer }}" class="w-100" rows="5"
+                placeholder="답변을 작성해주세요">{{ inquiry.answer }}</textarea>
+            {% else %}
+            <textarea name="answer" class="w-100" rows="5" placeholder="답변을 작성해주세요"></textarea>
+            {% endif %}
+        </div>
+        <div class="col-12 d-flex justify-content-end">
+            <form method="post" id="inquiry-form">
+                <button type="submit" class="btn btn-primary">답장완료</button>
+                <button type="button" class="btn btn-secondary" id="close-button" style="margin-left: 10p;">닫기</button>
+            </form>
+        </div>
+        <!-- 상품명, 상품 설명, 이미지 URL: 가로 한 칸 사용 -->
+    </form>
+</div>
+
+<script>
+    document.getElementById('close-button').addEventListener('click', function () {
+        window.location.href = "{% url 'artwork:seller_inquiry_list' %}";
+    });
+</script>
+{% endblock %}

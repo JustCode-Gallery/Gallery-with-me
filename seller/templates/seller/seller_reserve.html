@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block extra-style %}
+<style>
+    .container {
+        width: 80%; 
+        box-shadow: 0px 6px 9px rgba(18, 15, 40, 0.12);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto; /* 가운데 정렬 */
+    }
+    .reserve-header {
+        font-size: 40px;
+        font-weight: 800;
+        color: #171A1F;
+        margin-bottom: 20px;
+    }
+    .content-header h3 {
+        font-weight: 700;
+        color: #171A1F;
+        margin: 12px 0;
+    }
+    .content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .content-item {
+        display: flex;
+        gap: 20px; /* 이미지와 정보 간격 */
+        padding: 24px;
+        margin: 24px;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+    }
+    .artwork-images {
+        flex-shrink: 0; /* 이미지 크기를 유지 */
+        width: 50%; 
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* 이미지 간격 조정 */
+    }
+    .artwork-images img {
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+    }
+    .content-item-details-right {
+        flex-grow: 1; /* 정보 영역이 남은 공간을 차지 */
+        display: flex;
+        flex-direction: column;
+        margin-left: 24px;
+        
+        /* align-items: center; */
+    }
+    .artwork-name {
+        font-weight: 700;
+        font-size: 1.2em;
+    }
+    .artwork-price {
+        font-weight: 400;
+        font-size: 1.1em;
+        color: #565E6D;
+    }
+    .status-badge-reservation,
+    .status-badge-cancel {
+        background-color: #c82333; /* #F0BA32;*/
+        color: white;
+        border-radius: 12px;
+        padding: 5px 10px;
+        font-size: 0.9em;
+        display: inline-block;
+        white-space: nowrap;
+    }
+    .status-badge-cancel {
+        background-color: #c82333; /* 예약 취소 색상 */
+    }
+  
+    .cancel {
+        border: none;
+        color: #6c757d;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 5px;
+        font-weight: 700;
+        background-color: transparent;
+    }
+    .cancel:hover {
+        background-color: #c82333;
+        color: white;
+    }
+    .status-info{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+    .artwork-info{
+        margin-bottom: 30px;
+    }
+    .cancel-form{
+        display: flex;
+        justify-content: flex-end;
+    }
+    /* 모달 스타일 */
+    .modal {
+        display: none; /* 초기에는 숨김 */
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: 10% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+    .close-button {
+        color: #aaa;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .close-button:hover,
+    .close-button:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+   
+    .modal form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .modal .button-group {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    .modal button {
+        color: #6c757d;
+        background-color: transparent; 
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em; /* 텍스트 크기 */
+        font-weight: 700; 
+        margin-top: 10px;
+        text-align: center;
+    }
+    .modal button:hover {
+        color: #fff;
+        background-color: #F0BA32;
+    }
+    
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="reserve-header">판매자 예약 조회</h1>
+    <div class="content-header">
+        <h3>📆 예약 정보</h3>
+    </div>                    
+    <div class="content">
+        {% for artwork_info in artworks_with_images %}
+        <div class="content-item">
+            <div class="artwork-images">
+                {% if artwork_info.images %}
+                    {% for image in artwork_info.images %}
+                        <img src="{{ image.image_url.url }}" alt="{{ artwork_info.artwork.title }}">
+                    {% endfor %}
+                {% else %}
+                    <p>이미지가 없습니다.</p>
+                {% endif %}
+            </div>
+            <div class="content-item-details-right">
+                <div class="status-info">
+                    <div>
+                        <h3>예약번호 - 80230564890</h3>
+                        {{reservation.created_at|date:"y/m/d H:i"}}
+                    </div>
+                    {% if artwork_info.artwork.is_reservable %}
+                    <div>
+                        <div class="status-badge-reservation">예약취소</div>
+                    </div>
+                    {% else %}
+                    <div>
+                        <div class="status-badge-cancel">예약취소</div>
+                    </div>
+                    {% endif%}
+                </div>
+                <div class="artwork-info">
+                    <div class="artwork-name">{{ artwork_info.artwork.title }}</div>
+                    <p class="artwork-price">{{ artwork_info.artwork.price|intcomma }}원</p>
+                </div>
+                <form class="cancel-form" action="" method="post">
+                    {% csrf_token %}
+                    <button class="cancel" type="button">예약 취소</button>
+                </form> 
+                <!-- 취소사유 모달 -->
+                <div id="cancel-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-button">&times;</span>
+                        <h2>예약 취소</h2>
+                        <form id="cancel-form" action="{% url 'seller:reserve_cancel' pk=reservation.id %}" method="post">
+                            {% csrf_token %}
+                            <label for="reason">취소 사유:</label>
+                            <textarea id="reason" name="reason" cols="50" rows="10" placeholder="내용을 입력하세요" required></textarea>
+                            <button type="submit">저장</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<!-- 취소사유 모달 -->
+<script>
+    // 모달 요소 선택
+    var modal = document.getElementById("cancel-modal");
+    var btn = document.querySelector(".cancel");
+    var span = document.getElementsByClassName("close-button")[0]; // 배열의 첫 번째 요소 선택
+    // 취소 버튼 클릭 시 모달 열기
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+    // 닫기 버튼 클릭 시 모달 닫기
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    // 모달 외부 클릭 시 모달 닫기
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+{% endblock %}

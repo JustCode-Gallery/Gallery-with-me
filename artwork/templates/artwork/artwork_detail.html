@@ -50,8 +50,6 @@
     </button>
   </div>
 
-  <div id="cart-message" class="alert" style="display: none;"></div>
-
 <div class="container-fluid">
   <div class="card mt-3 mx-2 py-3 px-4">
     <div class="card-body d-flex flex-row">
@@ -122,7 +120,7 @@
                 {% if artwork.is_reservable %}
                 <a href="{% url 'artwork:reserve_artwork' artwork.id %}" class="btn btn-dark">구매 예약</a>
                 {% else %}
-                <a href="{% url 'artwork:add_to_cart' artwork.id %}" class="btn btn-outline-dark">장바구니에 추가</a>
+                <a href="{% url 'artwork:add_to_cart' artwork.id %}" class="btn btn-outline-dark add-to-cart-button" data-artwork-id="{{ artwork.id }}">장바구니에 추가</a>
                 <a href="{% url 'artwork:buy_now' artwork.id %}" class="btn btn-dark">구매하기</a>
                 {% endif %}
             {% endif %}
@@ -170,21 +168,32 @@
             window.location.href = '{% url "artwork:add_inquiry" artwork.id %}';
         });
 
-        // 장바구니 안내 메세지
-        document.addEventListener('DOMContentLoaded', function() {
-            const message = "{{ request.session.cart_message|default:'' }}";
-            const messageType = "{{ request.session.cart_message_type|default:'' }}";
-            if (message) {
-                const messageDiv = document.getElementById('cart-message');
-                messageDiv.innerText = message;
-                messageDiv.classList.add('alert-' + messageType);
-                messageDiv.style.display = 'block';
+        // 장바구니 안내 메세지 보이기
+        function displayCartMessage(message) {
+        alert(message);
+        }
+        // 카트 버튼 이벤트 추가
+        document.querySelectorAll('.add-to-cart-button').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const artworkId = this.dataset.artworkId;
 
-                // Hide the message after 3 seconds
-                setTimeout(function() {
-                    messageDiv.style.display = 'none';
-                }, 3000);
-            }
+                fetch("{% url 'artwork:add_to_cart' 0 %}".replace('0', artworkId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayCartMessage(data.message, data.type);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    displayCartMessage('오류가 발생했습니다.', 'danger');
+                });
+            });
         });
     </script>
 {% endblock %}

@@ -15,4 +15,7 @@ urlpatterns = [
     path('order_change_address/delete/<int:pk>/', views.delete_address, name='delete_address'),
     path('order_change_address/update/<int:pk>/', views.update_address, name='update_address'),
     path('set_order_address/', views.set_order_address, name='set_order_address'),
+    path('get_address/<int:payment_id>/', views.get_address, name='get_address'),
+    path('check_address/<int:payment_id>/', views.check_address, name='check_address'),
+    path('check_order_items/', views.check_order_items, name='check_order_items'),
 ]

@@ -1,3 +1,36 @@
-<h2>결제가 완료되었습니다.</h2>
-<p>작품: {{ payment.art_work.name }}</p>
-<p>가격: {{ payment.pay_amount }}</p>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 완료</title>
+    <link rel="stylesheet" href="{% static 'path/to/your/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'path/to/your/css/styles.css' %}">
+    <style>
+        .alert-heading {
+            font-size: 2rem;
+        }
+        .alert {
+            background-color: white;
+            margin-top: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="alert text-center" role="alert">
+            <h2 class="alert-heading">결제가 완료되었습니다!</h2>
+            <hr>
+            <p class="mb-0">주문해 주셔서 감사합니다.</p>
+        </div>
+        <div class="text-center mt-3">
+            <a href="{% url 'home' %}" class="btn btn-primary" style="margin-bottom: 200px; background-color: #f0ba32; border: #f0ba32;">홈으로 돌아가기</a>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

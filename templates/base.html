@@ -19,6 +19,7 @@
 </head>
 
 <body>
+  {% block navbar %}
   <!-- 헤더 -->
   <div class="container-fluid mx-0 header fixed-top">
     <header class="d-flex flex-wrap justify-content-center py-2 container-fluid">
@@ -53,6 +54,7 @@
     </header>
   </div>
   <!-- 헤더end -->
+  {% endblock %}
 
   <!-- 사이드바 -->
   <div class="sidebar sidebar-menu flex-shrink-0 p-3">
@@ -195,6 +197,7 @@
 
   {% block content %}{% endblock %}
 
+  {% block footer %}
   <!-- footer -->
   <div class="container mt-4" style="border-top: 1px solid #dee2e6;">
     <footer class="pt-3 pb-3 mt-auto">
@@ -210,6 +213,7 @@
     </footer>
   </div>
   <!-- footer end -->
+  {% endblock %}
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

@@ -1,9 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
+
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
 {% block extra-style %}
 <link href="{% static 'css/user.css' %}" rel="stylesheet">
 {% endblock %}
 {% block content %}
+<div class="container-fluid mx-0 header fixed-top d-flex justify-content-center">
+    <span class="logo fs-4">Gallery With Me</span>
+</div>
 <div class="container-fluid mt-5">
     <div class="d-flex justify-content-center mb-5">
         <div class="border p-4 rounded mt-4 address-container">
@@ -19,7 +26,7 @@
             <div class="d-grid mb-3">
                 <button type="button" class="btn register-address-btn" data-bs-toggle="modal" data-bs-target="#registerAddressModal">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5.5.5 0 0 1 0 1h-5v5a.5.5.5.5 0 0 1-1 0v-5h-5a.5.5.5.5 0 0 1-1 0v-5h5v-5A.5.5 0 0 1 8 2"/>
+                        <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v6h6a.5.5 0 0 1 0 1h-6v6a.5.5 0 0 1-1 0v-6h-6a.5.5 0 0 1 0-1h6v-6A.5.5 0 0 1 8 1z"/>
                     </svg>
                     배송지 신규입력
                 </button>
@@ -35,6 +42,7 @@
                         </div>
                         <form action="{% url 'order:create_address' %}" method="post">
                             {% csrf_token %}
+                            <input type="hidden" name="payment_id" value="{{ payment_id }}">
                             <div class="modal-body">
                                 <div class="mb-3 row">
                                     <label for="recipient" class="col-sm-2 col-form-label">받는분:</label>
@@ -67,7 +75,7 @@
                                     <div class="col-sm-10 mb-1">
                                         <input type="text" class="form-control" id="address" placeholder="주소" name="address" required>
                                     </div>
-                                    <label for="detail_address" class="col-sm-2 col-form-label"></label>
+                                    <label for="more_address" class="col-sm-2 col-form-label"></label>
                                     <div class="col-sm-5 mb-1">
                                         <input type="text" class="form-control" id="more_address" placeholder="상세주소" name="more_address">
                                     </div>
@@ -114,7 +122,9 @@
                                 </button>
                             </div>
                 
-                            <form action="{% url 'order:delete_address' address.pk %}">
+                            <form action="{% url 'order:delete_address' address.pk %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="payment_id" value="{{ payment_id }}">
                                 <input class="btn delete-btn" type="submit" value="삭제">
                             </form>
                         </div>
@@ -132,6 +142,7 @@
                             </div>
                             <form action="{% url 'order:update_address' address.pk %}" method="post">
                                 {% csrf_token %}
+                                <input type="hidden" name="payment_id" value="{{ payment_id }}">
                                 <div class="modal-body">
                                     <div class="mb-3 row">
                                         <label for="recipient" class="col-sm-2 col-form-label">받는분:</label>
@@ -246,39 +257,61 @@
                         }).open();
                     }
 
-    function selectAddress(event, addressId) {
-        // 이벤트 전파 중지
-        event.stopPropagation();
+                    function selectAddress(event, addressId) {
+                        event.stopPropagation();
+                        var target = event.target;
+                        if (target.classList.contains('update-address-btn') || target.classList.contains('delete-btn') || target.closest('.update-address-btn') || target.closest('.delete-btn')) {
+                            return;
+                        }
 
-        // 클릭된 요소가 수정 버튼이나 삭제 버튼인지 확인
-        var target = event.target;
-        if (target.classList.contains('update-address-btn') || target.classList.contains('delete-btn') || target.closest('.update-address-btn') || target.closest('.delete-btn')) {
-            return;
-        }
+                        var paymentId = "{{ payment_id }}";
 
-        // AJAX 요청
-        var paymentId = "{{ payment_id }}";  // 템플릿 변수를 JSON으로 변환하여 안전하게 삽입
+                        fetch(`/order/set_order_address/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: JSON.stringify({
+                                payment_id: paymentId,
+                                address_id: addressId
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // 부모 창의 배송지 정보 업데이트
+                                window.opener.updateAddressInfo();
+                                // 창 닫기
+                                window.close();  
+                            } else {
+                                alert('배송지 설정에 실패했습니다.');
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    }
 
-        fetch(`/order/set_order_address/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                payment_id: paymentId,
-                address_id: addressId
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.close();  // 창 닫기
-            } else {
-                alert('배송지 설정에 실패했습니다.');
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
+                    function updateAddressInfo() {
+                        var paymentId = "{{ payment_id }}";
+                        console.log(paymentId)
+
+                        fetch(`/order/get_address/${paymentId}/`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('recipient').innerText = data.address.recipient;
+                                document.getElementById('address').innerText = data.address.address + ' ' + data.address.detail_address;
+                                document.getElementById('phone').innerText = data.address.phone_number;
+                            } else {
+                                alert('배송지 정보를 불러오는데 실패했습니다.');
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    }
 </script>
 {% endblock %}

@@ -56,6 +56,21 @@
             object-fit: cover;
             margin-right: 10px;
         }
+        .btn-payment {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            vertical-align: middle;
+            width: 50%;
+            background-color: #0d6efd;
+            color: #f8f8f8;
+            font-size: 30px;
+            height: 50px;
+        }
+        .btn-payment:hover {
+            background-color: #0d5ed7;  /* Hover 색상 설정 */
+        }
     </style>
 </head>
 <body>
@@ -90,15 +105,33 @@
             <table class="info-table">
                 <tr>
                     <th>이름</th>
-                    <td>{{ request.user.username }}</td>
+                    <td id="recipient">
+                        {% if order_item.address %}
+                            {{ order_item.address.recipient }}
+                        {% else %}
+                            기본 배송지를 설정해주세요.
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
                     <th>배송주소</th>
-                    <td>서울특별시 강남구 삼성동</td>
+                    <td id="address">
+                        {% if order_item.address %}
+                            {{ order_item.address.address }} {{ order_item.address.detail_address }}
+                        {% else %}
+                            기본 배송지를 설정해주세요.
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
                     <th>연락처</th>
-                    <td>010-1234-5678</td>
+                    <td id="phone">
+                        {% if order_item.address %}
+                            {{ order_item.address.phone_number }}
+                        {% else %}
+                            기본 배송지를 설정해주세요.
+                        {% endif %}
+                    </td>
                 </tr>
             </table>
         </div>
@@ -108,10 +141,10 @@
             <h2 class="section-title">구매 작품 목록</h2>
             <div>
                 {% for item in order_items %}
-                <div class="artwork-card">
-                    <img src="{{ item.art_work.artimage_set.first.image_url.url }}" alt="{{ item.art_work.title }}" class="artwork-card-img rounded-0">
+                <div class="artwork-card d-flex justify-content-between align-items-center" style="padding: 10px 0; border: 1px solid #ddd; margin-bottom: 10px;">
+                    <img src="{{ item.art_work.artimage_set.first.image_url.url }}" alt="{{ item.art_work.title }}" class="artwork-card-img rounded-0" style="width: 50px; height: 50px; object-fit: cover; margin-left: 20px;">
                     <strong>{{ item.art_work.title }}</strong>
-                    <p>{{ item.price }} 원</p>
+                    <p style="margin-right: 20px;">{{ item.price }} 원</p>
                 </div>
                 {% endfor %}
             </div>
@@ -160,68 +193,114 @@
         </div>
         <div class="horizontal-line"></div>
 
-        <button id="payment-button" class="btn btn-primary">결제하기</button>
+        <div class="order-container d-flex justify-content-center">
+            <button id="payment-button" class="btn btn-payment">결제하기</button>
+        </div>
     </div>
 
     <script>
-        document.getElementById('payment-button').addEventListener('click', function () {
-            var paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-            var pgProvider = paymentMethod;
+    document.getElementById('payment-button').addEventListener('click', function () {
+        // 결제 정보 체크박스 선택 여부 확인
+        var paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+        if (!paymentMethod) {
+            alert('결제 정보를 선택해주세요.');
+            return;
+        }
 
-            var IMP = window.IMP;
-            IMP.init('{{ imp_api_key }}');
+        // OrderItem의 address_id가 null인지 확인
+        fetch(`/order/check_address/{{ payment.id }}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                alert('배송지를 입력해 주세요.');
+            } else {
+                proceedWithPayment(paymentMethod.value);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 
-            IMP.request_pay({
-                pg: pgProvider,
-                pay_method: 'card',
-                merchant_uid: 'merchant_' + new Date().getTime(),
-                name: '{{ orderName }}',
-                amount: parseInt('{{ total_price }}'),  // 금액을 정수로 변환
-                buyer_email: '{{ request.user.email }}',
-                buyer_name: '{{ request.user.username }}',
-                buyer_tel: '010-1234-5678',
-                buyer_addr: '서울특별시 강남구 삼성동',
-                buyer_postcode: '123-456',
-                m_redirect_url: '{{ approval_url }}'  // 결제 완료 후 리다이렉트 URL
-            }, function (rsp) {
-                if (rsp.success) {
-                    var msg = '결제가 완료되었습니다.';
-                    msg += ' 고유ID : ' + rsp.imp_uid;
-                    msg += ' 상점 거래ID : ' + rsp.merchant_uid;
-                    msg += ' 결제 금액 : ' + rsp.paid_amount;
-                    msg += ' 카드 승인번호 : ' + rsp.apply_num;
+    function proceedWithPayment(paymentMethod) {
+        var pgProvider = paymentMethod;
 
-                    alert(msg);
+        var IMP = window.IMP;
+        IMP.init('{{ imp_api_key }}');
 
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', '{{ approval_url }}');
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    xhr.onload = function () {
-                        if (xhr.status === 200) {
-                            var response = JSON.parse(xhr.responseText);
-                            if (response.redirect_url) {
-                                window.location.href = response.redirect_url;
-                            } else {
-                                alert('결제 승인 처리 중 오류가 발생했습니다.');
-                            }
+        IMP.request_pay({
+            pg: pgProvider,
+            pay_method: 'card',
+            merchant_uid: 'merchant_' + new Date().getTime(),
+            name: '{{ orderName }}',
+            amount: parseInt('{{ total_price }}'),  // 금액을 정수로 변환
+            buyer_email: '{{ request.user.email }}',
+            buyer_name: '{{ request.user.username }}',
+            buyer_tel: '010-1234-5678',
+            buyer_addr: '서울특별시 강남구 삼성동',
+            buyer_postcode: '123-456',
+            m_redirect_url: '{{ approval_url }}'  // 결제 완료 후 리다이렉트 URL
+        }, function (rsp) {
+            if (rsp.success) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '{{ approval_url }}');
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.redirect_url) {
+                            window.location.href = response.redirect_url;
                         } else {
                             alert('결제 승인 처리 중 오류가 발생했습니다.');
                         }
-                    };
-                    xhr.send('imp_uid=' + rsp.imp_uid + '&payment_id={{ payment.id }}');
-                } else {
-                    var msg = '결제에 실패하였습니다.';
-                    msg += ' 에러내용 : ' + rsp.error_msg;
-                    alert(msg);
-                }
-            });
+                    } else {
+                        alert('결제 승인 처리 중 오류가 발생했습니다.');
+                    }
+                };
+                xhr.send('imp_uid=' + rsp.imp_uid + '&payment_id={{ payment.id }}');
+            } else {
+                var msg = '결제에 실패하였습니다.';
+                msg += ' 에러내용 : ' + rsp.error_msg;
+                alert(msg);
+            }
         });
+    }
 
-        document.getElementById('change-address-button').addEventListener('click', function () {
-            var paymentId = "{{ payment.id }}";  // 템플릿 변수를 사용하여 payment_id 가져오기
-            var url = '{% url "order:order_change_address" payment.id %}';
-            window.open(url, '배송지 변경', 'width=500,height=500');
-        });
+    document.getElementById('change-address-button').addEventListener('click', function () {
+        var paymentId = "{{ payment.id }}";  // 템플릿 변수를 사용하여 payment_id 가져오기
+        var url = '{% url "order:order_change_address" payment.id %}';
+        window.open(url, '배송지 변경', 'width=500,height=500');
+    });
+
+    function fetchAddress(paymentId) {
+        fetch(`/order/get_address/${paymentId}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('recipient').innerText = data.address.recipient;
+                document.getElementById('address').innerText = data.address.address + ' ' + data.address.detail_address;
+                document.getElementById('phone').innerText = data.address.phone_number;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // 부모 창에서 호출될 업데이트 함수 추가
+    function updateAddressInfo() {
+        fetchAddress("{{ payment.id }}");
+    }
+
+    window.onload = function() {
+        fetchAddress("{{ payment.id }}");
+    }
     </script>
 </body>
 </html>

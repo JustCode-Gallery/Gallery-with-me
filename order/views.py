@@ -69,13 +69,20 @@ def create_order(request, artwork_id):
     # 주문 상태 "주문 대기"를 가져옴
     order_status = OrderStatus.objects.get(status='주문 대기')
 
+    # 기본 배송지 가져오기
+    try:
+        default_address = ShippingAddress.objects.get(user=user, is_default=True, is_deleted=False)
+    except ShippingAddress.DoesNotExist:
+        default_address = None
+
     # OrderItem 객체 생성
     OrderItem.objects.create(
         price=artwork.price,
         art_work=artwork,
         user=user,
         payment=payment,
-        order_status=order_status
+        order_status=order_status,
+        address=default_address  # 기본 배송지 설정
     )
 
     # 주문 페이지로 리다이렉트
@@ -85,12 +92,19 @@ def create_order(request, artwork_id):
 def order_detail(request, payment_id):
     payment = get_object_or_404(Payment, id=payment_id)
     order_items = OrderItem.objects.filter(payment=payment)
-    return render(request, 'order/order_detail.html', {'payment': payment, 'order_items': order_items})
+    regular_order_items = order_items.filter(art_work__is_reservable=False)
+    reservable_order_items = order_items.filter(art_work__is_reservable=True)
+    return render(request, 'order/order_detail.html', {
+        'payment': payment,
+        'regular_order_items': regular_order_items,
+        'reservable_order_items': reservable_order_items
+    })
 
 # 결제 요청
 @csrf_exempt
 def import_payment(request, payment_id):
     payment = get_object_or_404(Payment, id=payment_id)
+    order_items = OrderItem.objects.filter(payment=payment)
     user = request.user
 
     total_price = payment.pay_amount
@@ -110,7 +124,8 @@ def import_payment(request, payment_id):
         'kakao_channel_key': KAKAO_CHANNEL_KEY,
         'toss_channel_key': TOSS_CHANNEL_KEY,
         'kcp_channel_key': KCP_CHANNEL_KEY,
-        'approval_url': approval_url
+        'approval_url': approval_url,
+        'order_items': order_items  # OrderItem 추가
     }
     return render(request, 'order/import_payment.html', context)
 
@@ -168,7 +183,10 @@ def order_success(request, payment_id):
 
 # 결제 실패
 def order_fail(request, payment_id):
-    return render(request, 'order/order_fail.html')
+    payment = get_object_or_404(Payment, id=payment_id)
+    order_item = OrderItem.objects.filter(payment=payment).first()
+    artwork_id = order_item.art_work.id if order_item else None
+    return render(request, 'order/order_fail.html', {'payment': payment, 'artwork_id': artwork_id, 'error': request.GET.get('error')})
 
 def remove_item(request, item_id):
     item = get_object_or_404(OrderItem, id=item_id)
@@ -189,11 +207,19 @@ def remove_item(request, item_id):
 
 def order_change_address(request, payment_id):
     address_list = ShippingAddress.objects.filter(user_id=request.user.id, is_deleted=False)
-    return render(request, 'order/order_change_address.html', {'address_list': address_list, 'payment_id': payment_id})
+    payment = get_object_or_404(Payment, id=payment_id)
+    order_item = OrderItem.objects.filter(payment=payment).first()
+    current_address = order_item.address if order_item else None
+    return render(request, 'order/order_change_address.html', {
+        'address_list': address_list,
+        'payment_id': payment_id,
+        'current_address': current_address
+    })
 
 def create_address(request):
+    payment_id = request.POST.get('payment_id')
     if request.method == 'POST':
-        if ShippingAddress.objects.filter(user=request.user).count() < 5:
+        if ShippingAddress.objects.filter(user=request.user, is_deleted=False).count() < 5:
             recipient = request.POST.get('recipient')
             phone_number = request.POST.get('phone_number')
             destination = request.POST.get('destination') if request.POST.get('destination') else None
@@ -226,7 +252,7 @@ def create_address(request):
                 user = user
             )
             shipping_address.save()
-            return redirect('order:order_change_address', payment_id=request.POST.get('payment_id'))
+            return redirect('order:order_change_address', payment_id)
         else: 
             address_list = ShippingAddress.objects.filter(user_id=request.user.id, is_deleted=False)
             context = {
@@ -240,9 +266,11 @@ def delete_address(request, pk):
     address = get_object_or_404(ShippingAddress, pk=pk)
     address.is_deleted = True
     address.save()
-    return redirect('order:order_change_address', payment_id=request.GET.get('payment_id'))
+    payment_id = request.POST.get('payment_id')
+    return redirect('order:order_change_address', payment_id=payment_id)
 
 def update_address(request, pk):
+    payment_id = request.POST.get('payment_id')
     address = get_object_or_404(ShippingAddress, pk=pk)
     if request.method == 'POST':
         address.recipient = request.POST.get('recipient', address.recipient)
@@ -266,7 +294,7 @@ def update_address(request, pk):
             address.is_default = False
 
         address.save()
-        return redirect('order:order_change_address')
+        return redirect('order:order_change_address', payment_id)
 
 
 @csrf_exempt
@@ -287,3 +315,39 @@ def set_order_address(request):
             return JsonResponse({'success': False, 'error': 'Invalid address ID'})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+def get_address(request, payment_id):
+    try:
+        order_item = OrderItem.objects.filter(payment_id=payment_id).first()
+        if order_item and order_item.address:
+            address = order_item.address
+            address_info = {
+                'recipient': address.recipient,
+                'address': address.address,
+                'detail_address': address.detail_address,
+                'phone_number': address.phone_number,
+            }
+            return JsonResponse({'success': True, 'address': address_info})
+        else:
+            return JsonResponse({'success': False, 'error': 'Address not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+    
+def check_address(request, payment_id):
+    try:
+        order_item = OrderItem.objects.filter(payment_id=payment_id).first()
+        if order_item and order_item.address:
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'error': 'Address not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+    
+def check_order_items(request):
+    payment_id = request.POST.get('payment_id')
+    order_items = OrderItem.objects.filter(payment_id=payment_id)
+    
+    if not order_items.exists():
+        return JsonResponse({'success': False, 'message': '구매할 작품이 없습니다.'})
+    
+    return JsonResponse({'success': True})

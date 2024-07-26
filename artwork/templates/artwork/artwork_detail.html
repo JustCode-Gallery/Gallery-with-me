@@ -121,7 +121,7 @@
                 <a href="{% url 'artwork:reserve_artwork' artwork.id %}" class="btn btn-dark">구매 예약</a>
                 {% else %}
                 <a href="{% url 'artwork:add_to_cart' artwork.id %}" class="btn btn-outline-dark add-to-cart-button" data-artwork-id="{{ artwork.id }}">장바구니에 추가</a>
-                <a href="{% url 'artwork:buy_now' artwork.id %}" class="btn btn-dark">구매하기</a>
+                <a href="{% url 'order:create_order' artwork.id %}" class="btn btn-dark">구매하기</a>
                 {% endif %}
             {% endif %}
           </div>
@@ -140,6 +140,7 @@
         $('#like-button').click(function() {
             var button = $(this);
             var artworkId = button.data('artwork-id');
+            console.log('artworkId :', artworkId);
             $.ajax({
                 url: '{% url "artwork:toggle_work_like" artwork.id %}',
                 method: 'POST',

@@ -3,6 +3,9 @@ from django.db import models
 class PaymentStatus(models.Model):
     status = models.CharField(max_length=10)
 
+    def __str__(self):
+        return self.status
+
 class Payment(models.Model):
     payment_uuid = models.CharField(max_length=50, unique=True, null=True)
     pay_method = models.CharField(max_length=20)  # 카카오페이, 카드, 무통장

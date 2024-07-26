@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 실패</title>
+    <link rel="stylesheet" href="{% static 'path/to/your/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'path/to/your/css/styles.css' %}">
+</head>
+<body>
+    <div class="container" style="margin-top: 200px;">
+        <div class="alert text-center" role="alert">
+            <h4 class="alert-heading">결제 실패</h4>
+            <p>결제가 실패했습니다. 다시 시도해 주세요.</p>
+            <hr>
+            <p class="mb-0">문제가 지속되면 고객 지원팀에 문의해 주세요.</p>
+            {% if error %}
+                <p>오류 메시지: {{ error }}</p>
+            {% endif %}
+        </div>
+        <div class="text-center mt-3">
+            {% if artwork_id %}
+            <a href="{% url 'order:create_order' artwork_id %}" class="btn btn-danger">주문 다시 생성하기</a>
+            {% else %}
+            <p>주문을 다시 생성할 수 없습니다.</p>
+            {% endif %}
+        </div>
+        <div class="text-center mt-3" style="margin-bottom: 200px;">
+            <a href="{% url 'home' %}" class="btn btn-primary">홈으로 돌아가기</a>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

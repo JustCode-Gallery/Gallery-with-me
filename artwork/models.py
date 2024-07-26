@@ -2,7 +2,7 @@ from django.db import models
 
 class ArtWork(models.Model):
     title = models.CharField(max_length=100)
-    description = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000)
     width = models.IntegerField()
     height = models.IntegerField()
     depth = models.IntegerField()
@@ -54,3 +54,4 @@ class ArtistInquiry(models.Model):
     completed_at = models.DateTimeField(auto_now=True)  # 수정될 때, answer가 올라올 때 시간 설정하기
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='user_artist_inquiries')  # 문자열 기반 참조
     seller = models.ForeignKey('user.Seller', on_delete=models.SET_NULL, null=True, related_name='seller_artist_inquiries')  # seller가 삭제되었을 경우 NULL, User에게는 '판매자 회원 정보가 없습니다.'같은 게시물로 보이도록 하기
+    art_work = models.ForeignKey(ArtWork, on_delete=models.SET_NULL, null=True)

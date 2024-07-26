@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 상세</title>
+    <link rel="stylesheet" href="{% static 'path/to/your/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'path/to/your/css/styles.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .order_container {
+            display: flex;
+            align-items: flex-start;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            overflow: visible;
+        }
+
+        .artwork-card {
+            position: relative;
+            overflow: hidden;
+            width: 150px;
+            height: 150px;
+            margin-right: 20px;
+        }
+
+        .artwork-card-img {
+            transition: opacity 0.3s ease-in-out;
+            width: 100%; 
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .vertical-line {
+            border-left: 1px solid #ddd;
+            height: 100%;
+        }
+
+        .sticky-card {
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 설정 */
+        }
+
+        .list-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .col-md-8 {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-list-container{
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .card-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fixed-card {
+            position: fixed;
+            top: 60px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 설정 */
+        }
+
+        .btn-primary {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            vertical-align: middle;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>주문 정보</h2>
+        <div class="order_container d-flex justify-content-between">
+            <div class="col-md-8">
+                {% if regular_order_items %}
+                <div class="detail-list-container" id="regular-order-container">
+                    <h3>일반 구매 상품</h3>
+                    <ul class="list-group" id="regular-order-items-list">
+                        {% for item in regular_order_items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center" id="order-item-{{ item.id }}">
+                            <div class="list-container">
+                                <div class="artwork-card p-0 border-0 rounded-0">
+                                    <img src="{{ item.art_work.artimage_set.first.image_url.url }}" alt="{{ item.art_work.title }}" class="artwork-card-img rounded-0">
+                                </div>
+                                <div>
+                                    <strong>{{ item.art_work.title }}</strong>
+                                    <p>가격: {{ item.price }} 원</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-danger btn-sm remove-item-button" data-item-id="{{ item.id }}">삭제</button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if reservable_order_items %}
+                <div class="detail-list-container" id="reservable-order-container">
+                    <h3>예약 상품</h3>
+                    <ul class="list-group" id="reservable-order-items-list">
+                        {% for item in reservable_order_items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center" id="order-item-{{ item.id }}">
+                            <div class="list-container">
+                                <div class="artwork-card p-0 border-0 rounded-0">
+                                    <img src="{{ item.art_work.artimage_set.first.image_url.url }}" alt="{{ item.art_work.title }}" class="artwork-card-img rounded-0">
+                                </div>
+                                <div>
+                                    <strong>{{ item.art_work.title }}</strong>
+                                    <p>가격: {{ item.price }} 원</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-danger btn-sm remove-item-button" data-item-id="{{ item.id }}">삭제</button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="vertical-line"></div>
+
+            <div class="col-md-4 card-container">
+                <div class="card sticky-card">
+                    <div class="card-body">
+                        <h3 class="card-title">주문 예상 금액</h3>
+                        <p>총 상품 가격: <span id="total-price">{{ payment.pay_amount }}</span> 원</p>
+                        <p>총 할인: -0 원</p>
+                        <h4>총 결제 금액:</h4> 
+                        <h4><span id="total-pay-amount">{{ payment.pay_amount }}</span> 원</h4>
+                        <form method="post" action="{% url 'order:import_payment' payment.id %}">
+                            {% csrf_token %}
+                            <button type="button" class="btn btn-primary" id="purchase-button">구매하기</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    $(document).ready(function() {
+        $('#purchase-button').click(function() {
+            var paymentId = '{{ payment.id }}';
+            var csrfToken = '{{ csrf_token }}';
+            $.ajax({
+                url: '{% url "order:check_order_items" %}',
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                data: {
+                    'payment_id': paymentId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('form').submit();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function(response) {
+                    alert('An error occurred');
+                }
+            });
+        });
+
+        $('.remove-item-button').click(function() {
+            var itemId = $(this).data('item-id');
+            var csrfToken = '{{ csrf_token }}';
+            $.ajax({
+                url: '{% url "order:remove_item" 0 %}'.replace('0', itemId),
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                success: function(response) {
+                    if (response.success) {
+                        var itemElement = $('#order-item-' + response.item_id);
+                        var listId = itemElement.closest('ul').attr('id');
+                        itemElement.remove();
+
+                        // 해당 리스트에 아이템이 남아있는지 확인 후 없으면 컨테이너 삭제
+                        if ($('#' + listId + ' li').length === 0) {
+                            if (listId === 'regular-order-items-list') {
+                                $('#' + listId).closest('div').remove(); // 일반 구매 상품 컨테이너 삭제
+                            } else if (listId === 'reservable-order-items-list') {
+                                $('#' + listId).closest('div').remove(); // 예약 상품 컨테이너 삭제
+                            }
+                        }
+
+                        $('#total-price').text(response.pay_amount);
+                        $('#total-pay-amount').text(response.pay_amount);
+                    } else {
+                        alert('Item removal failed');
+                    }
+                },
+                error: function(response) {
+                    alert('An error occurred');
+                }
+            });
+        });
+    });
+
+    $(window).scroll(function() {
+        var sticky = $('.sticky-card'),
+            scroll = $(window).scrollTop();
+
+        if (scroll >= 100) {
+            sticky.addClass('fixed-card');
+            sticky.width(sticky.parent().width()); // 부모 요소의 너비를 가져와 설정
+        } else {
+            sticky.removeClass('fixed-card');
+            sticky.css('width', ''); // 원래 너비로 복원
+        }
+    });
+    </script>
+</body>
+</html>
+{% endblock %}

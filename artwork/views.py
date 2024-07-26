@@ -145,12 +145,19 @@ def toggle_work_like(request, pk): # 좋아요 기능
 
 @login_required
 def add_to_cart(request, pk): # 장바구니에 담기 기능
-    artwork = get_object_or_404(ArtWork, pk=pk)
-    user = request.user
+    if request.method == 'POST':
+        artwork = get_object_or_404(ArtWork, pk=pk)
+        user = request.user
 
-    # 장바구니에 추가
-    Cart.objects.create(user=user, art_work=artwork)
-    return redirect('artwork:artwork_detail', pk=pk)
+        # 기존에 담겨있는 항목인지 확인
+        if Cart.objects.filter(user=user, art_work=artwork).exists():
+            # 이미 장바구니에 있을 때 안내 메시지
+            return JsonResponse({'message': '이미 장바구니에 있는 아이템입니다.', 'type': 'info'})
+        else:
+            # 장바구니에 추가
+            Cart.objects.create(user=user, art_work=artwork)
+            return JsonResponse({'message': '장바구니에 추가되었습니다.', 'type': 'success'})
+    return JsonResponse({'message': '잘못된 요청입니다.', 'type': 'error'})
 
 @login_required
 def add_inquiry(request, pk):  # 작가 문의하기 기능

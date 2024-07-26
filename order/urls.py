@@ -18,4 +18,6 @@ urlpatterns = [
     path('get_address/<int:payment_id>/', views.get_address, name='get_address'),
     path('check_address/<int:payment_id>/', views.check_address, name='check_address'),
     path('check_order_items/', views.check_order_items, name='check_order_items'),
+    path('cart/', views.cart_list, name='cart'),
+    path('delete_cart_item/<int:cart_id>/', views.delete_cart_item, name='delete_cart_item'),
 ]

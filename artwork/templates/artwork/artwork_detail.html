@@ -7,6 +7,19 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<style>
+  #cart-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      z-index: 1000;
+  }
+</style>
 {% endblock %}
 {% block content %}
 
@@ -107,7 +120,7 @@
                 {% if artwork.is_reservable %}
                 <a href="{% url 'artwork:reserve_artwork' artwork.id %}" class="btn btn-dark">구매 예약</a>
                 {% else %}
-                <a href="{% url 'artwork:add_to_cart' artwork.id %}" class="btn btn-outline-dark">장바구니에 추가</a>
+                <a href="{% url 'artwork:add_to_cart' artwork.id %}" class="btn btn-outline-dark add-to-cart-button" data-artwork-id="{{ artwork.id }}">장바구니에 추가</a>
                 <a href="{% url 'order:create_order' artwork.id %}" class="btn btn-dark">구매하기</a>
                 {% endif %}
             {% endif %}
@@ -154,6 +167,34 @@
 
         $('#inquiry-button').click(function() {
             window.location.href = '{% url "artwork:add_inquiry" artwork.id %}';
+        });
+
+        // 장바구니 안내 메세지 보이기
+        function displayCartMessage(message) {
+        alert(message);
+        }
+        // 카트 버튼 이벤트 추가
+        document.querySelectorAll('.add-to-cart-button').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const artworkId = this.dataset.artworkId;
+
+                fetch("{% url 'artwork:add_to_cart' 0 %}".replace('0', artworkId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayCartMessage(data.message, data.type);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    displayCartMessage('오류가 발생했습니다.', 'danger');
+                });
+            });
         });
     </script>
 {% endblock %}

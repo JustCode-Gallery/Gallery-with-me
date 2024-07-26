@@ -73,6 +73,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'order.context_processors.cart_count',  # 장바구니 아이템 수 컨텍스트 프로세서
             ],
         },
     },

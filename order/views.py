@@ -19,4 +19,6 @@ def cart_list(request):
 def delete_cart_item(request, cart_id):
     cart_item = get_object_or_404(Cart, id=cart_id, user=request.user)
     cart_item.delete()
-    return JsonResponse({'success': True})
+    # 카트 뱃지 비동기 업데이트를 위해 아이템 수 가져옴
+    cart_count = Cart.objects.filter(user=request.user).count()
+    return JsonResponse({'success': True, 'cart_count': cart_count})

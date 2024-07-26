@@ -128,5 +128,15 @@
             });
         });
     });
+
+    function updateCartBadge(cartCount) {
+        const badge = document.querySelector('.nav-item .badge');
+        if (cartCount > 0) {
+            badge.innerText = cartCount;
+            badge.style.display = 'inline';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
 </script>
 {% endblock %}

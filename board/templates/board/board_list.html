@@ -52,8 +52,6 @@
                     {% endif %}
                 
                 <div class="overlay">
-                    <!-- <span class="badge bg-light text-dark university-cap"><i class="fa-solid fa-graduation-cap"></i>&nbsp;{{ post.exhibit }}</span>
-                    <span class="badge bg-light text-dark visitors"><i class="fa-solid fa-eye"></i>&nbsp;3345</span> -->
                     <div class="top-row">
                         <span class="badge bg-light text-dark university-cap">
                             <i class="fa-solid fa-graduation-cap"></i>&nbsp;{{ post.exhibit }}
@@ -67,9 +65,73 @@
             
             </div>
             <h4>{{ post.post_title }}</h4>
-            <p>{{ post.user }}</p>
+            <p><i class="fa-solid fa-circle-user" style="font-size: 1.2em; vertical-align: middle;"></i>&nbsp;{{ post.user }}</p>
         </div>
+        {% empty %}
+            <p class="text-center">게시물이 없습니다.</p>
         {% endfor %}
+
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="First">
+                        <span aria-hidden="true"><i class="fa-solid fa-angles-left"></i></span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fa-solid fa-angles-left"></i></span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fa-solid fa-chevron-left"></i></span>
+                </li>
+                {% endif %}
+        
+                {% with ''|center:page_obj.paginator.num_pages as range %}
+                {% for _ in range %}
+                    {% with forloop.counter as i %}
+                        {% if i > page_obj.number|add:"-3" and i < page_obj.number|add:"3" %}
+                            {% if i == page_obj.number %}
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                            </li>
+                            {% endif %}
+                        {% endif %}
+                    {% endwith %}
+                {% endfor %}
+                {% endwith %}
+        
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true"><i class="fa-solid fa-angle-right"></i></span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                        <span aria-hidden="true"><i class="fa-solid fa-angles-right"></i></span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fa-solid fa-angle-right"></i></span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fa-solid fa-angles-right"></i></span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
 </div>
 

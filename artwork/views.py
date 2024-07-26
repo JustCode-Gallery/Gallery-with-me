@@ -341,3 +341,19 @@ def answer_inquiry(request,inquiry_id):
         return render(request, 'artwork/answer_inquiry.html', {'inquiry':inquiry})
     
 # 재헌끝
+
+@login_required
+def artwork_like_list(request):
+    like_list = WorkLike.objects.filter(user=request.user)
+    context = {
+        'like_list': like_list,
+    }
+    return render(request, 'artwork/artwork_like_list.html', context)
+
+@login_required
+def user_inquiry_list(request):
+    inquiry_list = ArtistInquiry.objects.filter(user=request.user)
+    context = {
+        'inquiry_list': inquiry_list,
+    }
+    return render(request, 'artwork/user_inquiry_list.html', context)

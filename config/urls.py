@@ -29,5 +29,6 @@ urlpatterns = [
     path('order/', include('order.urls')),
     path('payment/', include('payment.urls')),
     path('user/', include('user.urls')),
+    path('seller/', include('seller.urls')),
     path('', HomeView.as_view(),name='home'), # 홈화면
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -59,10 +59,17 @@
             flex-direction: column;
         }
 
-        .detail-list-container{
+        .buynow-detail-list-container{
             border: 1px solid #ddd;
             padding: 20px;
             border-radius: 8px;
+        }
+
+        .reserve-detail-list-container{
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 10px;
         }
 
         .card-container {
@@ -92,7 +99,7 @@
         <div class="order_container d-flex justify-content-between">
             <div class="col-md-8">
                 {% if regular_order_items %}
-                <div class="detail-list-container" id="regular-order-container">
+                <div class="buynow-detail-list-container" id="regular-order-container">
                     <h3>일반 구매 상품</h3>
                     <ul class="list-group" id="regular-order-items-list">
                         {% for item in regular_order_items %}
@@ -114,7 +121,7 @@
                 {% endif %}
 
                 {% if reservable_order_items %}
-                <div class="detail-list-container" id="reservable-order-container">
+                <div class="reserve-detail-list-container" id="reservable-order-container">
                     <h3>예약 상품</h3>
                     <ul class="list-group" id="reservable-order-items-list">
                         {% for item in reservable_order_items %}

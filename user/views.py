@@ -298,7 +298,7 @@ def select_artworks(request):
 
 
 def change_address(request):
-    address_list = ShippingAddress.objects.filter(user_id=request.user.id)
+    address_list = ShippingAddress.objects.filter(user_id=request.user.id, is_deleted=False)
     return render(request, 'change_address.html', {'address_list': address_list})
 
 def create_address(request):
@@ -346,7 +346,8 @@ def create_address(request):
 
 def delete_address(request, pk):
     address = ShippingAddress.objects.get(pk=pk)
-    address.delete()
+    address.is_deleted = True
+    address.save()
     return redirect('user:change_address')
 
 def update_address(request, pk):

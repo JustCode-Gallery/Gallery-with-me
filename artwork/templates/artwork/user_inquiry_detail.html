@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra-style %}
+<link href="{% static 'artwork/user_inquiry.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="d-flex justify-content-center mb-5">
+        <div class="border p-3 rounded mt-4 inquiry-container">
+            <a href="{% url 'artwork:artwork_detail' inquiry.art_work.pk %}" class="text-decoration-none link-dark">
+                <h5 class="text-center mb-2">{{ inquiry.art_work.title }}</h5>
+            </a>
+            <p class="text-center" style="font-size: 12px;">by {{ inquiry.seller }}</p>
+
+            <div class="card  mb-2 d-flex justify-content-center">
+                <div class="card-body mx-3">
+                    <div class="row d-flex">
+                            <label for="inquiryContent" class="col-sm-2 col-form-label">문의내용</label>
+                            <p class="col text-end align-middle inquiry-date pt-2">{{ inquiry.created_at }}</p>
+                            <textarea class="form-control" type="text" id="inquiryContent" rows="3" readonly>{{ inquiry.question }}</textarea>
+                        
+
+                            <label for="inquiryContent" class="col-sm-2 col-form-label mt-3">답변</label>
+                            {% if inquiry.answer %}
+                            <p class="col text-end inquiry-date pt-4">{{ inquiry.completed_at }}</p>
+                            <textarea class="form-control" type="text" id="inquiryContent" rows="3" readonly>{{ inquiry.answer }}</textarea>
+                            {% else %}
+                            <textarea class="form-control" type="text" id="inquiryContent" rows="3" readonly></textarea>
+                            {% endif %}
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

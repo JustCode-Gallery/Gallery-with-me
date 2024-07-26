@@ -163,6 +163,7 @@ def add_inquiry(request, pk):  # 작가 문의하기 기능
             inquiry = form.save(commit=False)
             inquiry.user = user
             inquiry.seller = artwork.seller
+            inquiry.art_work = artwork
             inquiry.save()
             return redirect('artwork:artwork_detail', pk=pk)
         else: 
@@ -333,3 +334,11 @@ def user_inquiry_list(request):
         'inquiry_list': inquiry_list,
     }
     return render(request, 'artwork/user_inquiry_list.html', context)
+
+@login_required
+def user_inquiry_detail(request, pk):
+    inquiry = ArtistInquiry.objects.get(pk=pk)
+    context = {
+        'inquiry': inquiry,
+    }
+    return render(request, 'artwork/user_inquiry_detail.html', context)

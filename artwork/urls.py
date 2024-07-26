@@ -18,4 +18,8 @@ urlpatterns = [
     path('artwork_list/seller/', views.seller_artwork_list, name='seller_artwork_list'),
     path('artwork_like_list/', views.artwork_like_list, name='artwork_like_list'),
     path('user_inquiry_list/', views.user_inquiry_list, name='user_inquiry_list'),
+    path('user_inquiry_detail/<int:pk>', views.user_inquiry_detail, name='user_inquiry_detail'),
+
+
+
 ]

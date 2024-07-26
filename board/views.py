@@ -25,7 +25,7 @@ def board_list(request):
     post = Post.objects.all().order_by('-post_timestamp')  # 최신 포스트가 먼저 나오도록 정렬
     
     # 페이지네이션
-    paginator = Paginator(post, 12)  # 한 페이지에 10개씩 보이도록 설정
+    paginator = Paginator(post, 12)  # 한 페이지에 12개씩 보이도록 설정
     page_number = request.GET.get('page', 1)  # 기본적으로 첫 페이지를 설정
     page_obj = paginator.get_page(page_number)
 
@@ -245,29 +245,54 @@ def board_update(request, pk):
 
 def board_search(request):
 
+    # 기본 context 초기화
     context = {
         'search_form': PostSearchForm(),
+        'search_term': '',
+        'object_list': None,
+        'paginator': None,
+        'page_obj': None,
     }
-
-    if request.method=="POST":
+    
+    search_term = request.GET.get('search_word', '')
+    
+    if request.method == "POST":
         search_form = PostSearchForm(request.POST)
         if search_form.is_valid():
-            searchWord = search_form.cleaned_data['search_word']
+            search_term = search_form.cleaned_data['search_word']
             post_list = Post.objects.filter(
-                Q(post_title__icontains=searchWord) | 
-                Q(post_content__icontains=searchWord)
-            ).distinct()    # 기본정렬순서 db최신순
-            # ).order_by('').distinct() 정렬 순서 직접지정
-
-            context.update({
-                'search_term': searchWord,
-                'object_list': post_list,
-            })
+                Q(post_title__icontains=search_term) | 
+                Q(post_content__icontains=search_term)
+            ).distinct()
         else:
+            post_list = Post.objects.none()
             context.update({
                 'search_form': search_form,
                 'form_errors': search_form.errors
             })
+    else:
+        # GET 요청에서 검색어로 게시물 필터링
+        if search_term:
+            post_list = Post.objects.filter(
+                Q(post_title__icontains=search_term) | 
+                Q(post_content__icontains=search_term)
+            ).distinct()
+        else:
+            post_list = Post.objects.none()
+    
+    # 페이지네이션
+    paginator = Paginator(post_list, 12)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    # context 업데이트
+    context.update({
+        'search_term': search_term,
+        'object_list': page_obj,
+        'paginator': paginator,
+        'page_obj': page_obj,
+    })
+        
     
     return render(request, 'board/board_search.html', context)
 

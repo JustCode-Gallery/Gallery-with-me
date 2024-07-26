@@ -153,11 +153,6 @@ def add_to_cart(request, pk): # 장바구니에 담기 기능
     return redirect('artwork:artwork_detail', pk=pk)
 
 @login_required
-def buy_now(request, pk): # 바로 구매 기능
-    # 추후 결제 페이지로 리다이렉트할 예정, 현재는 임시로 상세 페이지로 리다이렉트
-    return redirect('artwork:artwork_detail', pk=pk)
-
-@login_required
 def add_inquiry(request, pk):  # 작가 문의하기 기능
     artwork = get_object_or_404(ArtWork, pk=pk)
     user = request.user
@@ -168,6 +163,7 @@ def add_inquiry(request, pk):  # 작가 문의하기 기능
             inquiry = form.save(commit=False)
             inquiry.user = user
             inquiry.seller = artwork.seller
+            inquiry.art_work = artwork
             inquiry.save()
             return redirect('artwork:artwork_detail', pk=pk)
         else: 
@@ -357,3 +353,11 @@ def user_inquiry_list(request):
         'inquiry_list': inquiry_list,
     }
     return render(request, 'artwork/user_inquiry_list.html', context)
+
+@login_required
+def user_inquiry_detail(request, pk):
+    inquiry = ArtistInquiry.objects.get(pk=pk)
+    context = {
+        'inquiry': inquiry,
+    }
+    return render(request, 'artwork/user_inquiry_detail.html', context)

@@ -265,7 +265,7 @@ def create_artwork(request):
     exhibits = ArtExhibit.objects.all()
     return render(request, 'artwork/create_artwork.html', {'seller': seller, 'exhibits': exhibits})
 
-
+#작품 수정하기
 @login_required
 def update_artwork(request, artwork_id):
     artwork = get_object_or_404(ArtWork, id=artwork_id)
@@ -304,12 +304,14 @@ def update_artwork(request, artwork_id):
     }
     return render(request, 'artwork/update_artwork.html', context)
 
+# 판매자 페이지-작품 리스트
 @login_required
 def seller_artwork_list(request):
     seller = get_object_or_404(Seller, id=request.user.id)
     artworks= ArtWork.objects.filter(seller=seller)
     return render(request,  'artwork/seller_artwork_list.html', {'artworks':artworks,'seller':seller})
 
+# 작품 삭제
 @login_required
 def delete_artwork(request, artwork_id):
     seller = get_object_or_404(Seller, id=request.user.id)
@@ -319,12 +321,14 @@ def delete_artwork(request, artwork_id):
 
 
 # 재헌
+# 판매자 페이지-답변 리스트
 @login_required
 def seller_inquiry_list(request):
     seller=Seller.objects.get(id=request.user.id)
     inquiries=ArtistInquiry.objects.filter(seller=seller).order_by('created_at')
     return render(request,'artwork/seller_inquiry_list.html',{'inquiries':inquiries,'seller':seller})
 
+# 판매자 페이지-답변하기
 @login_required
 def answer_inquiry(request,inquiry_id):
     inquiry=ArtistInquiry.objects.get(id=inquiry_id)
@@ -335,7 +339,6 @@ def answer_inquiry(request,inquiry_id):
         return redirect('artwork:seller_inquiry_list')
     else:
         return render(request, 'artwork/answer_inquiry.html', {'inquiry':inquiry})
-    
 # 재헌끝
 
 @login_required

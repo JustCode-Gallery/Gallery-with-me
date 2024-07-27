@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize', # 금액 천단위 
+    'django_celery_beat', # 샐러리 설정
+    'django_celery_results', # 샐러리 설정
      # 앱별 추가
     'board',    
     'user',
@@ -176,3 +178,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # login_required
 LOGIN_URL = '/user/login/'
+
+# Celery 설정
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+CELERY_TIMEZONE = 'Asia/Seoul'

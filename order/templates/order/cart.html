@@ -32,7 +32,7 @@
     <div class="d-flex justify-content-center mb-5">
         <div class="border p-4 rounded mt-4 cart-container">
             <h2 class="text-center mb-4">장바구니</h2>
-            <form method="post" action="#">
+            <form method="post" action="{% url 'order:create_order' %}" id="cart-form">
                 {% csrf_token %}
                 <div class="table-responsive">
                     <table class="table">
@@ -48,7 +48,7 @@
                         <tbody>
                             {% for cart in carts %}
                             <tr>
-                                <td><input type="checkbox" name="selected_items" value="{{ cart.id }}" data-price="{{ cart.art_work.price }}"></td>
+                                <td><input type="checkbox" name="selected_items" value="{{ cart.art_work.id }}" data-price="{{ cart.art_work.price }}"></td>
                                 <td>
                                     <div class="card">
                                         {% for image in cart.art_work.artimage_set.all %}
@@ -74,6 +74,7 @@
                 </div>
                 <div class="d-flex justify-content-between mt-3">
                     <h4>총 금액: <span id="total-price">0</span>원</h4>
+                    <input type="hidden" name="artwork_ids" id="artwork-ids">
                     <button type="submit" class="btn btn-primary">결제하기</button>
                 </div>
             </form>
@@ -82,7 +83,7 @@
 </div>
 
 <script>
-        function updateTotalPrice() {
+    function updateTotalPrice() {
         const checkboxes = document.querySelectorAll('input[name="selected_items"]:checked');
         let totalPrice = 0;
         checkboxes.forEach(checkbox => {
@@ -108,6 +109,7 @@
 
     document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', function() {
+            event.preventDefault(); // 기본 폼 제출 막기
             const cartId = this.getAttribute('data-cart-id');
             fetch(`/order/delete_cart_item/${cartId}/`, {
                 method: 'POST',
@@ -129,14 +131,15 @@
         });
     });
 
-    function updateCartBadge(cartCount) {
-        const badge = document.querySelector('.nav-item .badge');
-        if (cartCount > 0) {
-            badge.innerText = cartCount;
-            badge.style.display = 'inline';
+    document.getElementById('cart-form').addEventListener('submit', function(event) {
+        const selectedItems = document.querySelectorAll('input[name="selected_items"]:checked');
+        const artworkIds = Array.from(selectedItems).map(item => item.value).join(',');
+        if (!artworkIds) {
+            alert('선택된 항목이 없습니다.');
+            event.preventDefault();
         } else {
-            badge.style.display = 'none';
+            document.getElementById('artwork-ids').value = artworkIds;
         }
-    }
+    });
 </script>
 {% endblock %}

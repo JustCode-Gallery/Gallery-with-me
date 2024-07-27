@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize', # 금액 천단위 
+    'django_celery_beat', # 샐러리 설정
+    'django_celery_results', # 샐러리 설정
      # 앱별 추가
     'board',    
     'user',
@@ -74,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'order.context_processors.cart_count',  # 장바구니 아이템 수 컨텍스트 프로세서
             ],
         },
     },
@@ -175,3 +178,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # login_required
 LOGIN_URL = '/user/login/'
+
+# Celery 설정
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+CELERY_TIMEZONE = 'Asia/Seoul'

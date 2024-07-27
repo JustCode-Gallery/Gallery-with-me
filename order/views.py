@@ -10,6 +10,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http import JsonResponse
 from payment.models import Payment, PaymentStatus
@@ -64,8 +65,11 @@ def get_import_token():
         raise Exception('토큰 발급 실패')
 
 # 주문 생성
-def create_order(request, artwork_id):
-    artwork = get_object_or_404(ArtWork, id=artwork_id)
+@login_required
+def create_order(request):
+    artwork_ids = request.POST.get('artwork_ids')
+    artwork_ids = artwork_ids.split(',')  # 쉼표로 구분된 문자열을 리스트로 변환
+    
     user = request.user
 
     # 결제 상태 "결제 전"을 가져옴
@@ -75,7 +79,7 @@ def create_order(request, artwork_id):
     payment = Payment.objects.create(
         payment_uuid=str(uuid.uuid4()),
         pay_method='Import',
-        pay_amount=artwork.price,
+        pay_amount=0,  # 초기 금액은 0으로 설정, 아래에서 주문 항목의 가격을 더함
         user=user,
         payment_status=payment_status
     )
@@ -89,15 +93,25 @@ def create_order(request, artwork_id):
     except ShippingAddress.DoesNotExist:
         default_address = None
 
-    # OrderItem 객체 생성
-    OrderItem.objects.create(
-        price=artwork.price,
-        art_work=artwork,
-        user=user,
-        payment=payment,
-        order_status=order_status,
-        address=default_address  # 기본 배송지 설정
-    )
+    total_price = 0
+
+    for artwork_id in artwork_ids:
+        artwork = get_object_or_404(ArtWork, id=artwork_id)
+
+        # OrderItem 객체 생성
+        OrderItem.objects.create(
+            price=artwork.price,
+            art_work=artwork,
+            user=user,
+            payment=payment,
+            order_status=order_status,
+            address=default_address  # 기본 배송지 설정
+        )
+        total_price += artwork.price
+
+    # Payment 객체의 총 결제 금액 업데이트
+    payment.pay_amount = total_price
+    payment.save()
 
     # 주문 페이지로 리다이렉트
     return redirect('order:order_detail', payment.id)
@@ -365,3 +379,28 @@ def check_order_items(request):
         return JsonResponse({'success': False, 'message': '구매할 작품이 없습니다.'})
     
     return JsonResponse({'success': True})
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from .models import Cart
+# Create your views here.
+
+@login_required
+def cart_list(request):
+    user = request.user
+    carts = Cart.objects.filter(user=user).select_related('art_work').prefetch_related('art_work__artimage_set')
+
+    content = {
+        'carts' : carts
+    }
+    return render(request, 'order/cart.html', content)
+
+@login_required
+def delete_cart_item(request, cart_id):
+    cart_item = get_object_or_404(Cart, id=cart_id, user=request.user)
+    cart_item.delete()
+    # 카트 뱃지 비동기 업데이트를 위해 아이템 수 가져옴
+    cart_count = Cart.objects.filter(user=request.user).count()
+    return JsonResponse({'success': True, 'cart_count': cart_count})

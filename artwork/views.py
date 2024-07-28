@@ -224,7 +224,6 @@ def create_artwork(request):
         year = request.POST.get('year')
         price = request.POST.get('price')
         exhibit_id = request.POST.get('exhibit')
-        is_sold = request.POST.get('is_sold') == 'on'
         is_reservable = request.POST.get('is_reservable') == 'on'
         images = request.FILES.getlist('images')
 
@@ -253,7 +252,7 @@ def create_artwork(request):
                 price=price,
                 seller=seller,
                 exhibit=exhibit,
-                is_sold=is_sold,
+                is_sold=False,
                 is_reservable=is_reservable,
             )
             artwork.save()
@@ -273,7 +272,7 @@ def create_artwork(request):
     exhibits = ArtExhibit.objects.all()
     return render(request, 'artwork/create_artwork.html', {'seller': seller, 'exhibits': exhibits})
 
-
+#작품 수정하기
 @login_required
 def update_artwork(request, artwork_id):
     artwork = get_object_or_404(ArtWork, id=artwork_id)
@@ -290,7 +289,6 @@ def update_artwork(request, artwork_id):
         artwork.year = request.POST.get('year')
         artwork.price = request.POST.get('price')
         artwork.exhibit_id = request.POST.get('exhibit')
-        artwork.is_sold = request.POST.get('is_sold') == 'on'
         artwork.is_reservable = request.POST.get('is_reservable') == 'on'
         artwork.save()
 
@@ -313,18 +311,42 @@ def update_artwork(request, artwork_id):
     }
     return render(request, 'artwork/update_artwork.html', context)
 
+# 판매자 페이지-작품 리스트
 @login_required
 def seller_artwork_list(request):
     seller = get_object_or_404(Seller, id=request.user.id)
     artworks= ArtWork.objects.filter(seller=seller)
     return render(request,  'artwork/seller_artwork_list.html', {'artworks':artworks,'seller':seller})
 
+# 작품 삭제
 @login_required
 def delete_artwork(request, artwork_id):
     seller = get_object_or_404(Seller, id=request.user.id)
     artwork = ArtWork.objects.filter(id=artwork_id,seller=seller)
     artwork.delete()
     return redirect('artwork:seller_artwork_list')
+
+
+# 재헌
+# 판매자 페이지-답변 리스트
+@login_required
+def seller_inquiry_list(request):
+    seller=Seller.objects.get(id=request.user.id)
+    inquiries=ArtistInquiry.objects.filter(seller=seller).order_by('created_at')
+    return render(request,'artwork/seller_inquiry_list.html',{'inquiries':inquiries,'seller':seller})
+
+# 판매자 페이지-답변하기
+@login_required
+def answer_inquiry(request,inquiry_id):
+    inquiry=ArtistInquiry.objects.get(id=inquiry_id)
+    if request.method == 'POST':
+        answer = request.POST.get('answer')
+        inquiry.answer=answer
+        inquiry.save()
+        return redirect('artwork:seller_inquiry_list')
+    else:
+        return render(request, 'artwork/answer_inquiry.html', {'inquiry':inquiry})
+# 재헌끝
 
 @login_required
 def artwork_like_list(request):

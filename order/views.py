@@ -1,3 +1,6 @@
+
+# Create your views here.
+
 import uuid
 import os
 import requests
@@ -11,13 +14,24 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http import JsonResponse
 from payment.models import Payment, PaymentStatus
-from .models import OrderItem, OrderStatus
+from .models import OrderItem, OrderStatus,Reservation
 from artwork.models import ArtWork
 from user.models import User
 from user.models import ShippingAddress
 from django.conf import settings
 from dotenv import load_dotenv
 import json
+
+# 재헌
+def order_list(request):
+    orders=OrderItem.objects.filter(user=request.user)
+    return render(request,'order/order_list.html',{'orders':orders})
+
+def reservation_list(request):
+    reservations=Reservation.objects.filter(user=request.user)
+    return render(request,'order/order_list.html',{'reservations':reservations})
+
+# 재헌끝
 
 load_dotenv()
 
@@ -365,6 +379,7 @@ def check_order_items(request):
         return JsonResponse({'success': False, 'message': '구매할 작품이 없습니다.'})
     
     return JsonResponse({'success': True})
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404

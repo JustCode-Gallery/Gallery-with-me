@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load user_extras %}
+
+{% block content %}
+<h2 style="text-align: center; margin-top: 50px;">예약 현황</h2>
+<div class="container mt-5">
+    <div class="text-end mb-3">
+        <a href="{% url 'user:purchase_history' %}" class="btn btn-secondary">구매 내역 보기</a>
+    </div>
+    <form method="post" action="{% url 'user:cancel_reservation' %}">
+        {% csrf_token %}
+        <table style="width: 100%; border-collapse: collapse; text-align: center; margin: 0 auto;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 8px; width: 5%;"></th>
+                    <th style="border: 1px solid #ddd; padding: 8px; width: 20%;">주문 금액</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; width: 35%;">작품</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; width: 25%;">주문 상태 업데이트 시간</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; width: 20%;">주문 상태</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;">
+                        <input type="checkbox" name="order_items" value="{{ order.id }}">
+                    </td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ order.price|format_currency }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">
+                        {% if order.art_work.artimage_set.all %}
+                            <a href="{% url 'artwork:artwork_detail' order.art_work.id %}">
+                                <img src="{{ order.art_work.artimage_set.first.image_url.url }}" alt="{{ order.art_work.title }}" style="width: 100px; height: auto;">
+                            </a>
+                        {% else %}
+                            <span>이미지가 없습니다</span>
+                        {% endif %}
+                    </td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ order.updated_at }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ order.order_status.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if orders.paginator.count > 10 %}
+        <nav aria-label="Page navigation" class="mt-3">
+            <ul class="pagination justify-content-center">
+                {% if orders.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true"><i class="fa-solid fa-angles-left"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ orders.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fa-solid fa-angles-left"></i></span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fa-solid fa-chevron-left"></i></span>
+                    </li>
+                {% endif %}
+
+                {% for num in orders.paginator.page_range %}
+                    {% if orders.number == num %}
+                        <li class="page-item active">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if orders.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ orders.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ orders.paginator.num_pages }}" aria-label="Last">
+                            <span aria-hidden="true"><i class="fa-solid fa-angles-right"></i></span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fa-solid fa-chevron-right"></i></span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fa-solid fa-angles-right"></i></span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        <div class="text-end mt-3">
+            <button type="submit" class="btn btn-danger">예약 취소</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -74,7 +74,7 @@ class ArtWorkListView(ListView):
                     search_titles = [result['title'] for result in search_results]
                     queryset = queryset.filter(title__in=search_titles)
 
-        return queryset.filter(is_sold=False)
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -86,7 +86,7 @@ class ArtWorkListView(ListView):
     
 def load_more_artworks(request):
     page = request.GET.get('page', 1)
-    artworks = ArtWork.objects.filter(is_sold=False)
+    artworks = ArtWork.objects.filter()
     paginator = Paginator(artworks, 10)  # 페이지당 10개 항목
     page_obj = paginator.get_page(page)
     

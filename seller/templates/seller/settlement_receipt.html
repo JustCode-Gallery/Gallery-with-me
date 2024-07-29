@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load seller_extras %}
+{% load humanize %}
+
+{% block content %}
+<h2 style="text-align: center; margin-top: 50px;">정산 영수증</h2>
+<div class="container mt-5">
+    <div class="text-end mb-3">
+        {% if status_filter == 'completed' %}
+            <a href="{% url 'seller:settlement_receipt' %}?status=pending" class="btn btn-secondary">정산 전 내역 보러가기</a>
+        {% else %}
+            <a href="{% url 'seller:settlement_receipt' %}?status=completed" class="btn btn-secondary">정산 완료 내역 보러가기</a>
+        {% endif %}
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>판매 작품</th>
+                    <th>수수료</th>
+                    <th>부가세</th>
+                    <th>정산 금액</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for settlement in settlements %}
+                <tr>
+                    <td style="vertical-align: middle;">
+                        {% if settlement.order_item.art_work.artimage_set.all %}
+                            <img src="{{ settlement.order_item.art_work.artimage_set.first.image_url.url }}" alt="{{ settlement.order_item.art_work.title }}" style="width: 100px; height: auto;">
+                        {% else %}
+                            <span>이미지가 없습니다</span>
+                        {% endif %}
+                    </td>
+                    <td style="vertical-align: middle;">{{ settlement.commission }}%</td>
+                    <td style="vertical-align: middle;">{{ settlement.vat }}%</td>
+                    <td style="vertical-align: middle;">{{ settlement.net_amount|floatformat:0|intcomma }}원</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <hr>
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>계좌번호</th>
+                    <th>은행</th>
+                    <th>예금주</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="vertical-align: middle;">{{ default_account_info.set_account|default:"계좌 정보를 입력해주세요" }}</td>
+                    <td style="vertical-align: middle;">{{ default_account_info.set_bank|default:"계좌 정보를 입력해주세요" }}</td>
+                    <td style="vertical-align: middle;">{{ default_account_info.set_bank_user|default:"계좌 정보를 입력해주세요" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center mt-3">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#accountInfoModal">계좌 정보 수정하기</button>
+    </div>
+</div>
+
+<!-- 계좌 정보 추가/수정 모달 -->
+<div class="modal fade" id="accountInfoModal" tabindex="-1" aria-labelledby="accountInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accountInfoModalLabel">계좌 정보 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="accountInfoForm">
+                    <div class="mb-3">
+                        <label for="accountInfo" class="form-label">계좌번호</label>
+                        <input type="text" class="form-control" id="accountInfo" name="account_info" value="{{ default_account_info.set_account }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bank" class="form-label">은행</label>
+                        <input type="text" class="form-control" id="bank" name="bank" value="{{ default_account_info.set_bank }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bankUser" class="form-label">예금주</label>
+                        <input type="text" class="form-control" id="bankUser" name="bank_user" value="{{ default_account_info.set_bank_user }}" required>
+                    </div>
+                    <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary">추가/수정</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('accountInfoForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const accountInfo = document.getElementById('accountInfo').value;
+            const bank = document.getElementById('bank').value;
+            const bankUser = document.getElementById('bankUser').value;
+
+            fetch("{% url 'seller:update_account_info' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'account_info': accountInfo,
+                    'bank': bank,
+                    'bank_user': bankUser
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('계좌 정보 업데이트에 실패했습니다.');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -2,7 +2,11 @@ from django.shortcuts import render, redirect
 from order.models import Reservation
 from artwork.models import ArtWork, ArtImage
 from user.models import User,Seller
-# Create your views here.
+from order.models import OrderItem, OrderStatus
+from payment.models import Settlement, SettlementStatus
+from django.core.paginator import Paginator
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 
 # 판매자 예약
 def seller_reserve(request): 
@@ -70,3 +74,77 @@ def reserve_cancel(request,pk):
         return redirect('seller:seller_reserve')
 
     return render(request,'seller/seller_reserve.html')
+
+def sales_history(request):
+    seller = request.user.seller
+    filter_confirmed = request.GET.get('filter') == 'confirmed'
+    if filter_confirmed:
+        confirmed_status = OrderStatus.objects.get(status='구매 확정')
+        sales_list = OrderItem.objects.filter(art_work__seller=seller, order_status=confirmed_status).select_related('art_work', 'order_status').prefetch_related('art_work__artimage_set').order_by('-updated_at')
+    else:
+        sales_list = OrderItem.objects.filter(art_work__seller=seller).select_related('art_work', 'order_status').prefetch_related('art_work__artimage_set').order_by('-updated_at')
+
+    paginator = Paginator(sales_list, 10)  # 한 페이지에 10개씩
+    page = request.GET.get('page')
+    sales = paginator.get_page(page)
+
+    context = {
+        'sales': sales,
+        'filter_confirmed': filter_confirmed,
+    }
+    return render(request, 'seller/sales_history.html', context)
+
+def settlement_receipt(request):
+    seller = request.user.seller
+    status_filter = request.GET.get('status', 'pending')  # 기본값은 'pending'
+    if status_filter == 'completed':
+        settlement_status = SettlementStatus.objects.get(status='정산 완료')
+    else:
+        settlement_status = SettlementStatus.objects.get(status='정산 전')
+
+    settlements = Settlement.objects.filter(seller=seller, settlement_status=settlement_status).order_by('-settlement_date')
+    
+    # 정산 금액 계산
+    for settlement in settlements:
+        commission_amount = settlement.settlement_amount * (settlement.commission / 100)
+        vat_amount = commission_amount * (settlement.vat / 100)
+        net_amount = settlement.settlement_amount - (commission_amount + vat_amount)
+        settlement.net_amount = net_amount
+
+    default_account_info = {
+        'set_account': seller.account,
+        'set_bank': seller.bank,
+        'set_bank_user': seller.bank_user
+    }
+
+    context = {
+        'settlements': settlements,
+        'default_account_info': default_account_info,
+        'status_filter': status_filter,
+    }
+    return render(request, 'seller/settlement_receipt.html', context)
+
+@require_POST
+def update_account_info(request):
+    seller = request.user.seller
+    account_info = request.POST.get('account_info')
+    bank = request.POST.get('bank')
+    bank_user = request.POST.get('bank_user')
+
+    # 판매자의 계좌 정보 업데이트
+    seller.account = account_info
+    seller.bank = bank
+    seller.bank_user = bank_user
+    seller.save()
+
+    # 업데이트 할 정산 테이블 필터링 ('정산 전' 상태)
+    settlements = Settlement.objects.filter(seller=seller, settlement_status__status='정산 전')
+
+    # 정보 업데이트
+    for settlement in settlements:
+        settlement.set_account = account_info
+        settlement.set_bank = bank
+        settlement.set_bank_user = bank_user
+        settlement.save()
+
+    return JsonResponse({'success': True})

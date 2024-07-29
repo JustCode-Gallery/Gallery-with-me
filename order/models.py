@@ -14,6 +14,7 @@ class OrderItem(models.Model):
     payment = models.ForeignKey('payment.Payment', on_delete=models.PROTECT)  # 문자열 기반 참조
     order_status = models.ForeignKey(OrderStatus, on_delete=models.PROTECT)
     address = models.ForeignKey(ShippingAddress, on_delete=models.PROTECT, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
 class RefundRequest(models.Model):
     reason = models.CharField(max_length=500)

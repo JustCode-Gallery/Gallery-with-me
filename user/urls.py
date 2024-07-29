@@ -22,5 +22,9 @@ urlpatterns = [
     path('change_address/create/', views.create_address, name='create_address'),
     path('change_address/delete/<int:pk>/', views.delete_address, name='delete_address'),
     path('change_address/update/<int:pk>/', views.update_address, name='update_address'),
-
+    path('purchase_history/', views.purchase_history, name='purchase_history'),
+    path('reservation_history/', views.reservation_history, name='reservation_history'),
+    path('cancel_orders/', views.cancel_orders, name='cancel_orders'),
+    path('cancel_reservation/', views.cancel_reservation, name='cancel_reservation'),
+    path('history_detail/<int:order_id>/', views.history_detail, name='history_detail'),
 ]

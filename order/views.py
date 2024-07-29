@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http import JsonResponse
 from payment.models import Payment, PaymentStatus
-from .models import OrderItem, OrderStatus,Reservation, Cart
+from .models import OrderItem, OrderStatus,Reservation, Cart, RefundRequest
 from artwork.models import ArtWork
 from user.models import ShippingAddress
 from django.conf import settings
@@ -229,6 +229,37 @@ def remove_item(request, item_id):
         return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
     return redirect('order:order_detail', payment_id)
 
+# 결제취소 및 환불
+@login_required
+def request_refund(request, orderitem_id):
+    if request.method == 'GET':
+        order_item = get_object_or_404(OrderItem, id=orderitem_id, user=request.user)
+
+        context = {
+            'order_item' : order_item
+        }
+
+        return render(request, 'order/refund_request.html', context)
+
+    if request.method == 'POST':
+        order_item = get_object_or_404(OrderItem, id=orderitem_id)
+        # 결제가 완료되고, 아직 환불되지 않은 상품에 대해 환불 진행
+        if order_item.payment.payment_status == '결제완료':
+            if order_item.order_status == '주문완료':
+                reason = request.POST.get('reason')
+                RefundRequest.objects.create(
+                    reason = reason,
+                    user = request.user,
+                    order_item  = order_item
+                )
+                order_item.order_status = '환불완료'
+                order_item.save()
+                return JsonResponse({'message': '상품 환불이 정상적으로 완료되었습니다.', 'type': 'success'})
+            else:
+                return JsonResponse({'message': '이미 환불된 상품이거나, 환불할 수 없는 상태입니다.', 'type': 'info'})
+        
+        return JsonResponse({'message': '잘못된 요청입니다.', 'type': 'error'})
+
 def order_change_address(request, payment_id):
     address_list = ShippingAddress.objects.filter(user_id=request.user.id, is_deleted=False)
     payment = get_object_or_404(Payment, id=payment_id)
@@ -319,7 +350,6 @@ def update_address(request, pk):
 
         address.save()
         return redirect('order:order_change_address', payment_id)
-
 
 @csrf_exempt
 def set_order_address(request):

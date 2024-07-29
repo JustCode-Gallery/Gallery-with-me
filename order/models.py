@@ -32,7 +32,6 @@ class Reservation(models.Model):
     cancel_reason = models.CharField(max_length=500, null=True)
     status = models.BooleanField(default=True)
 
-
 class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_direct = models.BooleanField(default=False)

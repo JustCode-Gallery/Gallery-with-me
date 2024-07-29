@@ -25,14 +25,19 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
+
+ALLOWED_HOSTS = [
+    '3.34.123.49',
+    'localhost',
+    '127.0.0.1',    
+]
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://3.34.123.49:8080',
+    'http://3.34.123.49',
     'https://3.34.123.49',
 ]
 
-ALLOWED_HOSTS = ['*']
 
 
 # Application definition

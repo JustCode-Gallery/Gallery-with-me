@@ -29,9 +29,10 @@ DEBUG = False
 
 CSRF_TRUSTED_ORIGINS = [
     'http://3.34.123.49:8080',
+    'https://3.34.123.49',
 ]
 
-ALLOWED_HOSTS = ['3.34.123.49']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

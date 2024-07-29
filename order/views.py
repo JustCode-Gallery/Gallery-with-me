@@ -203,6 +203,10 @@ def import_payment_approval(request):
 def order_success(request, payment_id):
     payment = get_object_or_404(Payment, id=payment_id)
     order_items = OrderItem.objects.filter(payment=payment)
+    for order_item in order_items:
+        artwork = order_item.art_work
+        artwork.is_sold = True
+        artwork.save()
     return render(request, 'order/order_success.html', {'payment': payment, 'order_items': order_items})
 
 # 결제 실패

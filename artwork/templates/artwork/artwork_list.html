@@ -48,6 +48,23 @@
     .btn-spacing {
         margin-left: 10px;
     }
+    .sold-out-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .artwork-card-img.sold-out {
+        filter: brightness(50%);
+    }
 </style>
 {% endblock %}
 
@@ -92,7 +109,10 @@
         <div class="col-4 artwork-card p-0 border-0 rounded-0">
             <div class="ratio ratio-1x1">
                 <a href="{% url 'artwork:artwork_detail' artwork.pk %}">
-                    <img src="{{ artwork.artimage_set.first.image_url.url }}" class="artwork-card-img rounded-0">
+                    <img src="{{ artwork.artimage_set.first.image_url.url }}" class="artwork-card-img rounded-0 {% if artwork.is_sold %}sold-out{% endif %}">
+                    {% if artwork.is_sold %}
+                    <div class="sold-out-overlay">Sold Out</div>
+                    {% endif %}
                     <div class="artwork-card-img-overlay d-flex flex-column justify-content-center align-items-center">
                         <h5 class="artwork-card-title">{{ artwork.title }}</h5>
                         <h5 class="artwork-card-title">{{ artwork.price|floatformat:0 }} 원</h5>

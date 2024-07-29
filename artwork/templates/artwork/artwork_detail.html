@@ -117,7 +117,7 @@
               </svg></h6>
             </button>
             {% if not artwork.is_sold %}
-                <a href="{% url 'artwork:add_to_cart' artwork.id %}" class="btn btn-outline-dark add-to-cart-button" data-artwork-id="{{ artwork.id }}">장바구니에 추가</a>
+              <a href="{% url 'artwork:add_to_cart' artwork.id %}" class="btn btn-outline-dark add-to-cart-button" data-artwork-id="{{ artwork.id }}">장바구니에 추가</a>
                 {% if artwork.is_reservable %}
                 <form action="{% url 'order:create_order' %}" method="post" id="order-form">
                   {% csrf_token %}
@@ -177,8 +177,8 @@
             window.location.href = '{% url "artwork:add_inquiry" artwork.id %}';
         });
 
-        // 장바구니 안내 메세지 보이기
-        function displayCartMessage(message) {
+    // 장바구니 안내 메세지 보이기
+    function displayCartMessage(message) {
         alert(message);
         }
         // 카트 버튼 이벤트 추가 (장바구니 추가 시도)

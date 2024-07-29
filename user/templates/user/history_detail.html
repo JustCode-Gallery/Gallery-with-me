@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load user_extras %}
+
+{% block content %}
+<h2 style="text-align: center; margin-top: 50px;">구매 내역 상세</h2>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <h4>주문 정보</h4>
+            <table class="table table-bordered">
+                <tr>
+                    <th>작품</th>
+                    <td>
+                        {% if order.art_work.artimage_set.all %}
+                            <img src="{{ order.art_work.artimage_set.first.image_url.url }}" alt="{{ order.art_work.title }}" style="width: 100px; height: auto;">
+                        {% else %}
+                            <span>이미지가 없습니다</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>주문 금액</th>
+                    <td>{{ order.price|format_currency }}</td>
+                </tr>
+                <tr>
+                    <th>주문 상태</th>
+                    <td>{{ order.order_status.status }}</td>
+                </tr>
+                <tr>
+                    <th>주문 업데이트 시간</th>
+                    <td>{{ order.updated_at }}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h4>결제 정보</h4>
+            <table class="table table-bordered">
+                <tr>
+                    <th>결제 일자</th>
+                    <td>{{ order.payment.pay_date }}</td>
+                </tr>
+                <tr>
+                    <th>결제 금액</th>
+                    <td>{{ order.payment.pay_amount|format_currency }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <h4>배송지 정보</h4>
+            <table class="table table-bordered">
+                <tr>
+                    <th style="width: 20%;">수령인</th>
+                    <td id="recipient">{{ order.address.recipient }}</td>
+                </tr>
+                <tr>
+                    <th style="width: 20%;">전화번호</th>
+                    <td id="phone">{{ order.address.phone_number }}</td>
+                </tr>
+                <tr>
+                    <th style="width: 20%;">우편번호</th>
+                    <td id="postal_code">{{ order.address.postal_code }}</td>
+                </tr>
+                <tr>
+                    <th style="width: 20%;">주소</th>
+                    <td id="address">{{ order.address.address }}</td>
+                </tr>
+                <tr>
+                    <th style="width: 20%;">상세 주소</th>
+                    <td id="detail_address">{{ order.address.detail_address }}</td>
+                </tr>
+            </table>
+            <div class="text-end">
+                {% if order.order_status.status == '주문 완료' %}
+                    <button onclick="openAddressWindow('{{ order.payment.id }}')" class="btn btn-primary">배송지 수정</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAddressWindow(paymentId) {
+        var url = "{% url 'order:order_change_address' order.payment.id %}";
+        window.open(url, '배송지 변경', 'width=500,height=500');
+    }
+
+    function updateAddressInfo() {
+        var paymentId = "{{ order.payment.id }}";
+        fetch(`/order/get_address/${paymentId}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('recipient').innerText = data.address.recipient;
+                document.getElementById('phone').innerText = data.address.phone_number;
+                document.getElementById('postal_code').innerText = data.address.postal_code;
+                document.getElementById('address').innerText = data.address.address;
+                document.getElementById('detail_address').innerText = data.address.detail_address;
+            } else {
+                alert('배송지 정보를 불러오는데 실패했습니다.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // 부모 창에서 호출될 업데이트 함수 추가
+    window.updateAddressInfo = updateAddressInfo;
+</script>
+{% endblock %}

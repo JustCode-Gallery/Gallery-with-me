@@ -1,6 +1,3 @@
-
-# Create your views here.
-
 import uuid
 import os
 import requests
@@ -14,9 +11,8 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http import JsonResponse
 from payment.models import Payment, PaymentStatus
-from .models import OrderItem, OrderStatus,Reservation
+from .models import OrderItem, OrderStatus,Reservation, Cart
 from artwork.models import ArtWork
-from user.models import User
 from user.models import ShippingAddress
 from django.conf import settings
 from dotenv import load_dotenv
@@ -379,13 +375,6 @@ def check_order_items(request):
         return JsonResponse({'success': False, 'message': '구매할 작품이 없습니다.'})
     
     return JsonResponse({'success': True})
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-from .models import Cart
-# Create your views here.
 
 @login_required
 def cart_list(request):

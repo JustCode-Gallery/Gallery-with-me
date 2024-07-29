@@ -181,7 +181,7 @@
         function displayCartMessage(message) {
         alert(message);
         }
-        // 카트 버튼 이벤트 추가
+        // 카트 버튼 이벤트 추가 (장바구니 추가 시도)
         document.querySelectorAll('.add-to-cart-button').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.preventDefault();
@@ -197,6 +197,7 @@
                 .then(response => response.json())
                 .then(data => {
                     displayCartMessage(data.message, data.type);
+                    updateCartBadge(); // 비동기로 장바구니 뱃지 업데이트
                 })
                 .catch(error => {
                     console.error('Error:', error);

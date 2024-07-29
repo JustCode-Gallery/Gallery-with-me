@@ -7,10 +7,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http import JsonResponse
 from payment.models import Payment, PaymentStatus
-from .models import OrderItem, OrderStatus
+from .models import OrderItem, OrderStatus, Cart
 from artwork.models import ArtWork
 from user.models import User
 from user.models import ShippingAddress
@@ -351,12 +352,6 @@ def check_order_items(request):
         return JsonResponse({'success': False, 'message': '구매할 작품이 없습니다.'})
     
     return JsonResponse({'success': True})
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-from .models import Cart
-# Create your views here.
 
 @login_required
 def cart_list(request):

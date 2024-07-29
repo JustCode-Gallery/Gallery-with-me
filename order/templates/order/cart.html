@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+</head>
+
 <style>
     .cart-container {
         max-width: 1000px; 
@@ -52,17 +56,22 @@
                                 <td>
                                     <div class="card">
                                         {% for image in cart.art_work.artimage_set.all %}
-                                            <a href="{% url 'artwork:artwork_detail' cart.art_work.id %}" class="card-link">
-                                                <img src="{{ image.image_url.url }}" alt="{{ cart.art_work.title }}">
-                                                {{ cart.art_work.title }}
-                                            </a>
+                                            {% if forloop.first %}
+                                                <a href="{% url 'artwork:artwork_detail' cart.art_work.id %}" class="card-link">
+                                                    <img src="{{ image.image_url.url }}" alt="{{ cart.art_work.title }}">
+                                                    {{ cart.art_work.title }}
+                                                </a>
+                                            {% endif %}
                                         {% endfor %}
                                     </div>
                                 </td>
-                                
-                                <td>{{ cart.art_work.seller.nickname }}</td>
-                                <td>{{ cart.art_work.price|floatformat:0 }}원</td>
-                                <td><button class="delete-btn" data-cart-id="{{ cart.id }}">X</button></td>                                
+                                <td class="pt-3">{{ cart.art_work.seller.nickname }}</td>
+                                <td class="pt-3">{{ cart.art_work.price|floatformat:0 }}원</td>
+                                <td>
+                                    <button class="btn btn-toggle btn-outline-dark delete-btn" data-cart-id="{{ cart.id }}">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </td>                          
                             </tr>
                             {% empty %}
                             <tr>
@@ -82,7 +91,8 @@
 </div>
 
 <script>
-        function updateTotalPrice() {
+    // 선택된 상품의 총 가격 계산
+    function updateTotalPrice() {
         const checkboxes = document.querySelectorAll('input[name="selected_items"]:checked');
         let totalPrice = 0;
         checkboxes.forEach(checkbox => {
@@ -102,10 +112,12 @@
         updateTotalPrice();
     });
 
+    // 선택된 상품이 바뀌면 총 금액 다시 계산
     document.querySelectorAll('input[name="selected_items"]').forEach(checkbox => {
         checkbox.addEventListener('change', updateTotalPrice);
     });
 
+    // 삭제 버튼을 누르면 해당 상품 장바구니에서 제거하는 ajax
     document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', function() {
             const cartId = this.getAttribute('data-cart-id');
@@ -122,6 +134,7 @@
                 if (data.success) {
                     this.closest('tr').remove();
                     updateTotalPrice();
+                    updateCartBadge(); // 비동기로 장바구니 뱃지 업데이트
                 } else {
                     alert('삭제에 실패했습니다.');
                 }
@@ -129,14 +142,14 @@
         });
     });
 
-    function updateCartBadge(cartCount) {
-        const badge = document.querySelector('.nav-item .badge');
-        if (cartCount > 0) {
-            badge.innerText = cartCount;
-            badge.style.display = 'inline';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
+    // function updateCartBadge(cartCount) {
+    //     const badge = document.querySelector('.nav-item .badge');
+    //     if (cartCount > 0) {
+    //         badge.innerText = cartCount;
+    //         badge.style.display = 'inline';
+    //     } else {
+    //         badge.style.display = 'none';
+    //     }
+    // }
 </script>
 {% endblock %}

@@ -117,11 +117,19 @@
               </svg></h6>
             </button>
             {% if not artwork.is_sold %}
-                {% if artwork.is_reservable %}
-                <a href="{% url 'artwork:reserve_artwork' artwork.id %}" class="btn btn-dark">구매 예약</a>
-                {% else %}
                 <a href="{% url 'artwork:add_to_cart' artwork.id %}" class="btn btn-outline-dark add-to-cart-button" data-artwork-id="{{ artwork.id }}">장바구니에 추가</a>
-                <a href="{% url 'order:create_order' artwork.id %}" class="btn btn-dark">구매하기</a>
+                {% if artwork.is_reservable %}
+                <form action="{% url 'order:create_order' %}" method="post" id="order-form">
+                  {% csrf_token %}
+                  <input type="hidden" name="artwork_ids" value="{{ artwork.id }}">
+                  <button type="submit" class="btn btn-dark">구매예약</button>
+              </form>
+                {% else %}
+                <form action="{% url 'order:create_order' %}" method="post" id="order-form">
+                  {% csrf_token %}
+                  <input type="hidden" name="artwork_ids" value="{{ artwork.id }}">
+                  <button type="submit" class="btn btn-dark">구매하기</button>
+              </form>
                 {% endif %}
             {% endif %}
           </div>

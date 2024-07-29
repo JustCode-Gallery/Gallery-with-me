@@ -1,0 +1,33 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">{{ seller.nickname }}님에게 온 문의</h2>
+    <table class="table table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">질문</th>
+                <th scope="col">생성날짜</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inquiry in inquiries %}
+            <tr class="clickable-row" data-href="{% url 'artwork:answer_inquiry' inquiry.id %}">
+                <td>{{ inquiry.question }}</td>
+                <td>{{ inquiry.created_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    $(document).ready(function($) {
+        $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
+</script>
+{% endblock %}
+

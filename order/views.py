@@ -11,13 +11,23 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http import JsonResponse
 from payment.models import Payment, PaymentStatus
-from .models import OrderItem, OrderStatus, Cart
+from .models import OrderItem, OrderStatus,Reservation, Cart
 from artwork.models import ArtWork
-from user.models import User
 from user.models import ShippingAddress
 from django.conf import settings
 from dotenv import load_dotenv
 import json
+
+# 재헌
+def order_list(request):
+    orders=OrderItem.objects.filter(user=request.user)
+    return render(request,'order/order_list.html',{'orders':orders})
+
+def reservation_list(request):
+    reservations=Reservation.objects.filter(user=request.user)
+    return render(request,'order/order_list.html',{'reservations':reservations})
+
+# 재헌끝
 
 load_dotenv()
 
@@ -51,8 +61,11 @@ def get_import_token():
         raise Exception('토큰 발급 실패')
 
 # 주문 생성
-def create_order(request, artwork_id):
-    artwork = get_object_or_404(ArtWork, id=artwork_id)
+@login_required
+def create_order(request):
+    artwork_ids = request.POST.get('artwork_ids')
+    artwork_ids = artwork_ids.split(',')  # 쉼표로 구분된 문자열을 리스트로 변환
+    
     user = request.user
 
     # 결제 상태 "결제 전"을 가져옴
@@ -62,7 +75,7 @@ def create_order(request, artwork_id):
     payment = Payment.objects.create(
         payment_uuid=str(uuid.uuid4()),
         pay_method='Import',
-        pay_amount=artwork.price,
+        pay_amount=0,  # 초기 금액은 0으로 설정, 아래에서 주문 항목의 가격을 더함
         user=user,
         payment_status=payment_status
     )
@@ -76,15 +89,25 @@ def create_order(request, artwork_id):
     except ShippingAddress.DoesNotExist:
         default_address = None
 
-    # OrderItem 객체 생성
-    OrderItem.objects.create(
-        price=artwork.price,
-        art_work=artwork,
-        user=user,
-        payment=payment,
-        order_status=order_status,
-        address=default_address  # 기본 배송지 설정
-    )
+    total_price = 0
+
+    for artwork_id in artwork_ids:
+        artwork = get_object_or_404(ArtWork, id=artwork_id)
+
+        # OrderItem 객체 생성
+        OrderItem.objects.create(
+            price=artwork.price,
+            art_work=artwork,
+            user=user,
+            payment=payment,
+            order_status=order_status,
+            address=default_address  # 기본 배송지 설정
+        )
+        total_price += artwork.price
+
+    # Payment 객체의 총 결제 금액 업데이트
+    payment.pay_amount = total_price
+    payment.save()
 
     # 주문 페이지로 리다이렉트
     return redirect('order:order_detail', payment.id)

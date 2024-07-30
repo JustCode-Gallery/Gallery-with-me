@@ -1,4 +1,4 @@
-﻿window.onscroll = function() {
+﻿window.onscroll = function () {
     scrollFunction();
     hideCarouselIndicators();
 };
@@ -19,37 +19,37 @@ function hideCarouselIndicators() {
 
     // 스크롤 위치가 0보다 클 경우 버튼 숨기기
     if (scrollPosY > 0) {
-        carouselButtons.forEach(function(button) {
+        carouselButtons.forEach(function (button) {
             button.style.display = 'none';
         });
     } else {
-        carouselButtons.forEach(function(button) {
+        carouselButtons.forEach(function (button) {
             button.style.display = 'block'; // 기본 값으로 변경하거나 필요에 따라 다른 값 설정
         });
     }
 }
 
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const sidebarMenuIcon = document.getElementById('Sidebar-menu');
     const sidebarProfileIcon = document.getElementById('Sidebar-profile');
     const sidebarMenu = document.querySelector('.sidebar-menu');
     const sidebarProfile = document.querySelector('.sidebar-profile');
 
-    sidebarMenuIcon.addEventListener('click', function(e) {
+    sidebarMenuIcon.addEventListener('click', function (e) {
         e.preventDefault();
         sidebarMenu.classList.toggle('active');
         sidebarProfile.classList.remove('active');
     });
 
-    sidebarProfileIcon.addEventListener('click', function(e) {
+    sidebarProfileIcon.addEventListener('click', function (e) {
         e.preventDefault();
         sidebarProfile.classList.toggle('active');
         sidebarMenu.classList.remove('active');
     });
 });
 
-window.addEventListener('scroll', function() {
+window.addEventListener('scroll', function () {
     // Calculate the scroll position
     var scrollPos = window.scrollY;
 
@@ -57,3 +57,34 @@ window.addEventListener('scroll', function() {
     var carousel = document.getElementById('MainCarousel');
     carousel.style.top = scrollPos / 2 + 'px'; // Adjust the division factor as needed
 });
+
+// 비동기(AJAX)로 장바구니에 든 아이템의 수 가져와서 뱃지 업데이트 
+function updateCartBadge() {
+    $.ajax({
+        url: '{% url "get_cart_count" %}',
+        method: 'GET',
+        success: function (data) {
+            const cartCount = data.cart_count;
+            const badge = document.querySelector('.nav-item .badge');
+            if (badge) {
+                if (cartCount > 0) {
+                    badge.innerText = cartCount;
+                    badge.style.display = 'inline';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        },
+        error: function (error) {
+            console.error('Error fetching cart count:', error);
+        }
+    });
+}
+
+// Call the function to update the badge on page load
+$(document).ready(function () {
+    updateCartBadge();
+});
+
+// Optionally, you can set an interval to update the badge periodically
+setInterval(updateCartBadge, 60000); // Update every 60 seconds

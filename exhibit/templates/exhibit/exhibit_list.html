@@ -61,11 +61,27 @@
 
     .list-group-item {
         display: flex;
+        flex-direction: column; /* 세로 정렬을 위해 추가 */
+    }
+    .title-bookmark-container {
+        display: flex;
         align-items: center;
         justify-content: space-between;
+        width: 100%;
     }
     .bookmark-container {
         margin-left: 10px;
+    }
+    .badge {
+        background-color: #f0f0f0;
+        color: #333;
+        margin-right: 3px;
+    }
+    .badge + .badge {
+        margin-left: 3px; /* 배지 사이 간격 추가 */
+    }
+    .list-group-item > div {
+        margin-bottom: 6px; /* 각 div 사이 간격 추가 */
     }
 </style>
 
@@ -76,7 +92,7 @@
                 <h1 class="mb-4">Exhibit List</h1>
                  <!-- 전시 검색 폼 -->
                 <form id="search-form" action="" method="get" class="mb-3">
-                    <input type="text" id="search-query" name="query" placeholder="전시 검색하기">
+                    <input type="text" id="search-query" name="query" placeholder="제목,학과,학교 검색">
                     <button id="search-button" type="submit" style="padding: 0%;">
                         <span class="material-symbols-outlined" style="font-size: 35px;">
                             <i class="bi bi-search"></i>
@@ -86,14 +102,20 @@
                 <!-- 전시 리스트 -->
                 <ul class="list-group">
                     {% for exhibit in exhibits %}
-                        <li class="list-group-item">    
-                            <!-- 전시 제목 -->
+                    <li class="list-group-item">
+                        <!-- 학교와 학과 배지 -->
+                        <div>
+                            <span class="badge">{{ exhibit.university_department.university.name }}</span>
+                            <span class="badge">{{ exhibit.university_department.department.name }}</span>
+                        </div>
+                        <!-- 전시 제목과 북마크 버튼 -->
+                        <div class="title-bookmark-container">
                             <a href="{% url 'exhibit:exhibit_detail' exhibit.id %}" class="custom-link" data-exhibit-id="{{ exhibit.id }}">
                                 {{ exhibit.title }}
                             </a>
-                            <!-- 북마크 버튼 동적 생성-->
                             <div id="bookmark-container-{{ exhibit.id }}" class="bookmark-container"></div>
-                        </li>
+                        </div>
+                    </li>
                     {% endfor %}
                 </ul>
                 <!-- 페이지네이션 버튼 -->

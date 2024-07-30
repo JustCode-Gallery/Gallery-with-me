@@ -25,7 +25,7 @@ def exhibit_list(request):
         exhibits = ArtExhibit.objects.all()
 
     # 페이지네이션 설정
-    paginator = Paginator(exhibits, 10)  # 한 페이지에 10개씩 보이도록 설정
+    paginator = Paginator(exhibits, 5)  # 한 페이지에 10개씩 보이도록 설정
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -66,6 +66,7 @@ def exhibit_detail(request, exhibit_id):
         'start_date': exhibit.start_date,
         'end_date': exhibit.end_date,
         'address': exhibit.address,
+        'university_department': exhibit.university_department,
         'is_bookmarked': is_bookmarked,
         'map': figure._repr_html_(), # folium 객체의 _repr_html() 메소드를 통해 html 출력할 수 있도록 객체화
     }

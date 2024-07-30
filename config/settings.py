@@ -28,14 +28,14 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '3.34.123.49',
+    '54.172.199.193',
     'localhost',
     '127.0.0.1',    
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://3.34.123.49',
-    'https://3.34.123.49',
+    'http://54.172.199.193',
+    'https://54.172.199.193',
 ]
 
 

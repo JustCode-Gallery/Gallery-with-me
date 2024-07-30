@@ -384,11 +384,12 @@ def purchase_history(request):
     order_complete_status = OrderStatus.objects.get(status='주문 완료')
     order_confirm_status = OrderStatus.objects.get(status='구매 확정')
     order_cancel_status = OrderStatus.objects.get(status='구매 취소')
+    order_refund_status = OrderStatus.objects.get(status='환불 완료')
 
     orders = OrderItem.objects.filter(
         user=user,
         art_work__is_reservable=False,
-        order_status__in=[order_complete_status, order_confirm_status, order_cancel_status]
+        order_status__in=[order_complete_status, order_confirm_status, order_cancel_status, order_refund_status]
     ).order_by('-updated_at')
 
     paginator = Paginator(orders, 10)  # 페이지당 10개 항목
@@ -453,12 +454,12 @@ def cancel_reservation(request):
     
     return redirect('user:reservation_history')
 
-# 결제취소 및 환불
+# 구매 확정 이후 환불 (실제 정산은 아직 되기 전 일 수 있음)
 @login_required
 def request_refund(request, order_id):
     user = request.user
     order = get_object_or_404(OrderItem, id=order_id, user=user)
-    payment_complete_status = PaymentStatus.objects.get(status='결제완료')
+    payment_complete_status = PaymentStatus.objects.get(status='결제 완료')
     order_confirm_status = OrderStatus.objects.get(status='구매 확정')
     order_refund_status = OrderStatus.objects.get(status='환불 완료')
 
@@ -471,7 +472,7 @@ def request_refund(request, order_id):
                 refund_request = RefundRequest.objects.create(
                     reason = reason,
                     user = user,
-                    order  = order
+                    order_item = order
                 )
                 # 환불서에 첨부된 사진 저장
                 for file in request.FILES.getlist('refund_images'):
@@ -482,6 +483,8 @@ def request_refund(request, order_id):
 
                 order.order_status = order_refund_status
                 order.save()
+                order.art_work.is_sold = False
+                order.art_work.save()
                 messages.success(request, '상품 환불이 정상적으로 완료되었습니다.')
             else:
                 messages.error(request, '해당 상품은 이미 환불 되었거나, 환불할 수 없는 상태입니다. 문제가 반복되면 관리자에게 연락바랍니다.')

@@ -24,7 +24,8 @@ urlpatterns = [
     path('change_address/update/<int:pk>/', views.update_address, name='update_address'),
     path('purchase_history/', views.purchase_history, name='purchase_history'),
     path('reservation_history/', views.reservation_history, name='reservation_history'),
-    path('cancel-order/<int:order_id>/', views.cancel_order, name='cancel_order'),
+    path('cancel_order/<int:order_id>/', views.cancel_order, name='cancel_order'),
     path('cancel_reservation/', views.cancel_reservation, name='cancel_reservation'),
+    path('request_refund/<int:order_id>/', views.request_refund, name='request_refund'),
     path('history_detail/<int:order_id>/', views.history_detail, name='history_detail'),
 ]

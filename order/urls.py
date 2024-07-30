@@ -14,7 +14,6 @@ urlpatterns = [
     path('order_success/<int:payment_id>/', views.order_success, name='order_success'),
     path('order_fail/<int:payment_id>/', views.order_fail, name='order_fail'),
     path('remove_item/<int:item_id>/', views.remove_item, name='remove_item'),
-    path('request_refund/<int:item_id>/', views.request_refund, name='request_refund'),
     path('order_change_address/<int:payment_id>/', views.order_change_address, name='order_change_address'),
     path('order_change_address/create/', views.create_address, name='create_address'),
     path('order_change_address/delete/<int:pk>/', views.delete_address, name='delete_address'),

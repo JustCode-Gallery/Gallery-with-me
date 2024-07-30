@@ -24,7 +24,6 @@ class Material(models.Model):
     def __str__(self):
         return self.name
 
-
 class ArtWorkMaterial(models.Model):
     art_work = models.ForeignKey(ArtWork, on_delete=models.CASCADE)
     material = models.ForeignKey(Material, on_delete=models.CASCADE)

@@ -27,7 +27,7 @@
         display: flex;
         align-items: center;
         border: 0px solid #ffffff; /* 테두리 */
-        width: 70%;
+        width: 80%;
     }
     
     #search-query {
@@ -92,7 +92,7 @@
                 <h1 class="mb-4">Exhibit List</h1>
                  <!-- 전시 검색 폼 -->
                 <form id="search-form" action="" method="get" class="mb-3">
-                    <input type="text" id="search-query" name="query" placeholder="제목,학과,학교 검색">
+                    <input type="text" id="search-query" name="query" placeholder="제목/학과/학교 검색">
                     <button id="search-button" type="submit" style="padding: 0%;">
                         <span class="material-symbols-outlined" style="font-size: 35px;">
                             <i class="bi bi-search"></i>
@@ -220,7 +220,7 @@
                     }
                 });
             }
-            
+
             // 북마크 상태 업데이트(로컬 스토리지 기반)
             updateBookmarkStatus();
 

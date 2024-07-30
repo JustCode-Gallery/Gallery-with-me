@@ -7,6 +7,7 @@ import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 def exhibit_list(request):
     query = request.GET.get('query', '')
@@ -14,7 +15,12 @@ def exhibit_list(request):
 
     # 검색을 한 경우 관련 결과 출력
     if query:
-            exhibits = ArtExhibit.objects.filter(title__icontains=query)
+        # 전시제목, 학교, 학과 등으로 검색 가능
+        exhibits = ArtExhibit.objects.filter(
+        Q(title__icontains=query) |
+        Q(university_department__university__name__icontains=query) |
+        Q(university_department__department__name__icontains=query)
+        )
     else:
         exhibits = ArtExhibit.objects.all()
 

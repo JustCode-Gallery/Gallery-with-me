@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, ShippingAddress, UserPreferArt, University, Department, Seller
+from .models import User, ShippingAddress, UserPreferArt, University, Department, University_Department, Seller
 
 # 사용자 정의 UserAdmin
 class UserAdmin(BaseUserAdmin):
@@ -35,9 +35,13 @@ class UniversityAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 class DepartmentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'university')
-    search_fields = ('name', 'university__name')
-    list_filter = ('university',)
+    list_display = ('name',)
+    search_fields = ('name',)
+
+class UniversityDepartmentAdmin(admin.ModelAdmin):
+    list_display = ('university', 'department')
+    search_fields = ('university__name', 'department__name')
+    list_filter = ('university', 'department')
 
 class SellerAdmin(BaseUserAdmin):
     fieldsets = (
@@ -62,4 +66,5 @@ admin.site.register(ShippingAddress, ShippingAddressAdmin)
 admin.site.register(UserPreferArt, UserPreferArtAdmin)
 admin.site.register(University, UniversityAdmin)
 admin.site.register(Department, DepartmentAdmin)
+admin.site.register(University_Department, UniversityDepartmentAdmin)
 admin.site.register(Seller, SellerAdmin)

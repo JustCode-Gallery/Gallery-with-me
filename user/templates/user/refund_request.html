@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% load user_tags %}
+{% block content %}
+<div class="container mt-5">
+  <h2>환불 요청</h2>
+  <form method="post" action="{% url 'user:request_refund' order.id %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="mb-3">
+          <label for="reason" class="form-label">환불 사유</label>
+          <textarea class="form-control" id="reason" name="reason" rows="4" required></textarea>
+      </div>
+      <div class="mb-3">
+          <label for="refund_images" class="form-label">환불 이미지 (선택 사항)</label>
+          <input class="form-control" type="file" id="refund_images" name="refund_images" multiple>
+      </div>
+      <button type="submit" class="btn btn-danger">환불 요청</button>
+  </form>
+</div>
+{% endblock %}

@@ -324,7 +324,6 @@ def update_address(request, pk):
         address.save()
         return redirect('order:order_change_address', payment_id)
 
-
 @csrf_exempt
 def set_order_address(request):
     if request.method == 'POST':

@@ -11,7 +11,8 @@ from django.http import JsonResponse
 from .utils import generate_verification_code, send_verification_email
 import json 
 from django.contrib import messages
-from order.models import OrderItem, OrderStatus
+from order.models import OrderItem, OrderStatus, RefundRequest, RefundImg
+from payment.models import Payment, PaymentStatus, SettlementStatus, Settlement
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_POST
 
@@ -451,6 +452,43 @@ def cancel_reservation(request):
         messages.success(request, '선택한 예약이 성공적으로 취소되었습니다.')
     
     return redirect('user:reservation_history')
+
+# 결제취소 및 환불
+@login_required
+def request_refund(request, order_id):
+    user = request.user
+    order = get_object_or_404(OrderItem, id=order_id, user=user)
+    payment_complete_status = PaymentStatus.objects.get(status='결제완료')
+    order_confirm_status = OrderStatus.objects.get(status='구매 확정')
+    order_refund_status = OrderStatus.objects.get(status='환불 완료')
+
+    if request.method == 'POST':
+        # 결제가 완료되고, 구매 확정이 된 상품에 대해 환불 진행
+        if order.payment.payment_status == payment_complete_status:
+            if order.order_status == order_confirm_status:
+                reason = request.POST.get('reason')
+                # 입력 받은 정보로 환불서 작성
+                refund_request = RefundRequest.objects.create(
+                    reason = reason,
+                    user = user,
+                    order  = order
+                )
+                # 환불서에 첨부된 사진 저장
+                for file in request.FILES.getlist('refund_images'):
+                    RefundImg.objects.create(
+                        image_url=file,
+                        refund_request=refund_request
+                    )
+
+                order.order_status = order_refund_status
+                order.save()
+                messages.success(request, '상품 환불이 정상적으로 완료되었습니다.')
+            else:
+                messages.error(request, '해당 상품은 이미 환불 되었거나, 환불할 수 없는 상태입니다. 문제가 반복되면 관리자에게 연락바랍니다.')
+        
+        return redirect('user:purchase_history')
+    
+    return render(request, 'user/refund_request.html', {'order': order})
 
 def history_detail(request, order_id):
     order = get_object_or_404(OrderItem, id=order_id, user=request.user)

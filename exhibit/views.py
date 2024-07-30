@@ -7,6 +7,7 @@ import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 def exhibit_list(request):
     query = request.GET.get('query', '')
@@ -14,12 +15,17 @@ def exhibit_list(request):
 
     # 검색을 한 경우 관련 결과 출력
     if query:
-            exhibits = ArtExhibit.objects.filter(title__icontains=query)
+        # 전시제목, 학교, 학과 등으로 검색 가능
+        exhibits = ArtExhibit.objects.filter(
+        Q(title__icontains=query) |
+        Q(university_department__university__name__icontains=query) |
+        Q(university_department__department__name__icontains=query)
+        )
     else:
         exhibits = ArtExhibit.objects.all()
 
     # 페이지네이션 설정
-    paginator = Paginator(exhibits, 10)  # 한 페이지에 10개씩 보이도록 설정
+    paginator = Paginator(exhibits, 5)  # 한 페이지에 10개씩 보이도록 설정
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -60,6 +66,7 @@ def exhibit_detail(request, exhibit_id):
         'start_date': exhibit.start_date,
         'end_date': exhibit.end_date,
         'address': exhibit.address,
+        'university_department': exhibit.university_department,
         'is_bookmarked': is_bookmarked,
         'map': figure._repr_html_(), # folium 객체의 _repr_html() 메소드를 통해 html 출력할 수 있도록 객체화
     }

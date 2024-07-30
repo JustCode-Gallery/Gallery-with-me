@@ -8,46 +8,45 @@
     <div class="text-end mb-3">
         <a href="{% url 'user:reservation_history' %}" class="btn btn-secondary">예약 현황 보기</a>
     </div>
-    <form method="post" action="{% url 'user:cancel_orders' %}">
-        {% csrf_token %}
-        <table style="width: 100%; border-collapse: collapse; text-align: center; margin: 0 auto;">
-            <thead>
-                <tr>
-                    <th style="border: 1px solid #ddd; padding: 8px; width: 5%;">선택</th>
-                    <th style="border: 1px solid #ddd; padding: 8px; width: 20%;">주문 금액</th>
-                    <th style="border: 1px solid #ddd; padding: 8px; width: 35%;">작품</th>
-                    <th style="border: 1px solid #ddd; padding: 8px; width: 25%;">주문 상태 업데이트 시간</th>
-                    <th style="border: 1px solid #ddd; padding: 8px; width: 15%;">주문 상태</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in orders %}
-                <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px;">
-                        {% if order.order_status.status == '주문 완료' %}
-                            <input type="checkbox" name="order_ids" value="{{ order.id }}">
-                        {% endif %}
-                    </td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ order.price|format_currency }}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">
-                        {% if order.art_work.artimage_set.all %}
-                            <a href="{% url 'user:history_detail' order.id %}">
-                                <img src="{{ order.art_work.artimage_set.first.image_url.url }}" alt="{{ order.art_work.title }}" style="width: 100px; height: auto;">
-                            </a>
-                        {% else %}
-                            <span>이미지가 없습니다</span>
-                        {% endif %}
-                    </td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ order.updated_at }}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ order.order_status.status }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="text-end mt-3">
-            <button type="submit" class="btn btn-danger">구매 취소</button>
-        </div>
-    </form>
+    <table style="width: 100%; border-collapse: collapse; text-align: center; margin: 0 auto;">
+        <thead>
+            <tr>
+                <th style="border: 1px solid #ddd; padding: 8px; width: 15%;">주문 금액</th>
+                <th style="border: 1px solid #ddd; padding: 8px; width: 25%;">작품</th>
+                <th style="border: 1px solid #ddd; padding: 8px; width: 25%;">주문 상태 업데이트 시간</th>
+                <th style="border: 1px solid #ddd; padding: 8px; width: 10%;">주문 상태</th>
+                <th style="border: 1px solid #ddd; padding: 8px; width: 15%;">액션</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ order.price|format_currency }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">
+                    {% if order.art_work.artimage_set.all %}
+                        <a href="{% url 'user:history_detail' order.id %}">
+                            <img src="{{ order.art_work.artimage_set.first.image_url.url }}" alt="{{ order.art_work.title }}" style="width: 100px; height: auto;">
+                        </a>
+                    {% else %}
+                        <span>이미지가 없습니다</span>
+                    {% endif %}
+                </td>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ order.updated_at }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ order.order_status.status }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">
+                    {% if order.order_status.status == '주문 완료' %}
+                        <form method="post" action="{% url 'user:cancel_order' order.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning">구매 취소</button>
+                        </form>
+                    {% elif order.order_status.status == '구매 확정' %}
+                        <button class="btn btn-danger">환불 신청</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
     {% if orders.paginator.count > 10 %}
     <nav aria-label="Page navigation" class="mt-3">

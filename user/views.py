@@ -420,23 +420,20 @@ def reservation_history(request):
     return render(request, 'user/reservation_history.html', context)
 
 @require_POST
-def cancel_orders(request):
+def cancel_order(request, order_id):
     user = request.user
-    order_ids = request.POST.getlist('order_ids')
+    order = get_object_or_404(OrderItem, id=order_id, user=user)
     order_cancel_status = OrderStatus.objects.get(status='구매 취소')
     order_complete_status = OrderStatus.objects.get(status='주문 완료')
 
-    orders_to_cancel = OrderItem.objects.filter(
-        id__in=order_ids,
-        user=user,
-        order_status=order_complete_status
-    )
-
-    for order in orders_to_cancel:
+    if order.order_status == order_complete_status:
         order.order_status = order_cancel_status
         order.save()
         order.art_work.is_sold = False
         order.art_work.save()
+        messages.success(request, '주문이 성공적으로 취소되었습니다.')
+    else:
+        messages.error(request, '이 주문은 취소할 수 없습니다.')
 
     return redirect('user:purchase_history')
 

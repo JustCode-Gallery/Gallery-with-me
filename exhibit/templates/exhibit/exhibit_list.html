@@ -205,6 +205,25 @@
                 }
             });
 
+            // 로컬 스토리지 확인하여 북마크 상태 업데이트하는 함수
+            function updateBookmarkStatus() {
+                document.querySelectorAll('.bookmark-btn').forEach(function(button) {
+                    const exhibitId = button.getAttribute('data-exhibit-id');
+                    const bookmarkStatus = localStorage.getItem(`bookmark_status_${exhibitId}`);
+                    if (bookmarkStatus !== null) {
+                        const icon = button.querySelector('i');
+                        if (bookmarkStatus === 'true') {
+                            icon.className = 'bi bi-bookmark-star-fill';
+                        } else {
+                            icon.className = 'bi bi-bookmark';
+                        }
+                    }
+                });
+            }
+            
+            // 북마크 상태 업데이트(로컬 스토리지 기반)
+            updateBookmarkStatus();
+
             // 전시 제목에 마우스 호버 이벤트 추가 (매핑된 마커 팝업 활성화)
             document.querySelectorAll('.custom-link').forEach(function(link) {
                 link.addEventListener('mouseover', function() {
@@ -266,6 +285,8 @@
                         } else {
                             map.addLayer(markers[exhibitId]);
                         }
+                        // 로컬스토리지에 북마크 상태 저장
+                        localStorage.setItem(`bookmark_status_${exhibitId}`, data.is_bookmarked);
                     });
                 }
             });

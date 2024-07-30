@@ -1,0 +1,148 @@
+.head-container {
+    margin-top: 11rem;
+}
+
+.direct-container p,
+.direct-container a {
+    font-weight: 400;
+    font-family: "Bona Nova SC", serif;
+    font-style: normal;
+    color: black;
+    font-size: 1rem;
+}
+.sort-container a{
+    margin-top: 1rem;
+    margin-right: 1rem;
+    font-weight: 700;
+    font-family: "Bona Nova SC", serif;
+    font-style: normal;
+    color: black;
+    font-size: 1rem;
+}
+.artwork-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.artwork-card-img {
+    transition: opacity 0.3s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    object-fit: cover;
+}
+.artwork-card:hover {
+    background-color: #f0ba32;
+}
+.artwork-card:hover .artwork-card-img {
+    opacity: 0;
+}
+
+.artwork-card-title {
+    color: black;
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    font-weight: 400;
+    font-family: "Bona Nova SC", serif;
+    font-style: normal;
+}
+.artwork-card:hover .artwork-card-title {
+    opacity: 1;
+}
+.artwork-card-img-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.tag-button {
+    margin: 5px;
+    padding: 10px;
+    background-color: #eee;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.tag-button.selected {
+    background-color: #383838;
+    color: white;
+}
+
+.category-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.category-title {
+    font-weight: bold;
+    margin-right: 10px;
+    width: 100px; /* 카테고리 제목을 일정한 너비로 설정 */
+}
+
+.tag-container {
+    display: flex;
+    flex-direction: column; /* 세로 정렬 */
+    gap: 10px;
+}
+
+.filter-container {
+    margin-top: 20px;
+}
+
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 20px;
+}

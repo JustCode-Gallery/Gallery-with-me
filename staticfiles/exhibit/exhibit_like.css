@@ -1,0 +1,18 @@
+.exhibit-like-container {
+    width: 1500px;
+}
+
+.like-thumbnail-img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+}
+
+.bookmark-btn {
+    border: none;
+    background-color: transparent;
+}
+
+.bookmark-container {
+    margin-left: 10px;
+}

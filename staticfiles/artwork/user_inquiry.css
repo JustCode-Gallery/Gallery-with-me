@@ -1,0 +1,17 @@
+.inquiry-container {
+    width: 800px;
+    font-family: "Noto Serif KR", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+.inquiry-list-card {
+    height: 130px;
+}
+.inquiry-date {
+    font-size: 13px;
+    padding-bottom: 0;
+}
+.completed-badge {
+    height: 20px;
+}

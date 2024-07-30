@@ -2,6 +2,14 @@
 {% load static %}
 {% block extra-style %}
 <link href="{% static 'css/user.css' %}" rel="stylesheet">
+<style>
+* {
+    font-family: "Noto Serif KR", serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+}
+</style>
 {% endblock %}
 {% block content %}
 <div class="container-fluid mt-5">

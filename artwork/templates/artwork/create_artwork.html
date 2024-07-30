@@ -35,31 +35,57 @@
         </button>
     </div>
 
-    <div class="d-flex flex-column align-items-center mt-4">
-        <p>작품 사진 넣기</p>
-        <div id="image-inputs">
-            <div class="image-input-row">
-                <input type="file" class="image-input" multiple accept="image/*" onchange="previewImages(event)">
+    <div class="d-flex flex-column align-items-center mt-4 border-top">
+        <h4 class="mt-4">작품 이미지</h4>
+        <div class="container">
+            <div class="input-group mb-3">
+                <input type="file" class="form-control" id="inputGroupFile02" multiple accept="image/*"
+                    onchange="previewImages(event)">
+                <label class="input-group-text" for="inputGroupFile02">Upload</label>
             </div>
         </div>
     </div>
 
     <div class="container-fluid">
         <div class="card mt-3 mx-2 py-3 px-4">
+            <h4 class="text-center">작품 정보</h4>
             <div class="card-body d-flex flex-row">
                 <!-- 왼쪽 div -->
-                <div class="card-caption d-flex flex-column flex-fill px-1" style="width: 50%;">
-                    <h3 class="caption-card-title">
-                        <input type="text" name="title" maxlength="100" placeholder="작품명" required>
-                    </h3>
-                    <h5 class="caption-card-subtitle">{{ seller.name }}</h5>
-                    <h6 class="caption-card-subtitle text-body-secondary">
-                        <input type="number" name="year" placeholder="작품 완성 년도">,<br>
+                <div class="card-caption d-flex flex-column" style="width: 50%;">
+                    <div class="container">
+                        <div class="form-floating caption-card-title mb-2">
+                            <input type="text" name="title" id="artworkTitle" class="form-control" maxlength="100"
+                                placeholder="작품명" required>
+                            <label for="artworkTitle">작품명</label>
+                        </div>
 
-                        <input type="number" name="width" placeholder="넓이" required>x
-                        <input type="number" name="height" placeholder="높이" required>x
-                        <input type="number" name="depth" placeholder="두께" required>cm
-                    </h6>
+                        <div class="form-floating caption-card-subtitle text-body-secondary">
+                            <input type="number" name="year" id="artworkYear" class="form-control"
+                                placeholder="작품 완성 년도">
+                            <label for="artworkYear">작품 완성 년도</label>
+                        </div>
+                    </div>
+
+                    <div class="row container caption-card-subtitle text-body-secondary mt-2 center-text">
+                        <div class="form-floating form-floating-size col px-1">
+                            <input type="number" name="width" id="artworkWidth" class="form-control" placeholder="가로"
+                                required>
+                            <label for="artworkWidth">가로</label>
+                        </div>
+                        x
+                        <div class="form-floating form-floating-size col px-1">
+                            <input type="number" name="height" id="artworkHeight" class="form-control" placeholder="높이"
+                                required>
+                            <label for="artworkHeight">높이</label>
+                        </div>
+                        x
+                        <div class="form-floating form-floating-size col px-1">
+                            <input type="number" name="depth" id="artworkDepth" class="form-control" placeholder="깊이"
+                                required>
+                            <label for="artworkHeight">깊이</label>
+                        </div>
+                        cm
+                    </div>
                 </div>
 
                 <!-- 세로줄 -->
@@ -68,9 +94,13 @@
                 </div>
 
                 <!-- 오른쪽 div -->
-                <div class="d-flex flex-column px-1" style="width: 50%;">
-                    <p class="ms-2"><input type="number" step="0.01" name="price" placeholder="가격"
-                            required></p>
+                <div class="card-caption d-flex flex-column px-1" style="width: 50%;">
+                    <div class="form-floating form-floating-size col px-1">
+                        <input type="number" step="0.01" name="price" id="artworkPrice" class="form-control"
+                            placeholder="가격" required>
+                        <label for="artworkPrice">가격</label>
+                    </div>
+
                     <label for="id_exhibit">Exhibit:</label>
                     <select name="exhibit" id="id_exhibit">
                         <option value="">None</option>
@@ -79,34 +109,9 @@
                         {% endfor %}
                     </select>
 
-                    <!-- 좋아요 버튼 -->
-                    <div class="hstack gap-1 mt-2">
-                        <button type="button" class="btn" id="like-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-suit-heart" viewBox="0 0 16 16">
-                                <path
-                                    d="m8 6.236-.894-1.789c-.222-.443-.607-1.08-1.152-1.595C5.418 2.345 4.776 2 4 2 2.324 2 1 3.326 1 4.92c0 1.211.554 2.066 1.868 3.37.337.334.721.695 1.146 1.093C5.122 10.423 6.5 11.717 8 13.447c1.5-1.73 2.878-3.024 3.986-4.064.425-.398.81-.76 1.146-1.093C14.446 6.986 15 6.131 15 4.92 15 3.326 13.676 2 12 2c-.777 0-1.418.345-1.954.852-.545.515-.93 1.152-1.152 1.595zm.392 8.292a.513.513 0 0 1-.784 0c-1.601-1.902-3.05-3.262-4.243-4.381C1.3 8.208 0 6.989 0 4.92 0 2.755 1.79 1 4 1c1.6 0 2.719 1.05 3.404 2.008.26.365.458.716.596.992a7.6 7.6 0 0 1 .596-.992C9.281 2.049 10.4 1 12 1c2.21 0 4 1.755 4 3.92 0 2.069-1.3 3.288-3.365 5.227-1.193 1.12-2.642 2.48-4.243 4.38z" />
-                            </svg>
-                        </button>
-                        <span id="like-count">100 likes</span>
-                    </div>
-
-                    <!-- 작가에게 문의하기 버튼, 예약, 구매하기 및 장바구니에 추가하기 버튼 -->
-                    <div class="hstack gap-2">
-                        <button id="inquiry-button" type="button" class="btn">
-                            <h6><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-chat-square-dots-fill" viewBox="0 0 16 16">
-                                    <path
-                                        d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2zm5 4a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
-                                </svg></h6>
-                        </button>
-                    </div>
                     <div>
-                        <label for="id_is_sold">판매가능 여부:</label>
-                        <input type="checkbox" name="is_sold" id="id_is_sold">
-                        <br>
-                        <label for="id_is_reservable">예약가능 여부:</label>
                         <input type="checkbox" name="is_reservable" id="id_is_reservable">
+                        <label for="id_is_reservable">전시 전 작품입니다.</label>
                     </div>
                 </div>
             </div>
@@ -118,7 +123,7 @@
         <textarea name="description" class="form-control" rows="5" required></textarea>
     </div>
     <div class="d-flex justify-content-center mt-3">
-        <button type="submit" class="btn btn-warning ">생성</button>
+        <button type="submit" class="btn btn-light border ">등록</button>
     </div>
 
 </form>

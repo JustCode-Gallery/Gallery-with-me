@@ -60,10 +60,17 @@
 
 .carousel-title-description{
     color: white;
-    font-size: 2rem;
-    font-weight: 400;
+    font-weight: 600;
     font-family: "Bona Nova SC", serif;
     font-style: normal;
+}
+
+.carousel-btn {
+    font-family: "Noto Serif KR", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    margin-top: 2rem;
 }
 
 .breadcrumb {
@@ -152,7 +159,9 @@
 
 .rcmd-text {
     margin-left: 2rem;
-    font-family: "Bona Nova SC", serif;
+    font-family: "Noto Serif KR", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
     font-style: normal;
     flex-basis: 55%;
     max-width: 55%;

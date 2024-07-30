@@ -12,10 +12,12 @@
 
 {% block content %}
 <div class="mt-5 mb-5 text-center">
-    <h3 class="mt-5 mb-5">{{ seller.nickname }}님의 작품들입니다.</h3>
+    <h3 class="mt-5 mb-5 seller-awl-title">{{ seller.nickname }}님의 작품들입니다.</h3>
 </div>
 
-
+<div class="d-flex flex-row-reverse mx-3">
+    <a href="{% url 'artwork:create_artwork' %}" class="btn btn-light border seller-raw-btn">새작품 등록</a>
+</div>
 <!-- 작품들 -->
 <div class="container-fluid" id="artwork-container">
     <div class="row" style="margin-top: 20px;">

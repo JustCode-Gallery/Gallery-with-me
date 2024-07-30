@@ -146,3 +146,10 @@
     width: 100%;
     margin-top: 20px;
 }
+.seller-awl-title,
+.seller-raw-btn {
+    font-family: "Noto Serif KR", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}

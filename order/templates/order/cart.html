@@ -1,5 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block extra-style %}
+<style>
+    * {
+        font-family: "Noto Serif KR", serif;
+        font-optical-sizing: auto;
+        font-weight: 300;
+        font-style: normal;
+    }
+</style>
+{% endblock %}
 {% block content %}
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">

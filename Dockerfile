@@ -1,4 +1,4 @@
-﻿﻿FROM python:3.10
+﻿﻿FROM python:3.10-slim
 
 ENV PYTHONUNBUFFERED 1 #python 애플리케이션의 출력 버퍼링을 비활성화하는 데 사용되는 환경 변수
 ENV PYTHONDONTWRITEBYTECODE 1

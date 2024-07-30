@@ -10,7 +10,7 @@ def update_order_status_and_create_settlement():
     order_complete_status = OrderStatus.objects.get(status='주문 완료')
     order_confirm_status = OrderStatus.objects.get(status='구매 확정')
     settlement_pending_status = SettlementStatus.objects.get(status='정산 전')
-    five_minutes_ago = timezone.now() - timedelta(minutes=5) # 테스트를 위해 5분으로 설정
+    five_minutes_ago = timezone.now() - timedelta(weeks=1) # 테스트를 위해 5분으로 설정
 
     # 1주일 지난 주문을 '구매 확정'으로 변경
     orders_to_update = OrderItem.objects.filter(order_status=order_complete_status, updated_at__lt=five_minutes_ago)

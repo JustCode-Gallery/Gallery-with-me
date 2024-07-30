@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 import requests
 
-PAGINATE_BY = 10
+PAGINATE_BY = 9
 
 class ArtWorkListView(ListView):
     model = ArtWork
@@ -80,13 +80,26 @@ class ArtWorkListView(ListView):
         context = super().get_context_data(**kwargs)
         context['form'] = ArtWorkFilterForm()
         context['search_form'] = ArtWorkSearchForm()
+        artworks_with_materials = []
+
+        for artwork in context['artwork_list']:
+            materials = artwork.artworkmaterial_set.values_list('material__name', flat=True)
+            material_names = ', '.join(materials)
+            artworks_with_materials.append({
+                'artwork': artwork,
+                'materials': material_names
+            })
+
+        context['artworks_with_materials'] = artworks_with_materials
+
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             context['artwork_list'] = self.get_queryset()
+        
         return context
     
 def load_more_artworks(request):
     page = request.GET.get('page', 1)
-    artworks = ArtWork.objects.filter()
+    artworks = ArtWork.objects.all()
     paginator = Paginator(artworks, 10)  # 페이지당 10개 항목
     page_obj = paginator.get_page(page)
     
@@ -95,7 +108,8 @@ def load_more_artworks(request):
             'id': artwork.id,
             'title': artwork.title,
             'price': artwork.price,
-            'image_url': artwork.artimage_set.first().image_url.url if artwork.artimage_set.first() else ''
+            'image_url': artwork.artimage_set.first().image_url.url if artwork.artimage_set.first() else '',
+            'materials': ', '.join(artwork.artworkmaterial_set.values_list('material__name', flat=True))
         }
         for artwork in page_obj
     ]

@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
-from .models import ArtWork, WorkLike, ArtistInquiry, TagCategory, Material, ArtImage
+from .models import ArtWork, WorkLike, ArtistInquiry, TagCategory, Material, ArtImage, ArtWorkMaterial
 from order.models import Cart, Reservation
 from user.models import User,Seller
 from exhibit.models import ArtExhibit
@@ -228,6 +228,7 @@ def tag_material_categories_api(request):
 #작품 생성하기
 @login_required
 def create_artwork(request):
+    materials = Material.objects.all()
     if request.method == 'POST':
         #판매자가 입력한 값들 받아오기
         title = request.POST.get('title')
@@ -240,6 +241,7 @@ def create_artwork(request):
         exhibit_id = request.POST.get('exhibit')
         is_reservable = request.POST.get('is_reservable') == 'on'
         images = request.FILES.getlist('images')
+        materials = request.POST.getlist('materials')
 
         user = request.user
 
@@ -275,6 +277,11 @@ def create_artwork(request):
             for image in images:
                 ArtImage.objects.create(artwork=artwork, image_url=image)
 
+            #material 생성
+            for material in materials:
+                data = Material.objects.get(name=material)
+                ArtWorkMaterial.objects.create(art_work=artwork, material=data)
+
             #성공시 리디헥션
             return redirect('artwork:seller_artwork_list')
         except ValueError:
@@ -284,7 +291,7 @@ def create_artwork(request):
 
     seller = Seller.objects.filter(id=request.user.id)
     exhibits = ArtExhibit.objects.all()
-    return render(request, 'artwork/create_artwork.html', {'seller': seller, 'exhibits': exhibits})
+    return render(request, 'artwork/create_artwork.html', {'seller': seller, 'exhibits': exhibits, 'materials': materials})
 
 #작품 수정하기
 @login_required

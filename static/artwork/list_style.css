@@ -45,9 +45,7 @@
     font-size: 1.2rem;
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
-    font-weight: 400;
-    font-family: "Bona Nova SC", serif;
-    font-style: normal;
+
 }
 .artwork-card:hover .artwork-card-title {
     opacity: 1;

@@ -53,7 +53,7 @@
                 <!-- 왼쪽 div -->
                 <div class="card-caption d-flex flex-column" style="width: 50%;">
                     <div class="container">
-                        <div class="form-floating caption-card-title mb-2">
+                        <div class="form-floating caption-card-title mb-4">
                             <input type="text" name="title" id="artworkTitle" class="form-control" maxlength="100"
                                 placeholder="작품명" required>
                             <label for="artworkTitle">작품명</label>
@@ -66,7 +66,7 @@
                         </div>
                     </div>
 
-                    <div class="row container caption-card-subtitle text-body-secondary mt-2 center-text">
+                    <div class="row container caption-card-subtitle text-body-secondary mt-4 center-text">
                         <div class="form-floating form-floating-size col px-1">
                             <input type="number" name="width" id="artworkWidth" class="form-control" placeholder="가로"
                                 required>
@@ -101,7 +101,16 @@
                         <label for="artworkPrice">가격</label>
                     </div>
 
-                    <label for="id_exhibit">Exhibit:</label>
+                    <div class="form-floating px-1 mt-2">
+                        <select class="form-select" name="materials" size="3" multiple>
+                            <option selected>재료 선택</option>
+                            {% for material in materials %}
+                            <option value="{{ material.name }}">{{ material.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <label for="id_exhibit" class="mt-2">Exhibit:</label>
                     <select name="exhibit" id="id_exhibit">
                         <option value="">None</option>
                         {% for exhibit in exhibits %}
@@ -109,7 +118,7 @@
                         {% endfor %}
                     </select>
 
-                    <div>
+                    <div class="mt-2">
                         <input type="checkbox" name="is_reservable" id="id_is_reservable">
                         <label for="id_is_reservable">전시 전 작품입니다.</label>
                     </div>

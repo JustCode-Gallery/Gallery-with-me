@@ -11,6 +11,9 @@ from django.http import JsonResponse
 from .utils import generate_verification_code, send_verification_email
 import json 
 from django.contrib import messages
+from order.models import OrderItem, OrderStatus
+from django.core.paginator import Paginator
+from django.views.decorators.http import require_POST
 
 def find_password(request):
     if request.method == 'POST':
@@ -375,11 +378,86 @@ def update_address(request, pk):
         address.save()
         return redirect('user:change_address')
 
+def purchase_history(request):
+    user = request.user
+    order_complete_status = OrderStatus.objects.get(status='주문 완료')
+    order_confirm_status = OrderStatus.objects.get(status='구매 확정')
+    order_cancel_status = OrderStatus.objects.get(status='구매 취소')
 
+    orders = OrderItem.objects.filter(
+        user=user,
+        art_work__is_reservable=False,
+        order_status__in=[order_complete_status, order_confirm_status, order_cancel_status]
+    ).order_by('-updated_at')
 
+    paginator = Paginator(orders, 10)  # 페이지당 10개 항목
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
+    context = {
+        'orders': page_obj,
+    }
+    return render(request, 'user/purchase_history.html', context)
 
+def reservation_history(request):
+    user = request.user
+    order_complete_status = OrderStatus.objects.get(status='주문 완료')
+    reserve_cancel_status = OrderStatus.objects.get(status='예약 취소')
 
+    orders = OrderItem.objects.filter(
+        user=user,
+        art_work__is_reservable=True,
+        order_status__in=[order_complete_status, reserve_cancel_status]
+    ).order_by('-updated_at')
+
+    paginator = Paginator(orders, 10)  # 페이지당 10개 항목
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'orders': page_obj,
+    }
+    return render(request, 'user/reservation_history.html', context)
+
+@require_POST
+def cancel_order(request, order_id):
+    user = request.user
+    order = get_object_or_404(OrderItem, id=order_id, user=user)
+    order_cancel_status = OrderStatus.objects.get(status='구매 취소')
+    order_complete_status = OrderStatus.objects.get(status='주문 완료')
+
+    if order.order_status == order_complete_status:
+        order.order_status = order_cancel_status
+        order.save()
+        order.art_work.is_sold = False
+        order.art_work.save()
+        messages.success(request, '주문이 성공적으로 취소되었습니다.')
+    else:
+        messages.error(request, '이 주문은 취소할 수 없습니다.')
+
+    return redirect('user:purchase_history')
+
+def cancel_reservation(request):
+    if request.method == 'POST':
+        order_item_ids = request.POST.getlist('order_items')
+        order_cancel_status = OrderStatus.objects.get(status='예약 취소')
+
+        for order_item_id in order_item_ids:
+            order_item = get_object_or_404(OrderItem, id=order_item_id)
+            order_item.order_status = order_cancel_status
+            order_item.art_work.is_sold = False
+            order_item.save()
+
+        messages.success(request, '선택한 예약이 성공적으로 취소되었습니다.')
+    
+    return redirect('user:reservation_history')
+
+def history_detail(request, order_id):
+    order = get_object_or_404(OrderItem, id=order_id, user=request.user)
+    context = {
+        'order': order,
+    }
+    return render(request, 'user/history_detail.html', context)
 
 
 

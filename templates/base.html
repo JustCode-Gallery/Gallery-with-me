@@ -143,9 +143,9 @@
         </button>
         <div class="collapse" id="order-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">구매/환불내역</a>
+            <li><a href="{% url 'user:purchase_history' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">구매/환불내역</a>
             </li>
-            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">예약관리</a>
+            <li><a href="{% url 'user:reservation_history' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">예약관리</a>
             </li>
           </ul>
         </div>
@@ -171,7 +171,7 @@
             <li><a href="{% url 'artwork:seller_artwork_list' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">내 작품 관리</a>
             </li>
             <li><a href="{% url 'artwork:create_artwork' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">작품 등록</a>
-            <li><a href="#" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">판매내역</a>
+            <li><a href="{% url 'seller:sales_history' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">판매내역</a>
             <li><a href="{% url 'seller:seller_reserve' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">예약현황</a>
             <li><a href="{% url 'artwork:seller_inquiry_list' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">받은 문의내역</a>
             </li>

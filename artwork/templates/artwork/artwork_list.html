@@ -48,6 +48,23 @@
     .btn-spacing {
         margin-left: 10px;
     }
+    .sold-out-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .artwork-card-img.sold-out {
+        filter: brightness(50%);
+    }
 </style>
 {% endblock %}
 
@@ -88,14 +105,24 @@
 <!-- 작품들 -->
 <div class="container-fluid" id="artwork-container">
     <div class="row" style="margin-top: 20px;">
-        {% for artwork in artwork_list %}
+        {% for item in artworks_with_materials %}
         <div class="col-4 artwork-card p-0 border-0 rounded-0">
             <div class="ratio ratio-1x1">
-                <a href="{% url 'artwork:artwork_detail' artwork.pk %}">
-                    <img src="{{ artwork.artimage_set.first.image_url.url }}" class="artwork-card-img rounded-0">
+                <a href="{% url 'artwork:artwork_detail' item.artwork.pk %}">
+                    <img src="{{ item.artwork.artimage_set.first.image_url.url }}" class="artwork-card-img rounded-0 {% if item.artwork.is_sold %}sold-out{% endif %}">
+                    {% if item.artwork.is_sold %}
+                    <div class="sold-out-overlay">Sold Out</div>
+                    {% endif %}
                     <div class="artwork-card-img-overlay d-flex flex-column justify-content-center align-items-center">
-                        <h5 class="artwork-card-title">{{ artwork.title }}</h5>
-                        <h5 class="artwork-card-title">{{ artwork.price|floatformat:0 }} 원</h5>
+                        <h5 class="artwork-card-title">{{ item.artwork.title }}</h5>
+                        <h5 class="artwork-card-title">{{ item.artwork.price|floatformat:0 }} 원</h5>
+                        {% if item.artwork.depth == 0 %}
+                        <h5 class="artwork-card-title">{{ item.artwork.width }} cm x {{ item.artwork.height }} cm</h5>
+                        {% else %}
+                        <h5 class="artwork-card-title">{{ item.artwork.width }} cm x {{ item.artwork.height }} cm x {{ item.artwork.depth }} cm</h5>
+                        {% endif %}
+                        <h5 class="artwork-card-title">{{ item.artwork.year }} 년</h5>
+                        <h5 class="artwork-card-title">{{ item.materials }}</h5>
                     </div>
                 </a>
             </div>

@@ -10,9 +10,12 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    'sample_task': {
-        'task': 'seller.tasks.sample_task',
-        'schedule': crontab(minute='*/1'),  # 매 1분마다 실행
-        'args': (),
+    'update_order_status_and_create_settlement': {
+        'task': 'seller.tasks.update_order_status_and_create_settlement',
+        'schedule': crontab(minute='*/10'),  # 10분마다 실행
+    },
+    'update_settlement_status': {
+        'task': 'seller.tasks.update_settlement_status',
+        'schedule': crontab(hour=12, minute=0),  # 매일 정오에 실행
     },
 }

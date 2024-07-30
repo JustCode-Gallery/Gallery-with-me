@@ -8,4 +8,7 @@ urlpatterns = [
     path('seller_reserve/', views.seller_reserve, name='seller_reserve'),
     path('seller_noreserve/', views.seller_noreserve, name='seller_noreserve'),
     path('reserve_cancel/<int:pk>/', views.reserve_cancel, name='reserve_cancel'),
+    path('sales/', views.sales_history, name='sales_history'),
+    path('settlement_receipt/', views.settlement_receipt, name='settlement_receipt'),
+    path('update_account_info/', views.update_account_info, name='update_account_info'),
 ]

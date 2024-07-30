@@ -2,16 +2,16 @@
 {% load static %}
 {% load user_tags %}
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 pt-4">
   <h2>환불 요청</h2>
-  <form method="post" action="{% url 'user:request_refund' order.id %}" enctype="multipart/form-data">
+  <form method="post" action="{% url 'user:request_refund' order.id %}" enctype="multipart/form-data" class="mt-4">
       {% csrf_token %}
       <div class="mb-3">
           <label for="reason" class="form-label">환불 사유</label>
           <textarea class="form-control" id="reason" name="reason" rows="4" required></textarea>
       </div>
-      <div class="mb-3">
-          <label for="refund_images" class="form-label">환불 이미지 (선택 사항)</label>
+      <div class="mb-3 mt-4">
+          <label for="refund_images" class="form-label">환불 이미지 (선택 사항) : 여러 이미지를 한번에 선택하여 업로드 할 수 있습니다</label>
           <input class="form-control" type="file" id="refund_images" name="refund_images" multiple>
       </div>
       <button type="submit" class="btn btn-danger">환불 요청</button>

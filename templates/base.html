@@ -15,6 +15,14 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@40,400,0,0" />
   <script src="https://kit.fontawesome.com/a47086679e.js" crossorigin="anonymous"></script>
   {% block extra-style %}{% endblock %}
+  <style>
+    * {
+        font-family: "Noto Serif KR", serif;
+        font-optical-sizing: auto;
+        font-weight: 300;
+        font-style: normal;
+    }
+</style>
 </head>
 
 <body>
@@ -168,13 +176,10 @@
         </button>
         <div class="collapse" id="seller-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="{% url 'artwork:seller_artwork_list' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">내 작품 관리</a>
-            </li>
-            <li><a href="{% url 'artwork:create_artwork' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">작품 등록</a>
-            <li><a href="{% url 'seller:sales_history' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">판매내역</a>
-            <li><a href="{% url 'seller:seller_reserve' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">예약현황</a>
-            <li><a href="{% url 'artwork:seller_inquiry_list' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">받은 문의내역</a>
-            </li>
+            <li><a href="{% url 'artwork:seller_artwork_list' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">내 작품 관리</a></li>
+            <li><a href="{% url 'seller:sales_history' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">판매내역</a></li>
+            <li><a href="{% url 'seller:seller_reserve' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">예약현황</a></li>
+            <li><a href="{% url 'artwork:seller_inquiry_list' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">받은 문의내역</a></li>
           </ul>
         </div>
       </li>
@@ -223,44 +228,13 @@
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
   <script src="{% static 'js/base.js' %}"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   
   {% block extra-js %}{% endblock %}
 
-  {% block script %}
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-  // 비동기(AJAX)로 장바구니에 든 아이템의 수 가져와서 뱃지 업데이트 
-  function updateCartBadge() {
-    $.ajax({
-      url: '{% url "get_cart_count" %}',
-      method: 'GET',
-      success: function(data) {
-        const cartCount = data.cart_count;
-        const badge = document.querySelector('.nav-item .badge');
-        if (badge) {
-          if (cartCount > 0) {
-            badge.innerText = cartCount;
-            badge.style.display = 'inline';
-          } else {
-            badge.style.display = 'none';
-          }
-        }
-      },
-      error: function(error) {
-        console.error('Error fetching cart count:', error);
-      }
-    });
-  }
 
-  // Call the function to update the badge on page load
-  $(document).ready(function() {
-    updateCartBadge();
-  });
 
-  // Optionally, you can set an interval to update the badge periodically
-  setInterval(updateCartBadge, 60000); // Update every 60 seconds
-  </script>
-  {% endblock %}
+
 
   
 </body>

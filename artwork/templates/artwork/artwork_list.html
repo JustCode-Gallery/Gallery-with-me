@@ -113,9 +113,9 @@
                     {% if item.artwork.is_sold %}
                     <div class="sold-out-overlay">Sold Out</div>
                     {% endif %}
-                    <div class="artwork-card-img-overlay d-flex flex-column justify-content-center align-items-center">
+                    <div class="artwork-card-img-overlay d-flex flex-column align-self-center" style="height: 40%; font-size: 1rem; margin-top: 30%;">
                         <h5 class="artwork-card-title">{{ item.artwork.title }}</h5>
-                        <h5 class="artwork-card-title">{{ item.artwork.price|floatformat:0 }} 원</h5>
+                        <h5 class="artwork-card-title mb-auto">{{ item.artwork.price|floatformat:0 }} 원</h5>
                         {% if item.artwork.depth == 0 %}
                         <h5 class="artwork-card-title">{{ item.artwork.width }} cm x {{ item.artwork.height }} cm</h5>
                         {% else %}

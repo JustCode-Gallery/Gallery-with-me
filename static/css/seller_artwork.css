@@ -26,3 +26,12 @@
     align-items: center;
     margin-bottom: 10px;
 }
+.row {
+    display: flex;
+    align-items: center;
+}
+.center-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

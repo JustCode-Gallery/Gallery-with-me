@@ -25,7 +25,7 @@ def exhibit_list(request):
         exhibits = ArtExhibit.objects.all()
 
     # 페이지네이션 설정
-    paginator = Paginator(exhibits, 5)  # 한 페이지에 10개씩 보이도록 설정
+    paginator = Paginator(exhibits, 5)  # 한 페이지에 5개씩 보이도록 설정
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

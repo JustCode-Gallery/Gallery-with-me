@@ -60,6 +60,9 @@ class University_Department(models.Model):
     university = models.ForeignKey(University, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.university.name}_{self.department.name}"
+
 class Seller(User):
     bank = models.CharField(max_length=20)
     bank_user = models.CharField(max_length=20)

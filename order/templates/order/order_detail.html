@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
+{% load order_extras %}
+
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
@@ -109,7 +111,7 @@
                                 </div>
                                 <div>
                                     <strong>{{ item.art_work.title }}</strong>
-                                    <p>가격: {{ item.price }} 원</p>
+                                    <p>가격: {{ item.price|format_currency }}</p>
                                 </div>
                             </div>
                             <button class="btn btn-danger btn-sm remove-item-button" data-item-id="{{ item.id }}">삭제</button>
@@ -131,7 +133,7 @@
                                 </div>
                                 <div>
                                     <strong>{{ item.art_work.title }}</strong>
-                                    <p>가격: {{ item.price }} 원</p>
+                                    <p>가격: {{ item.price|format_currency }}</p>
                                 </div>
                             </div>
                             <button class="btn btn-danger btn-sm remove-item-button" data-item-id="{{ item.id }}">삭제</button>
@@ -148,10 +150,10 @@
                 <div class="card sticky-card">
                     <div class="card-body">
                         <h3 class="card-title">주문 예상 금액</h3>
-                        <p>총 상품 가격: <span id="total-price">{{ payment.pay_amount }}</span> 원</p>
+                        <p>총 상품 가격: <span id="total-price">{{ payment.pay_amount|format_currency }}</span></p>
                         <p>총 할인: -0 원</p>
                         <h4>총 결제 금액:</h4> 
-                        <h4><span id="total-pay-amount">{{ payment.pay_amount }}</span> 원</h4>
+                        <h4><span id="total-pay-amount">{{ payment.pay_amount|format_currency }}</span></h4>
                         <form method="post" action="{% url 'order:import_payment' payment.id %}">
                             {% csrf_token %}
                             <button type="button" class="btn btn-primary" id="purchase-button">구매하기</button>

@@ -174,7 +174,7 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB를 바이트 단위로 표현
 
 AUTH_USER_MODEL = 'user.User'
 
-LOGOUT_REDIRECT_URL = '/'   
+LOGOUT_REDIRECT_URL = '/'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

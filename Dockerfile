@@ -10,6 +10,9 @@ RUN pip install --no-cache-dir -r requirements.txt && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+    
+RUN python manage.py collectstatic --noinput
+
 COPY . /app/
 
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]

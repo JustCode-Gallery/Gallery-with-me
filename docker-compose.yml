@@ -11,7 +11,6 @@ services:
       - ./nginx/proxy_params:/etc/nginx/proxy_params:ro
       - static_volume:/app/static
       - media_volume:/app/media
-      - socket_volume:/app # 소켓 파일이 위치한 경로를 공유
     depends_on:
       - web
 
@@ -24,7 +23,6 @@ services:
     volumes:
       - static_volume:/app/static
       - media_volume:/app/media
-      - socket_volume:/app # 소켓 파일이 위치한 경로를 공유
     expose:
       - "8000"
     environment:
@@ -51,4 +49,3 @@ volumes:
   db_data:
   static_volume:
   media_volume:
-  socket_volume: # 소켓 파일을 저장할 볼륨

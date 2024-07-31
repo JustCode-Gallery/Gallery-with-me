@@ -27,7 +27,7 @@
         display: flex;
         align-items: center;
         border: 0px solid #ffffff; /* 테두리 */
-        width: 70%;
+        width: 80%;
     }
     
     #search-query {
@@ -92,7 +92,7 @@
                 <h1 class="mb-4">Exhibit List</h1>
                  <!-- 전시 검색 폼 -->
                 <form id="search-form" action="" method="get" class="mb-3">
-                    <input type="text" id="search-query" name="query" placeholder="제목,학과,학교 검색">
+                    <input type="text" id="search-query" name="query" placeholder="제목/학과/학교 검색">
                     <button id="search-button" type="submit" style="padding: 0%;">
                         <span class="material-symbols-outlined" style="font-size: 35px;">
                             <i class="bi bi-search"></i>
@@ -205,6 +205,25 @@
                 }
             });
 
+            // 로컬 스토리지 확인하여 북마크 상태 업데이트하는 함수
+            function updateBookmarkStatus() {
+                document.querySelectorAll('.bookmark-btn').forEach(function(button) {
+                    const exhibitId = button.getAttribute('data-exhibit-id');
+                    const bookmarkStatus = localStorage.getItem(`bookmark_status_${exhibitId}`);
+                    if (bookmarkStatus !== null) {
+                        const icon = button.querySelector('i');
+                        if (bookmarkStatus === 'true') {
+                            icon.className = 'bi bi-bookmark-star-fill';
+                        } else {
+                            icon.className = 'bi bi-bookmark';
+                        }
+                    }
+                });
+            }
+
+            // 북마크 상태 업데이트(로컬 스토리지 기반)
+            updateBookmarkStatus();
+
             // 전시 제목에 마우스 호버 이벤트 추가 (매핑된 마커 팝업 활성화)
             document.querySelectorAll('.custom-link').forEach(function(link) {
                 link.addEventListener('mouseover', function() {
@@ -266,6 +285,8 @@
                         } else {
                             map.addLayer(markers[exhibitId]);
                         }
+                        // 로컬스토리지에 북마크 상태 저장
+                        localStorage.setItem(`bookmark_status_${exhibitId}`, data.is_bookmarked);
                     });
                 }
             });

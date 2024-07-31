@@ -1,0 +1,216 @@
+﻿.header {
+    background-color: transparent;
+    transition: background-color 0.3s ease-out;
+}
+.header.fixed {
+    background-color: white;
+}
+
+/* 기본 사이드바 스타일 */
+.sidebar {
+    width: 280px;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+    z-index: 1001;
+}
+
+.sidebar,
+.list-unstyled,
+.btn-toggle,
+.link-body-emphasis,
+.btn-toggle-nav a {
+  font-weight: 400;
+  font-family: "Bona Nova SC", serif;
+  font-style: normal;
+}
+
+.logo {
+    font-size: 1rem;
+    font-family: "Bona Nova SC", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+#MainCarousel{
+    position: relative;
+    top: 0px;
+}
+
+.carousel-caption{
+    top: 40%;
+}
+
+.carousel-title{
+    color: white;
+    font-size: 5rem;
+    font-family: "Bona Nova SC", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.carousel-title-description{
+    color: white;
+    font-size: 2rem;
+    font-weight: 400;
+    font-family: "Bona Nova SC", serif;
+    font-style: normal;
+}
+
+.breadcrumb {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.breadcrumb .breadcrumb-item a {
+    color: black; /* 글자 색상 설정 */
+    text-decoration: none; /* 밑줄 제거 */
+}
+
+.card-cate {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-cate .card-img {
+    transition: opacity 0.3s ease-in-out;
+    height: 100%;
+}
+
+.card-cate:hover {
+    background-color: #f0ba32;
+}
+
+.card-cate:hover .card-img {
+    opacity: 0;
+}
+
+.card-cate .card-title {
+    color: black;
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    font-weight: 400;
+    font-family: "Bona Nova SC", serif;
+    font-style: normal;
+}
+
+.card-cate:hover .card-title {
+    opacity: 1;
+}
+
+.container-rcmd {
+    background-color: white;
+    padding-top: 5rem;
+    padding-inline: 10rem;
+}
+
+.rcmd-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.rcmd-head svg {
+    margin-left: auto;
+}
+
+.rcmd-title {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: "Bona Nova SC", serif;
+    font-style: normal;
+}
+
+.rcmd-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rcmd-img {
+    flex-basis: 40%;
+    max-width: 40%;
+}
+
+.rcmd-img img {
+    width: 100%;
+    height: auto;
+}
+
+.rcmd-text {
+    margin-left: 2rem;
+    font-family: "Bona Nova SC", serif;
+    font-style: normal;
+    flex-basis: 55%;
+    max-width: 55%;
+}
+
+.rcmd-text h2 {
+    font-weight: 400;
+}
+
+.rcmd-text h3 {
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.rcmd-text p {
+    margin-top: 2rem;
+    font-size: 21px;
+    font-weight: 400;
+}
+
+.rcmd-text a {
+    font-size: 21px;
+    font-weight: 400;
+    color: black;
+}
+
+.footer-text {
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+@media (max-width: 991px) {
+    .sidebar {
+        width: 100%;
+        z-index: 1000;
+    }
+    .sidebar.active {
+        transform: translateX(0);
+        width: 100%;
+
+        z-index: 1001;
+    }
+
+    .carousel-title {
+        font-size: 3rem;
+    }
+
+    .rcmd-content {
+        flex-direction: column;
+    }
+    .rcmd-img,
+    .rcmd-text {
+        flex-basis: auto;
+        max-width: 100%;
+    }
+    .rcmd-text p,
+    .rcmd-text a {
+        font-size: 1rem;
+    }
+}

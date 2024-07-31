@@ -17,11 +17,12 @@
     height: 100%;
     background-color: white;
     box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-    z-index: 1;
+    z-index: 1000;
 }
 
 .sidebar.active {
     transform: translateX(0);
+    z-index: 1001;
 }
 
 .sidebar,
@@ -196,9 +197,13 @@
 @media (max-width: 991px) {
     .sidebar {
         width: 100%;
+        z-index: 1000;
     }
     .sidebar.active {
         transform: translateX(0);
+        width: 100%;
+
+        z-index: 1001;
     }
 
     .carousel-title {

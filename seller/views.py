@@ -34,8 +34,8 @@ def seller_reserve(request):
     if artwork:
         if artwork.is_reservable:
             ## 예약 모델에 예약작품 있는지 확인 
-            reservation = Reservation.objects.get(user=user, art_work=artwork)
-            
+            reservation = Reservation.objects.filter(user=user, art_work=artwork)
+            # filter로 가야하는지 > html변경
             artworks_with_images = []
             images = ArtImage.objects.filter(artwork=artwork)
             artworks_with_images.append({
@@ -66,6 +66,16 @@ def reserve_cancel(request,pk):
         reservation.cancel_reason = reason
         reservation.status = False
         reservation.save()
+        
+        # 주문DB 상태변경 / 작품DB is_sold 변경
+                
+        orderItem = OrderItem.objects.get(art_work_id = reservation.art_work_id,
+                                          order_status_id__lte=2)
+        orderItem.order_status_id = 5
+        orderItem.save()
+        artwork = ArtWork.objects.get(seller_id=reservation.user_id)
+        artwork.is_sold = False
+        artwork.save()
             
         # 구매자에게 알림 뱃지 / 이메일
         # 시그널

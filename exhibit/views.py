@@ -1,12 +1,16 @@
 from django.shortcuts import render, redirect
 import folium
-from .models import ArtExhibit, ExhibitBookmark
-from .forms import ArtExhibitForm
+from .models import ArtExhibit, ExhibitBookmark, ArtExhibitPoster
+from .forms import ArtExhibitForm, ArtExhibitPosterForm
 from django.core.paginator import Paginator
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import ArtExhibitSerializer
 from django.db.models import Q
 
 def exhibit_list(request):
@@ -59,6 +63,8 @@ def exhibit_detail(request, exhibit_id):
     folium.Marker(location=[exhibit.latitude, exhibit.longitude], popup=exhibit.title, icon=folium.Icon(color='blue', icon='info-sign')).add_to(figure)
     folium.CircleMarker(location=[exhibit.latitude, exhibit.longitude], radius=100, color='blue', fill_color='blue').add_to(figure)
 
+    poster = ArtExhibitPoster.objects.filter(exhibit_id=exhibit.id)    
+
     context = {
         'id': exhibit.id,
         'title': exhibit.title,
@@ -69,23 +75,42 @@ def exhibit_detail(request, exhibit_id):
         'university_department': exhibit.university_department,
         'is_bookmarked': is_bookmarked,
         'map': figure._repr_html_(), # folium 객체의 _repr_html() 메소드를 통해 html 출력할 수 있도록 객체화
+        'poster': poster,
     }
 
     return render(request, 'exhibit/exhibit_detail.html', context)
 
 def create_exhibit(request):
     if request.method == 'POST':
-        form = ArtExhibitForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('exhibit:exhibit_list')
-        else:
-            # 폼이 유효하지 않은 경우 에러 메시지 출력
-            print(form.errors)
+            form = ArtExhibitForm(request.POST)
+            formset = ArtExhibitPosterForm(request.POST, request.FILES) # 포스터 추가
+            if form.is_valid():
+                exhibit = form.save()
+
+                images = request.FILES.getlist('image',None)
+
+                for image in images:
+                    ArtExhibitPoster.objects.create(exhibit=exhibit, poster_url=image)
+
+                return redirect('exhibit:exhibit_list')
+            else:
+                # 폼이 유효하지 않은 경우 에러 메시지 출력
+                print(form.errors)
+                print(formset.errors)
     else:
         form = ArtExhibitForm()
-    return render(request, 'exhibit/form.html', {'form': form})
+        formset = ArtExhibitPosterForm() # 포스터 추가
 
+    return render(request, 'exhibit/form.html', {'form': form, 'formset': formset})
+
+@api_view(['POST'])
+def create_exhibit_api(request):
+    serializer = ArtExhibitSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 def exhibit_like_list(request):
     like_list = ExhibitBookmark.objects.filter(user=request.user)
     context = {

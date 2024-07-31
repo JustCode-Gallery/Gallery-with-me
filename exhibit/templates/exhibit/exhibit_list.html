@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block content %}
+{% block extra-style %}
+
 <head>
     <meta name="csrf-token" content="{{ csrf_token }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -53,6 +54,8 @@
 
     .map-container {
         position: relative;
+        z-index: 1;
+        height: 660px;
     }
     #bookmark-toggle.active {
         background-color: #007bff;
@@ -67,11 +70,59 @@
     .bookmark-container {
         margin-left: 10px;
     }
+    .sidebar {
+    width: 280px;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+    .sidebar.active {
+        transform: translateX(0);
+        z-index: 1001 ;
+    }
+
+    @media (max-width: 991px) {
+    .sidebar {
+        width: 100%;
+        z-index: 1000;
+    }
+    .sidebar.active {
+        transform: translateX(0);
+        width: 100%;
+
+        z-index: 1001;
+    }
+
+    .carousel-title {
+        font-size: 3rem;
+    }
+
+    .rcmd-content {
+        flex-direction: column;
+    }
+    .rcmd-img,
+    .rcmd-text {
+        flex-basis: auto;
+        max-width: 100%;
+    }
+    .rcmd-text p,
+    .rcmd-text a {
+        font-size: 1rem;
+    }
+}
 </style>
+{% endblock %}
 
 <body>
+    {% block content %}
     <div class="container">
-        <div class="row">
+        <div class="row" style="z-index: 1;">
             <div class="col-md-6 px-5">
                 <h1 class="mb-4">Exhibit List</h1>
                  <!-- 전시 검색 폼 -->
@@ -83,6 +134,7 @@
                             </span>
                     </button>
                 </form>
+              
                 <!-- 전시 리스트 -->
                 <ul class="list-group">
                     {% for exhibit in exhibits %}
@@ -96,42 +148,74 @@
                         </li>
                     {% endfor %}
                 </ul>
-                <!-- 페이지네이션 버튼 -->
-                <nav aria-label="Page navigation" class="mt-3">
+              
+                <!-- 페이지네이션 시작  -->
+                <nav aria-label="Page navigation" class="mt-5">
                     <ul class="pagination justify-content-center">
                         {% if exhibits.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?query={{ request.GET.query }}&page=1" aria-label="First">
-                                    &laquo;
-                                </a>
-                            </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="First">
+                                <span aria-hidden="true"><i class="fa-solid fa-angles-left"></i></span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ exhibits.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true"><i class="fa-solid fa-chevron-left"></i></span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fa-solid fa-angles-left"></i></span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fa-solid fa-chevron-left"></i></span>
+                        </li>
                         {% endif %}
                 
-                        {% for num in exhibits.paginator.page_range %}
-                            {% if exhibits.number == num %}
-                                <li class="page-item active">
-                                    <a class="page-link" href="#">{{ num }}</a>
-                                </li>
-                            {% elif num > exhibits.number|add:'-3' and num < exhibits.number|add:'3' %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?query={{ request.GET.query }}&page={{ num }}">{{ num }}</a>
-                                </li>
-                            {% endif %}
+                        {% with ''|center:exhibits.paginator.num_pages as range %}
+                        {% for _ in range %}
+                            {% with forloop.counter as i %}
+                                {% if i > exhibits.number|add:"-3" and i < exhibits.number|add:"3" %}
+                                    {% if i == exhibits.number %}
+                                    <li class="page-item active" aria-current="page">
+                                        <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                    </li>
+                                    {% endif %}
+                                {% endif %}
+                            {% endwith %}
                         {% endfor %}
+                        {% endwith %}
                 
                         {% if exhibits.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?query={{ request.GET.query }}&page={{ exhibits.paginator.num_pages }}" aria-label="Last">
-                                    &raquo;
-                                </a>
-                            </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ exhibits.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true"><i class="fa-solid fa-angle-right"></i></span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ exhibits.paginator.num_pages }}" aria-label="Last">
+                                <span aria-hidden="true"><i class="fa-solid fa-angles-right"></i></span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fa-solid fa-angle-right"></i></span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fa-solid fa-angles-right"></i></span>
+                        </li>
                         {% endif %}
                     </ul>
-                </nav>          
+                </nav>
+                <!-- 페이지네이션 끝 -->
             </div>
             
             <!-- 전시 지도 -->
-            <div id="map" class="map-container col-md-6 px-5">
+            <div id="map" class="map-container col-md-6 px-5" >
                 <button id="bookmark-toggle" style="position: absolute; top: 10px; right: 10px; z-index: 1000;">북마크</button>
             </div>
         </div>
@@ -279,6 +363,5 @@
 
         
     </script>
-
-</body>
 {% endblock %}
+</body>

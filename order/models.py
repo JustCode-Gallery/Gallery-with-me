@@ -16,6 +16,10 @@ class OrderItem(models.Model):
     address = models.ForeignKey(ShippingAddress, on_delete=models.PROTECT, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+    def reservation():
+        pass
+    
+
 class RefundRequest(models.Model):
     reason = models.CharField(max_length=500)
     user = models.ForeignKey('user.User', on_delete=models.CASCADE)  # 문자열 기반 참조

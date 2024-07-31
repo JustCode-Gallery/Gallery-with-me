@@ -17,25 +17,132 @@
     .bookmark-btn {
         border: none;
         background-color: transparent;
+        font-size: x-large;
+        margin-left: 16px;
     }
+     .img-container {
+        position: relative;
+        overflow: hidden;
+        width: 80%; /* 원하는 고정 너비로 설정 */
+        height: 600px; /* 원하는 고정 높이로 설정 */
+        background-color: #000;
+        margin: 0 auto;
+    }
+    .img-container img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+    }
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-end;
+    }
+    .carousel-cap{
+        width: 24px;
+        margin: 20px 20px;
+        border-radius: 24px;
+        background-color: #373634;
+        color: #fff;
+
+    }
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 5%; /* Adjust the width if needed */
+        top: 50%;
+        transform: translateY(-50%);
+        /* Optional: Change the color if needed */
+    }
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: rgba(0, 0, 0, 0.5); /* 아이콘 배경 색상 */
+        border-radius: 50%;
+        padding: 10px;
+        color: #fff !important; /* 흰색으로 설정 */
+    }
+
+    .carousel-control-prev {
+        left: 10%; /* Move the button closer to the center */
+    }
+
+    .carousel-control-next {
+        right: 10%; /* Move the button closer to the center */
+    }
+    
 </style>
 
 <body>
+    
+
     <div class="container mt-5 mb-3">
-        <h1 class="mb-5">{{ title }}</h1>
-        <button class="bookmark-btn" data-exhibit-id="{{ id }}">
-            {% if is_bookmarked %}
-                <!-- Bookmark  -->                                    
-                <i class="bi bi-bookmark-star-fill"></i>
-            {% else %}
-                <!-- Unbookmark  -->
-                <i class="bi bi-bookmark"></i>
-            {% endif %}
-        </button>
+        <div class="mb-5" style="display: flex;">
+            <h1 class="">{{ title }}</h1>
+            <button class="bookmark-btn" data-exhibit-id="{{ id }}">
+                {% if is_bookmarked %}
+                    <!-- Bookmark  -->                                    
+                    <i class="bi bi-bookmark-star-fill"></i>
+                {% else %}
+                    <!-- Unbookmark  -->
+                    <i class="bi bi-bookmark"></i>
+                {% endif %}
+            </button>
+        </div>
+        
+        <div id="carouselExampleControls" class="carousel slide mb-5">
+            <div class="carousel-inner">
+                {% if poster %}
+                {% for image in poster %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <div class="img-container">
+                    <!-- seed 뒤 포스트 id 부여 seed/{{post.id}} -->
+                    <img src="{{ MEDIA_URL }}{{ image.poster_url.url }}" class="img-fluid" alt="random_img11">
+                        <div class="overlay">
+                            <!-- #373634 -->
+                            <span class="carousel-cap">{{ forloop.counter }}/{{ poster|length}}</span>
+                        </div>
+                </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="carousel-item active">
+                    <div class="img-container">
+                        <!-- seed 뒤 포스트 id 부여 seed/{{post.id}} -->
+                        <img style="color:white;" src="https://picsum.photos/900/500/" class="img-fluid" alt="NO IMAGE">
+                            <!-- <div class="overlay">
+                                <span class="carousel-cap">{{ forloop.counter }}/{{ post_img|length}}</span>
+                            </div> -->
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+                
+            
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+       
         <div class="row">
             <div class="col-md-6">
-                <h2 class="mb-3">Poster</h2>
-                <p>여기에 포스터들 쭉 나열</p>
+                <!-- <h2 class="mb-3">Poster</h2>
+                <p>여기에 포스터들 쭉 나열</p> -->
                 <h2 class="mb-3">Description</h2>
                 <p>{{ description }}</p>
                 <h2 class="mb-3">Details</h2>

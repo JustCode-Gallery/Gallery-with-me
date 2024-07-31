@@ -11,10 +11,11 @@
             "program": "${workspaceFolder}/manage.py",
             "args": [
                 "runserver",
-                "8700"
+                "9100"
             ],
             "django": true,
-            "justMyCode": true
+            "justMyCode": true,
+            "console": "integratedTerminal"
         }
     ]
 }

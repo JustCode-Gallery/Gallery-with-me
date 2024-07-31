@@ -1,15 +1,69 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block extra-style %}
 <style>
+    .container {
+        width: 80%; 
+        box-shadow: 0px 6px 9px rgba(18, 15, 40, 0.12);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto; /* 가운데 정렬 */
+    }
+    .reserve-header {
+        font-size: 40px;
+        font-weight: 800;
+        color: #171A1F;
+        margin-bottom: 20px;
+    }
+    .content-header h3 {
+        font-weight: 700;
+        color: #171A1F;
+        margin: 12px 0;
+    }
+    .content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .content-item {
+        display: flex;
+        gap: 20px; /* 이미지와 정보 간격 */
+        padding: 24px;
+        margin: 24px;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        justify-content: center;
+    }
+ 
 
+  
+    
 </style>
 {% endblock %}
-    
+
 {% block content %}
-<div class="container">
-<h1>판매자예약조회</h1>
-<h2>예약이 없습니다.</h2>
+<div class="container mt-5">
+    <h1 class="reserve-header">판매자 예약 조회</h1>
+    <div class="content-header">
+        <h3>📆 예약 정보</h3>
+    </div>                    
+    <div class="content">
+     
+        <div class="content-item">
+            <div class="no-search text-center" style="margin: 20px 0;">
+                <span class="material-symbols-outlined" style="font-size: 80px; ">
+                    campaign
+                    </span>
+                <div>
+                    <b><i>예약정보가 없습니다 !</i></b>
+                </div>
+            </div>
+        </div>
+     
+    </div>
 </div>
+
 {% endblock %}

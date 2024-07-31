@@ -35,7 +35,7 @@ def seller_reserve(request):
         if artwork.is_reservable:
             ## 예약 모델에 예약작품 있는지 확인 
             reservation = Reservation.objects.get(user=user, art_work=artwork)
-            
+            # filter로 가야하는지 > html변경
             artworks_with_images = []
             images = ArtImage.objects.filter(artwork=artwork)
             artworks_with_images.append({

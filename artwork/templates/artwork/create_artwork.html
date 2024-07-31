@@ -110,18 +110,16 @@
                         </select>
                     </div>
 
-                    <label for="id_exhibit" class="mt-2">Exhibit:</label>
-                    <select name="exhibit" id="id_exhibit">
-                        <option value="">None</option>
-                        {% for exhibit in exhibits %}
-                        <option value="{{ exhibit.id }}">{{ exhibit.title }}</option>
-                        {% endfor %}
-                    </select>
+                    <div class="d-flex flex-column px-1" style="width: 50%;">
+                        <p class="ms-2"><input type="number" step="0.01" name="price" placeholder="가격"
+                                required></p>
+                        <label for="id_exhibit">Exhibit:</label>
+                        <input id="exhibit-autocomplete" name="exhibit" type="text">
 
-                    <div class="mt-2">
-                        <input type="checkbox" name="is_reservable" id="id_is_reservable">
-                        <label for="id_is_reservable">전시 전 작품입니다.</label>
-                    </div>
+                        <div class="mt-2">
+                            <input type="checkbox" name="is_reservable" id="id_is_reservable">
+                            <label for="id_is_reservable">전시 전 작품입니다.</label>
+                        </div>
                 </div>
             </div>
         </div>
@@ -240,5 +238,35 @@
             console.error('Error:', error);
         });
     };
+
+    // 전시검색 자동완성 
+    $(document).ready(function() {
+        $("#exhibit-autocomplete").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "{% url 'artwork:exhibit_autocomplete' %}",
+                    data: {
+                        'term': request.term
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        // 디버깅
+                        console.log('AJAX request successful:', data); 
+                        response($.map(data, function(item) {
+                            return {
+                                label: item,
+                                value: item,
+                            };
+                        }));
+                    }
+                });
+            },
+            select: function(event, ui) {
+                $('#exhibit-autocomplete').val(ui.item.value); // value를 입력 필드에 설정
+                return false; // 기본 동작 방지
+            },
+            minLength: 1
+        });
+    });
 </script>
 {% endblock %}

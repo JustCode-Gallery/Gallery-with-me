@@ -1,0 +1,166 @@
+﻿/* select_register.html */
+.register-select-container {
+    width: 400px;
+}
+
+.register-select-box {
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.register-select-link {
+    width: 45%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.register-select-link:hover .register-select-box {
+    background-color: #f0ba32;
+}
+
+.register-select-box svg {
+    display: block;
+    margin: 0 auto 10px auto;
+}
+
+/* end select_register.html */
+
+
+/* regiser.html */
+.register-container {
+    width: 400px;
+}
+
+.register-form .form-label {
+    font-weight: bold;
+}
+
+.register-form .form-control {
+    margin-bottom: 15px;
+}
+
+.register-form .mb-3.d-flex .form-control {
+    margin-bottom: 0;
+}
+
+.register-form .mb-3.d-flex .form-control+.form-control {
+    margin-left: 10px;
+}
+
+.register-form button {
+    background-color: white;
+    color: black;
+    border: 1px solid #ced4da;
+    /* input field border color */
+    transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.register-form button:hover {
+    background-color: #f0ba32;
+    color: white;
+    border: 1px solid #f0ba32;
+    /* hover border color */
+}
+
+/* end regiser.html */
+
+
+/* select-artworks */
+.artwork-select {
+    background-color: #f0ba32;
+    border-color: #f0ba32;
+    color: black;  /* 텍스트 색상 */
+}
+
+.artwork-select:hover {
+    background-color: #f0ba32;
+    border-color: #f0ba32;
+}
+
+.artwork-card:hover .card-img {
+    opacity: 0;
+}
+
+.artwork-card .card-title {
+    color: black;
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    font-weight: 400;
+    font-family: "Bona Nova SC", serif;
+    font-style: normal;
+}
+
+.artwork-card:hover .card-title {
+    opacity: 1;
+}
+
+.artwork-card {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+    /* 1:1 비율 정사각형으로 만듦 */
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.artwork-card input[type="checkbox"] {
+    display: none;
+}
+
+.artwork-card img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* 이미지가 잘리지 않고 비율을 유지하도록 */
+    transition: opacity 0.3s ease;
+}
+
+.artwork-card input[type="checkbox"]:checked+img {
+    opacity: 0.5;
+}
+
+.artwork-card input[type="checkbox"]:checked+img+.card-img-overlay {
+    background-color: #f0ba32;
+}
+
+.selected-text {
+    display: none;
+}
+
+.artwork-card input[type="checkbox"]:checked+img+.card-img-overlay .selected-text {
+    display: block;
+    color: white;
+}
+/* select-artworks */
+
+/* change_address */
+.address-container {
+    width: 800px;
+}
+
+.register-address-btn,
+.update-address-btn,
+.delete-btn {
+    border-color: #ced4da;
+}
+
+.update-address-btn:hover,
+.delete-btn:hover {
+    border-color: #ced4da;
+}
+
+.register-address-btn:hover {
+    background-color: transparent;
+    border-color: #ced4da;
+    color: #6c757d;
+}
+
+.basic-badge {
+    font-size: 0.75rem;
+}
+/* end change_address */

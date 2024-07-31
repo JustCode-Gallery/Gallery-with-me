@@ -17,16 +17,18 @@
 <body>
     <div class="container">
         <h1>Create Art Exhibit</h1>
-        <form method="post" onsubmit="return confirmLocation()">
+        <form method="post" id="create-exhibit-form" enctype="multipart/form-data" onsubmit="return confirmLocation()">
             {% csrf_token %}
             {{ form.as_p}}
+            <input multiple type="file" name="image" accept="image/*" id="id_image">
+            
             <button type="submit">Save</button>
             <br><br>
             <a href="http://map.esran.com/" target="_blank">http://map.esran.com/</a> 이곳에서 전시 건물의 정확한 위치를 찾을 수 있습니다<br>
         </form>
 
         <script>
-            $(function() {
+            $(function confirmLocation() {
                 $("#id_start_date").datepicker({
                     dateFormat: 'yy-mm-dd'
                 });
@@ -34,6 +36,9 @@
                     dateFormat: 'yy-mm-dd'
                 });
             });
+
+          
+         
         </script>
     </div>
 </body>

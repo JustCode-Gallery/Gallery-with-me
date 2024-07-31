@@ -392,3 +392,12 @@ def user_inquiry_detail(request, pk):
         'inquiry': inquiry,
     }
     return render(request, 'artwork/user_inquiry_detail.html', context)
+
+# 전시검색 자동완성
+def exhibit_autocomplete(request):
+    if 'term' in request.GET:
+        term = request.GET.get('term')
+        exhibits = ArtExhibit.objects.filter(title__icontains=term)  # 제목에 term이 포함됐는지 확인
+        results = [exhibit.title for exhibit in exhibits]
+        return JsonResponse(results, safe=False)
+    return JsonResponse([], safe=False)

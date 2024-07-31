@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load artwork_extras %}
 
 {% block extra-style %}
 <link rel="stylesheet" href="{% static 'artwork/list_style.css' %}">
@@ -115,7 +116,7 @@
                     {% endif %}
                     <div class="artwork-card-img-overlay d-flex flex-column align-self-center" style="height: 40%; font-size: 1rem; margin-top: 30%;">
                         <h5 class="artwork-card-title">{{ item.artwork.title }}</h5>
-                        <h5 class="artwork-card-title mb-auto">{{ item.artwork.price|floatformat:0 }} 원</h5>
+                        <h5 class="artwork-card-title mb-auto">{{ item.artwork.price|format_currency }}</h5>
                         {% if item.artwork.depth == 0 %}
                         <h5 class="artwork-card-title">{{ item.artwork.width }} cm x {{ item.artwork.height }} cm</h5>
                         {% else %}
@@ -135,7 +136,7 @@
 <!-- 태그 검색 모달 -->
 <div id="tagSearchModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
+        <span class="close text-end" onclick="closeModal()">&times;</span>
         <div id="tagCategories" class="tag-container"></div>
         <div class="filter-container">
             <div class="filter-section">

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% load user_tags %}
+{% load artwork_extras %}
 
 {% block extra-style %}
 <link rel="stylesheet" href="{% static 'artwork/detail_style.css' %}">
@@ -90,7 +91,7 @@
 
       <!-- 오른쪽 div -->
       <div class="d-flex flex-column px-1" style="width: 50%;">
-        <p class="ms-2">{{ artwork.price|floatformat:0 }} 원</p>
+        <p class="ms-2">{{ artwork.price|format_currency }}</p>
         <p class="ms-2">{% if artwork.exhibit %} {{ artwork.exhibit.title }} {% else %} 없음 {% endif %}</p>
 
         <!-- 좋아요 버튼 -->

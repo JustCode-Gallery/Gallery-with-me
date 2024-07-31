@@ -16,9 +16,14 @@ class OrderItem(models.Model):
     address = models.ForeignKey(ShippingAddress, on_delete=models.PROTECT, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
-    def reservation():
-        pass
-    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.art_work and self.art_work.is_reservable:
+            Reservation.objects.get_or_create(
+                user=self.art_work.seller,
+                art_work=self.art_work,
+                cancel_reason = None
+            )
 
 class RefundRequest(models.Model):
     reason = models.CharField(max_length=500)

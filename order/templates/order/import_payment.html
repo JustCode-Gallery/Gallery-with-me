@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
+{% load order_extras %}
+
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
@@ -143,7 +145,7 @@
                 <div class="artwork-card d-flex justify-content-between align-items-center" style="padding: 10px 0; border: 1px solid #ddd; margin-bottom: 10px;">
                     <img src="{{ item.art_work.artimage_set.first.image_url.url }}" alt="{{ item.art_work.title }}" class="artwork-card-img rounded-0" style="width: 50px; height: 50px; object-fit: cover; margin-left: 20px;">
                     <strong>{{ item.art_work.title }}</strong>
-                    <p style="margin-right: 20px;">{{ item.price }} 원</p>
+                    <p style="margin-right: 20px;">{{ item.price|format_currency }}</p>
                 </div>
                 {% endfor %}
             </div>
@@ -155,7 +157,7 @@
             <table class="info-table">
                 <tr>
                     <th>총 상품 가격</th>
-                    <td>{{ total_price }}원</td>
+                    <td>{{ total_price|format_currency }}</td>
                 </tr>
                 <tr>
                     <th>할인</th>
@@ -163,7 +165,7 @@
                 </tr>
                 <tr>
                     <th>총 결제 금액</th>
-                    <td>{{ total_price }}원</td>
+                    <td>{{ total_price|format_currency }}</td>
                 </tr>
             </table>
         </div>

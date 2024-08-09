@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra-style %}
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.min.css" />
+<style>
+.head-container {
+    margin-top: 11rem;
+}
+.artist-img {
+    width: 300px,
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="head-container row d-flex justify-content-center">
+    <img src="{{ artist.photo_url.url }}" alt="{{ artist.nickname }}" class="col-3 artist-img" width="30">
+    <div class="col-7">
+        <h4>작가: {{ artist.nickname }}</h4>
+        <h4>Contact: {{ artist.email }}</h4>
+        <h4>소속: {{artist.university_department}}</h4>  <!--모델 수정 필요, university_department 정보 요함-->
+    </div>
+</div>
+<div class="container mt-3">
+    <div id="viewer">{{ artist.info|safe }}</div>
+</div>
+
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.js"></script>
+<script>
+    const viewer = new toastui.Editor({
+        el: document.querySelector('#viewer'),
+        height: '600px',
+        initialValue: `{{ artist.info|escapejs }}`
+    });
+</script>
+{% endblock %}

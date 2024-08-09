@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra-style %}
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.css" />
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">계정 소개</h2>
+    <div id="editor"></div>
+    <button id="saveButton" class="btn btn-primary mt-3">저장</button>
+</div>
+
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script>
+    const initialContent = "{{ info|escapejs }}"; 
+    const editor = new toastui.Editor({
+        el: document.querySelector('#editor'),
+        previewStyle: 'vertical',
+        height: '500px',
+        initialValue: initialContent || '내용을 입력해주세요.',
+        initialEditType: 'markdown',
+    });
+
+    document.getElementById('saveButton').onclick = function() {
+        const content = editor.getMarkdown();
+        
+        // AJAX 요청을 통해 서버에 내용을 전송합니다.
+        fetch('{% url "seller:save_seller_info" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ info: content })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('내용이 성공적으로 저장되었습니다.');
+            } else {
+                alert('저장 중 오류가 발생했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('저장 중 오류가 발생했습니다.');
+        });
+    };
+</script>
+{% endblock %}

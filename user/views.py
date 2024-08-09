@@ -122,7 +122,7 @@ def register_seller(request):
             path = default_storage.save('photos/' + photo.name, ContentFile(photo.read()))
             photo_url = path
         else:
-            photo_url = 'sample_images/basic_person.png'
+            photo_url = 'photos/basic_person.png'
         
         password=make_password(password1)
 

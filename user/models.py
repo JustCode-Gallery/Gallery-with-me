@@ -67,4 +67,5 @@ class Seller(User):
     bank = models.CharField(max_length=20)
     bank_user = models.CharField(max_length=20)
     account = models.CharField(max_length=20)  # 계좌번호는 문자열로 처리
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    university_department = models.ForeignKey(University_Department, on_delete=models.SET_NULL, null=True)
+    info = models.CharField(max_length=2000, null=True)

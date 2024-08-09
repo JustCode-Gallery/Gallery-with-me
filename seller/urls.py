@@ -11,4 +11,9 @@ urlpatterns = [
     path('sales/', views.sales_history, name='sales_history'),
     path('settlement_receipt/', views.settlement_receipt, name='settlement_receipt'),
     path('update_account_info/', views.update_account_info, name='update_account_info'),
+    path('', views.ArtistListView.as_view(), name='artist_list'),
+    path('<int:pk>/', views.ArtistDetailView.as_view(), name='artist_detail'),
+    path('info/', views.seller_info, name='seller_info'),
+    path('save_info/', views.save_seller_info, name='save_seller_info'),
+
 ]

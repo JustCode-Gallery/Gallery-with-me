@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra-style %}
+<style>
+.head-container {
+    margin-top: 11rem;
+}
+.artist-img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+}
+.artist-link {
+    text-decoration: none;
+    color: black;
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="head-container">
+    <div class="direct-container">
+        <p class="text-center">Our Artists</p>
+    </div>
+</div>
+
+
+<div class="container-fluid mt-5">
+    <div class="d-flex justify-content-center mb-5">
+        <div class="border p-4 rounded mt-4 artwork-like-container">
+
+            <div class="container">
+                <div class="row">
+                    {% for artist in artist_list %}
+                    <div class="col-lg-3 col-sm-6 mb-5">
+                        <a href="{% url 'seller:artist_detail' artist.id %}" class="artist-link">
+                            <img src="{{ artist.photo_url.url}}"
+                            class="img-thumbnail artist-img" alt="{{ artist.nickname }}">
+                            <h5 class="mt-2">{{ artist.nickname }}</h5>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

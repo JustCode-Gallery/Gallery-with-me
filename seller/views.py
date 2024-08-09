@@ -48,7 +48,7 @@ def seller_reserve(request):
     
     context = {
         'artworks_with_images': artworks_with_images,
-        'reservation': reservation,
+        'reservations': reservation,
     }
     
     return render(request,'seller/seller_reserve.html', context)
@@ -68,6 +68,7 @@ def reserve_cancel(request,pk):
         reservation.save()
         
         # 주문DB 상태변경 / 작품DB is_sold 변경
+        # 해당 오더건 id 필요 모델수정 reservation에 외래키 추가
                 
         orderItem = OrderItem.objects.get(art_work_id = reservation.art_work_id,
                                           order_status_id__lte=2)

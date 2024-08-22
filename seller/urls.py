@@ -15,5 +15,5 @@ urlpatterns = [
     path('<int:pk>/', views.ArtistDetailView.as_view(), name='artist_detail'),
     path('info/', views.seller_info, name='seller_info'),
     path('save_info/', views.save_seller_info, name='save_seller_info'),
-
+    path('upload_image/', views.UploadImageView.as_view(), name='upload_image'),
 ]

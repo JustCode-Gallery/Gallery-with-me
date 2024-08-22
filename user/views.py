@@ -110,8 +110,12 @@ def register_seller(request):
         bank = request.POST['bank']
         bank_user = request.POST['bank_user']
         account = request.POST['account']
+
+        university_id = request.POST['university']
         department_id = request.POST['department']
+        university = University.objects.get(id=university_id)
         department = Department.objects.get(id=department_id)
+        university_department, created = University_Department.objects.get_or_create(university=university, department=department)        
         
         if password1 != password2:
             return render(request, 'register_seller.html', {'error': 'Passwords do not match'})
@@ -138,13 +142,14 @@ def register_seller(request):
             bank=bank,
             bank_user=bank_user,
             account=account,
-            department=department
+            university_department=university_department
         )
         login(request, seller)
         return redirect('user:select_artworks')
     
+    universities = University.objects.all()
     departments = Department.objects.all()
-    return render(request, 'register_seller.html', {'departments': departments})
+    return render(request, 'register_seller.html', {'universities': universities, 'departments': departments})
 
 def send_verification_code(request):
     if request.method == 'POST':
@@ -201,8 +206,14 @@ def update_seller_profile(request):
         seller.bank = request.POST.get('bank', seller.bank)
         seller.bank_user = request.POST.get('bank_user', seller.bank_user)
         seller.account = request.POST.get('account', seller.account)
-        department_id = request.POST.get('department', seller.department.id)
-        seller.department = Department.objects.get(id=department_id)
+
+        university_id = request.POST.get('university', seller.university_department.university.id)
+        department_id = request.POST.get('department', seller.university_department.department.id)
+        university = University.objects.get(id=university_id)
+        department = Department.objects.get(id=department_id)
+
+        university_department, created = University_Department.objects.get_or_create(university=university, department=department)
+        seller.university_department = university_department
 
         photo = request.FILES.get('photo')
         
@@ -214,8 +225,9 @@ def update_seller_profile(request):
         seller.save()
         return redirect('user:update_seller_profile')
     
+    universities = University.objects.all()
     departments = Department.objects.all()
-    return render(request, 'update_seller_profile.html', {'seller': seller, 'departments': departments})
+    return render(request, 'update_seller_profile.html', {'seller': seller, 'universities': universities, 'departments': departments})
 
 def user_login(request):
     if request.method == 'POST':

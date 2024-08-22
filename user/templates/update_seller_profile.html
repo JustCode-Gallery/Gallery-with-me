@@ -15,40 +15,49 @@
                 {% csrf_token %}
                 <div class="mb-3 d-flex">
                     <div class="me-2" style="flex: 1;">
-                        <label for="nickname" class="form-label">성:</label>
+                        <label for="nickname" class="form-label">성</label>
                         <input type="text" id="first_name" name="first_name" class="form-control"
                         value="{{ seller.first_name }}" required>
                     </div>
                     <div style="flex: 1;">
-                        <label for="last_name" class="form-label">이름:</label>
+                        <label for="last_name" class="form-label">이름</label>
                         <input type="text" id="last_name" name="last_name" class="form-control"
                         value="{{ seller.last_name }}" required>
                     </div>
                 </div>
-                <label for="nickname" class="form-label">닉네임:</label>
+                <label for="nickname" class="form-label">닉네임</label>
                 <input type="text" id="nickname" name="nickname" class="form-control md-3"
                 value="{{ seller.nickname }}" required>
                 
-                <label for="phone_number" class="form-label">핸드폰 번호:</label>
+                <label for="phone_number" class="form-label">핸드폰 번호</label>
                 <input type="text" id="phone_number" name="phone_number" class="form-control mb-3"
                 value="{{ seller.phone_number }}" required>
                 
                 <label for="photo" class="form-label">프로필(선택사항)</label>
                 <input type="file" id="photo" name="photo" class="form-control mb-3">
 
-                <label for="bank" class="form-label">은행명:</label>
+                <label for="bank" class="form-label">은행명</label>
                 <input type="text" id="bank" name="bank" value="{{ seller.bank }}" class="form-control md-3" required>
                 
-                <label for="account" class="form-label">계좌번호:</label>
+                <label for="account" class="form-label">계좌번호</label>
                 <input type="text" id="account" name="account" value="{{ seller.account }}" class="form-control md-3" required>
                 
-                <label for="bank_user" class="form-label">예금주:</label>
+                <label for="bank_user" class="form-label">예금주</label>
                 <input type="text" id="bank_user" name="bank_user" value="{{ seller.bank_user }}" class="form-control md-3" required>
 
-                <label for="department" class="form-label mb-1">출신 학과:</label>
+                <label for="university" class="form-label">출신 대학</label>
+                <select id="university" name="university" class="form-control md-3" required>
+                    {% for university in universities %}
+                    <option value="{{ university.id }}" {% if seller.university_department.university.id == university.id %}selected{% endif %}>
+                        {{ university.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <label for="department" class="form-label">출신 학과</label>
                 <select id="department" name="department" class="form-control md-3" required>
                     {% for department in departments %}
-                    <option value="{{ department.id }}" {% if seller.department.id == department.id %}selected{% endif %}>
+                    <option value="{{ department.id }}" {% if seller.university_department.department.id == department.id %}selected{% endif %}>
                         {{ department.name }}
                     </option>
                     {% endfor %}

@@ -191,3 +191,19 @@ class ArtistDetailView(generic.DetailView):
     model = Seller
     template_name = 'seller/artist_detail.html'
     context_object_name = 'artist'
+
+from django.views import View
+from django.core.files.storage import FileSystemStorage
+import os
+
+class UploadImageView(View):
+    def post(self, request):
+        if request.FILES.get('image'):
+            image = request.FILES['image']
+            seller_info_images_path = 'seller_info_images/'  # 하위 폴더 경로
+            fs = FileSystemStorage()
+            filename = fs.save(os.path.join(seller_info_images_path, image.name), image)
+            image_url = fs.url(filename)  # 저장된 이미지의 URL 가져오기
+            
+            return JsonResponse({'success': True, 'image_url': image_url})
+        return JsonResponse({'success': False, 'error': 'No image uploaded.'})

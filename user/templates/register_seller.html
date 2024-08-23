@@ -14,8 +14,20 @@
             <form id="register-form" method="post" enctype="multipart/form-data" class="register-form">
                 {% csrf_token %}
                 <input type="email" id="email" name="email" class="form-control md-3" placeholder="Email" required>
-                <input type="university" id="university" name="university" class="form-control md-3" placeholder="대학명"
-                    required>
+
+                <select id="university" name="university" class="form-control mb-3" required>
+                    <option selected>출신 대학</option>
+                    {% for university in universities %}
+                    <option value="{{ university.id }}">{{ university.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <select id="department" name="department" class="form-control mb-3" required>
+                    <option selected>출신 학과</option>
+                    {% for department in departments %}
+                    <option value="{{ department.id }}">{{ department.name }}</option>
+                    {% endfor %}
+                </select>
 
                 <div class="mb-3 d-flex">
                     <div class="me-2" style="flex: 1;">
@@ -61,12 +73,6 @@
 
                 <input type="text" id="bank_user" name="bank_user" class="form-control mb-3" placeholder="예금주" required>
 
-                <label for="department" class="form-label mb-1">출신 학과</label>
-                <select id="department" name="department" class="form-control mb-3" required>
-                    {% for department in departments %}
-                    <option value="{{ department.id }}">{{ department.name }}</option>
-                    {% endfor %}
-                </select>
                 <button type="submit" class="btn btn-primary w-100">등록</button>
             </form>
         </div>

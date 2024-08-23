@@ -17,9 +17,38 @@
     const editor = new toastui.Editor({
         el: document.querySelector('#editor'),
         previewStyle: 'vertical',
-        height: '500px',
+        height: '600px',
         initialValue: initialContent || '내용을 입력해주세요.',
         initialEditType: 'markdown',
+        hooks: {
+        addImageBlobHook: async (blob, callback) => {
+            // 이미지 서버에 업로드
+            const formData = new FormData();
+            formData.append('image', blob);
+
+            try {
+                const response = await fetch('{% url "seller:upload_image" %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    // 서버에서 반환된 이미지 URL 또는 간단한 식별자
+                    const imageUrl = data.image_url; // 여기서 반환된 URL을 사용
+                    callback(imageUrl, '이미지 설명'); // 이미지 URL과 설명을 콜백으로 전달
+                } else {
+                    alert('이미지 업로드 중 오류가 발생했습니다.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('이미지 업로드 중 오류가 발생했습니다.');
+            }
+        }
+    }
     });
 
     document.getElementById('saveButton').onclick = function() {

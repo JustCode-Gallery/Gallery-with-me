@@ -7,6 +7,8 @@ from payment.models import Settlement, SettlementStatus
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+import json
+from django.views import generic
 
 # 판매자 예약
 def seller_reserve(request): 
@@ -159,3 +161,34 @@ def update_account_info(request):
         settlement.save()
 
     return JsonResponse({'success': True})
+
+def seller_info(request):
+    seller = Seller.objects.get(user_ptr_id=request.user.id)
+    info = seller.info
+    context = {
+        'seller': seller,
+        'info': info,
+    }
+    return render(request, 'seller/seller_info.html', context)
+
+def save_seller_info(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        info = data.get('info')
+
+        seller = Seller.objects.get(user_ptr_id=request.user.id)
+        seller.info = info
+        seller.save()
+
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False}, status=400)
+
+class ArtistListView(generic.ListView):
+    model = Seller
+    template_name = 'seller/artist_list.html'
+    context_object_name = 'artist_list'
+
+class ArtistDetailView(generic.DetailView):
+    model = Seller
+    template_name = 'seller/artist_detail.html'
+    context_object_name = 'artist'

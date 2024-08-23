@@ -87,6 +87,11 @@
           <a href="/exhibit/" class="link-body-emphasis text-decoration-none">Exhibition Map</a>
         </button>
       </li>
+      <li class="mb-2">
+        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed">
+          <a href="/artist/" class="link-body-emphasis text-decoration-none">Our Artists</a>
+        </button>
+      </li>
 
       <li class="border-top "></li>
       <li class="mb-2">
@@ -178,6 +183,7 @@
         <div class="collapse" id="seller-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
             <li><a href="{% url 'artwork:seller_artwork_list' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">내 작품 관리</a></li>
+            <li><a href="{% url 'seller:seller_info' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">계정 소개 관리</a></li>
             <li><a href="{% url 'seller:sales_history' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">판매내역</a></li>
             <li><a href="{% url 'seller:seller_reserve' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">예약현황</a></li>
             <li><a href="{% url 'artwork:seller_inquiry_list' %}" class="mx-4 mb-1 link-body-emphasis d-inline-flex text-decoration-none rounded">받은 문의내역</a></li>
@@ -229,10 +235,7 @@
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
   <script src="{% static 'js/base.js' %}"></script>
-  
-  
   {% block extra-js %}{% endblock %}
-  
 </body>
 
 </html>

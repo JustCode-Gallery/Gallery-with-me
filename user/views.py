@@ -122,7 +122,7 @@ def register_seller(request):
             path = default_storage.save('photos/' + photo.name, ContentFile(photo.read()))
             photo_url = path
         else:
-            photo_url = 'sample_images/basic_person.png'
+            photo_url = 'photos/basic_person.png'
         
         password=make_password(password1)
 
@@ -307,7 +307,7 @@ def change_address(request):
 
 def create_address(request):
     if request.method == 'POST':
-        if ShippingAddress.objects.filter(user=request.user).count() < 5:
+        if ShippingAddress.objects.filter(user=request.user, is_deleted=False).count() < 5:
             recipient = request.POST.get('recipient')
             phone_number = request.POST.get('phone_number')
             destination = request.POST.get('destination') if request.POST.get('destination') else None
@@ -341,7 +341,7 @@ def create_address(request):
             shipping_address.save()
             return redirect('user:change_address')
         else: 
-            address_list = ShippingAddress.objects.filter(user_id=request.user.id)
+            address_list = ShippingAddress.objects.filter(user_id=request.user.id, is_deleted=False)
             context = {
                 'address_list': address_list,
                 'error': '배송지 항목은 최대 5개까지 등록할 수 있습니다.'

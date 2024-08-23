@@ -22,14 +22,12 @@
         font-size: x-large;
         margin-left: 16px;
     }
-
     .badge {
         background-color: #f0f0f0;
         color: #333;
         margin-right: 5px;
     }
-
-     .img-container {
+    .img-container {
         position: relative;
         overflow: hidden;
         width: 80%; /* 원하는 고정 너비로 설정 */
@@ -78,7 +76,7 @@
         background-color: rgba(0, 0, 0, 0.5); /* 아이콘 배경 색상 */
         border-radius: 50%;
         padding: 10px;
-        color: #fff !important; /* 흰색으로 설정 */
+        color: #fff !important; /* 흰색으로 설정 */  
     }
 
     .carousel-control-prev {
@@ -89,6 +87,52 @@
         right: 10%; /* Move the button closer to the center */
     }
     
+    .sidebar {
+    width: 280px;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+    .sidebar.active {
+        transform: translateX(0);
+        z-index: 1001 ;
+    }
+
+    @media (max-width: 991px) {
+    .sidebar {
+        width: 100%;
+        z-index: 1000;
+    }
+    .sidebar.active {
+        transform: translateX(0);
+        width: 100%;
+
+        z-index: 1001;
+    }
+
+    .carousel-title {
+        font-size: 3rem;
+    }
+
+    .rcmd-content {
+        flex-direction: column;
+    }
+    .rcmd-img,
+    .rcmd-text {
+        flex-basis: auto;
+        max-width: 100%;
+    }
+    .rcmd-text p,
+    .rcmd-text a {
+        font-size: 1rem;
+    }
+}
 
 </style>
 
@@ -96,10 +140,11 @@
     
 
     <div class="container mt-5 mb-3">
-       
         <!-- 학교와 학과 배지 -->
-        <span class="badge">{{ university_department.university.name }}</span>
-        <span class="badge">{{ university_department.department.name }}</span>
+        <div class="mb-1">
+            <span class="badge">{{ university_department.university.name }}</span>
+            <span class="badge">{{ university_department.department.name }}</span>
+        </div>
 
         <div class="mb-5" style="display: flex;">
             <h1 class="">{{ title }}</h1>

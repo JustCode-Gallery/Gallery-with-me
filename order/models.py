@@ -41,6 +41,7 @@ class Reservation(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     cancel_reason = models.CharField(max_length=500, null=True)
     status = models.BooleanField(default=True)
+    order = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
 
 class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)

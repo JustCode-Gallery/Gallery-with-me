@@ -29,7 +29,7 @@ urlpatterns = [
     path('order/', include('order.urls')),
     path('payment/', include('payment.urls')),
     path('user/', include('user.urls')),
-    path('seller/', include('seller.urls')),
+    path('artist/', include('seller.urls')), # seller 앱에 artist_list_page 작성, url이 'seller/artist/' 부적절
     path('', HomeView.as_view(),name='home'), # 홈화면
     path('get-cart-count/', get_cart_count, name='get_cart_count'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

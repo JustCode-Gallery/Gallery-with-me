@@ -46,7 +46,7 @@ class UniversityDepartmentAdmin(admin.ModelAdmin):
 class SellerAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'nickname', 'photo_url', 'phone_number', 'bank', 'bank_user', 'account', 'department')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'nickname', 'photo_url', 'phone_number', 'bank', 'bank_user', 'account', 'university_department')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
@@ -56,7 +56,7 @@ class SellerAdmin(BaseUserAdmin):
             'fields': ('username', 'password1', 'password2'),
         }),
     )
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'bank', 'bank_user', 'account', 'department')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'bank', 'bank_user', 'account', 'university_department')
     search_fields = ('username', 'first_name', 'last_name', 'email', 'bank', 'bank_user', 'account')
     ordering = ('username',)
 

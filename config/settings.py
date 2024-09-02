@@ -17,7 +17,6 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 load_dotenv()
@@ -37,8 +36,6 @@ CSRF_TRUSTED_ORIGINS = [
     'http://54.172.199.193',
     'https://54.172.199.193',
 ]
-
-
 
 # Application definition
 
@@ -60,6 +57,12 @@ INSTALLED_APPS = [
     'order',
     'payment',
     'seller',
+    'django.contrib.sites',  # 사이트 프레임워크 추가
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.kakao',  # 카카오톡 소셜 로그인
+    'allauth.socialaccount.providers.naver',  # 네이버 소셜 로그인
     'rest_framework',
 ]
 
@@ -83,7 +86,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -107,7 +110,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -121,14 +123,6 @@ DATABASES = {
         'PORT': os.getenv("DB_PORT"),
     }
 }
-
-# sqlite3설정 ▼
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -148,7 +142,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -159,7 +152,6 @@ TIME_ZONE = 'Asia/Seoul'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
@@ -189,11 +181,9 @@ os.makedirs(TEMP_UPLOAD_DIR, exist_ok=True)
 # 최대 허용 크기를 10MB로 설정
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB를 바이트 단위로 표현
 
-
 AUTH_USER_MODEL = 'user.User'
 
 LOGOUT_REDIRECT_URL = '/'
-
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.naver.com'
@@ -211,3 +201,41 @@ LOGIN_URL = '/user/login/'
 CELERY_BROKER_URL = "redis://localhost:6379/0"
 CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 CELERY_TIMEZONE = 'Asia/Seoul'
+
+# django-allauth 설정
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # 기존 인증 백엔드
+    'allauth.account.auth_backends.AuthenticationBackend',  # allauth 인증 백엔드
+)
+
+SITE_ID = 5
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+ACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_LOGOUT_REDIRECT_URL = 'index'
+ACCOUNT_LOGOUT_ON_GET = True 
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# 이메일 인증 설정
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_REQUIRED = True
+
+# 소셜 로그인 제공자 설정
+SOCIALACCOUNT_PROVIDERS = {
+    'kakao': {
+        'APP': {
+            'client_id': os.getenv("KAKAO_CLIENT_ID"),
+            'secret': os.getenv("KAKAO_SECRET"),
+            'key': ''
+        }
+    }
+    # 'naver': {
+    #     'APP': {
+    #         'client_id': os.getenv("NAVER_CLIENT_ID"),
+    #         'secret': os.getenv("NAVER_SECRET"),
+    #         'key': ''
+    #     }
+    # }
+}

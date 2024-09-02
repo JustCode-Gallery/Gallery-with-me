@@ -386,17 +386,13 @@ $(window).scroll(function() {
         loadMoreArtworks();
     }
 });
-
-$(document).ready(function() {
-        loadMoreArtworks();
-});
     
-    $('#search-form').submit(function(event) {
-        event.preventDefault();
-        const searchQuery = $('#search-query').val();
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('query', searchQuery);
-        window.location.search = urlParams.toString();
-    });
+$('#search-form').submit(function(event) {
+    event.preventDefault();
+    const searchQuery = $('#search-query').val();
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('query', searchQuery);
+    window.location.search = urlParams.toString();
+});
 </script>
 {% endblock %}

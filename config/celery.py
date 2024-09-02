@@ -12,7 +12,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'update_order_status_and_create_settlement': {
         'task': 'seller.tasks.update_order_status_and_create_settlement',
-        'schedule': crontab(minute='*/10'),  # 10분마다 실행
+        'schedule': crontab(minute='*/1'),  # 1분마다 실행
     },
     'update_settlement_status': {
         'task': 'seller.tasks.update_settlement_status',

@@ -70,6 +70,32 @@
 <!-- 카테고리end -->
 
 <!-- 작품추천 -->
+{% if request.user.is_authenticated %}
+<div class="container-rcmd">
+    <div class="rcmd-head">
+        <h2 class="rcmd-title">Recommend Artwork</h2>
+        <svg id="nextArtworkBtn" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="gray"
+            class="bi bi-arrow-clockwise" viewBox="0 0 16 16" style="cursor: pointer;">
+            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+            <path
+                d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
+        </svg>
+    </div>
+    <div class="rcmd-content">
+        <div class="rcmd-img">
+			<div class="ratio ratio-1x1">
+				<img id="artworkImage" src="" alt="Artwork Image">
+			</div>
+        </div>
+        <div class="rcmd-text">
+            <h2 id="artworkTitle"></h2>
+            <h3 id="artworkPrice"></h3>
+            <p id="artworkDescription"></p>
+            <a id="artworkDetailLink" href="#" class="btn btn-primary" style="background-color: #f0ba32; border: #f0ba32;">See Details</a>
+        </div>
+    </div>
+</div>
+{% else %}
 <div class="container-rcmd">
 	<div class="rcmd-head">
 		<h2 class="rcmd-title">Artwork that you might like..</h2>
@@ -104,5 +130,33 @@
 		</div>
 	</div>
 </div>
+{% endif %}
 <!-- 작품추천end -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // JSON 데이터를 템플릿에서 가져옴
+        const artworks = JSON.parse('{{ recommended_artworks_json|safe }}');
+
+        let currentIndex = 0;
+
+        document.getElementById('nextArtworkBtn').addEventListener('click', function() {
+            currentIndex = (currentIndex + 1) % artworks.length;
+            updateArtwork();
+        });
+
+        function updateArtwork() {
+            document.getElementById('artworkImage').src = artworks[currentIndex].imageUrl;
+            document.getElementById('artworkTitle').textContent = artworks[currentIndex].title;
+            document.getElementById('artworkPrice').textContent = artworks[currentIndex].price + '₩';
+            document.getElementById('artworkDescription').textContent = artworks[currentIndex].description;
+            document.getElementById('artworkDetailLink').href = artworks[currentIndex].detailLink;
+        }
+
+        // 페이지 로드 시 첫 번째 작품을 표시합니다.
+        if (artworks.length > 0) {
+            updateArtwork();
+        }
+    });
+</script>
 {% endblock %}

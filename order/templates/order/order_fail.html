@@ -23,7 +23,7 @@
         </div>
         <div class="text-center mt-3">
             {% if artwork_id %}
-            <a href="{% url 'order:create_order' artwork_id %}" class="btn btn-danger">주문 다시 생성하기</a>
+            <a href="{% url 'order:create_order' %}" class="btn btn-danger">주문 다시 생성하기</a>
             {% else %}
             <p>주문을 다시 생성할 수 없습니다.</p>
             {% endif %}

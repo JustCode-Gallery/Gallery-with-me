@@ -1,6 +1,42 @@
 ﻿{% extends 'base.html' %}
 {% load static %}
+{% load socialaccount %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'artwork/detail_style.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<style>
+.social-login-button-kakao {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
+    height: auto;
+    border: #ffffff;
+    background-color: #ffffff;
+}
+.social-login-button-naver {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
+    height: auto;
+    border: #ffffff;
+    background-color: #ffffff;
+}
+
+.social-login-button-naver img{
+    height: auto;
+    max-width: 75%;
+}
+
+.social-login-button-kakao img{
+    height: 120%;
+    max-width: 100%;
+    margin-left: 30%;
+}
+</style>
 <div class="container-fluid mt-5">
     <div class="d-flex justify-content-center mb-5">
         <form method="post" class="border p-4 rounded mt-4" style="width: 300px;">
@@ -10,19 +46,45 @@
             {% endif %}
             {% csrf_token %}
             <div class="mb-3">
-                <!-- <label for="email" class="form-label">Email:</label> -->
                 <input type="text" id="email" name="email" class="form-control" placeholder="Email" required>
             </div>
             <div class="mb-3">
-                <!-- <label for="password" class="form-label">Password:</label> -->
-                <input type="password" id="password" name="password" class="form-control" placeholder="Password"
-                    required>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
             </div>
             <button type="submit" class="btn btn-primary w-100 mb-4">Submit</button>
             <a class="text-center text-decoration-none black fs-6" href="{% url 'user:find_password' %}">
                 <h6>비밀번호를 잊어버리셨나요?</h6>
             </a>
+            <div class="text-center">
+                <button type="button" onclick="location.href = kakaoLoginUrl" class="social-login-button-kakao">
+                    <img class="kakao" src="https://k.kakaocdn.net/14/dn/btroDszwNrM/I6efHub1SN5KCJqLm1Ovx1/o.jpg" alt="">
+                </button>        
+                <button type="button" onclick="location.href = naverLoginUrl" class="social-login-button-naver">
+                    <img class="naver" src="http://static.nid.naver.com/oauth/small_g_in.PNG" alt="">
+                </button>            
+            </div>
         </form>
     </div>
 </div>
+<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+<script>
+    var kakaoLoginUrl = "{% provider_login_url 'kakao' %}";
+    var naverLoginUrl = "{% provider_login_url 'naver' %}";
+
+    function kakaoLogin() {
+        window.Kakao.Auth.login({
+            scope:'profile',
+            success: function(authObj){
+                console.log(authObj);
+                window.Kakao.API.request({
+                    url:'/v2/user/me',
+                    success: res => {
+                        const kakao_account = res.kakao_account;
+                        console.log(kakao_account);
+                    }
+                })
+            }
+        })
+    }
+</script>
 {% endblock %}

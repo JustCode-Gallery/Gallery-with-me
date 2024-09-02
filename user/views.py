@@ -15,6 +15,9 @@ from order.models import OrderItem, OrderStatus, RefundRequest, RefundImg
 from payment.models import Payment, PaymentStatus, SettlementStatus, Settlement
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_POST
+import logging
+
+logger = logging.getLogger(__name__)
 
 def find_password(request):
     if request.method == 'POST':
@@ -233,13 +236,16 @@ def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('email')
         password = request.POST.get('password')
+        logger.debug(f"Attempting to authenticate user: {username}")
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             return redirect('home')
         else:
+            logger.error(f"Authentication failed for user: {username}")
             return render(request, 'login.html', {'error': 'Invalid username or password'})
     else:
+        logger.debug("Rendering login page")
         return render(request, 'login.html')
 
 def select_register(request):

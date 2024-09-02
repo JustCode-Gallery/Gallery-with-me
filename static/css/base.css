@@ -121,6 +121,7 @@
     background-color: white;
     padding-top: 5rem;
     padding-inline: 10rem;
+    max-height: 100%;
 }
 
 .rcmd-head {
@@ -151,6 +152,7 @@
 .rcmd-img {
     flex-basis: 40%;
     max-width: 40%;
+    overflow: hidden;
 }
 
 .rcmd-img img {

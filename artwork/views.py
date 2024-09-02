@@ -10,6 +10,12 @@ from .forms import ArtWorkFilterForm, ArtistInquiryForm, ArtWorkSearchForm
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 import requests
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+SEARCH_API_URL = os.getenv('SEARCH_API_URL', 'http://127.0.0.1:8001/search/')
 
 PAGINATE_BY = 9
 
@@ -65,7 +71,7 @@ class ArtWorkListView(ListView):
         # 검색 결과와 결합
         if query:
             response = requests.post(
-                'http://127.0.0.1:8001/search/',
+                SEARCH_API_URL,
                 json={'query': query}
             )
             if response.status_code == 200:

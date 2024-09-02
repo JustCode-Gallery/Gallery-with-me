@@ -81,7 +81,7 @@ async def search_artworks(request: SearchRequest):
         similarities.sort(key=lambda x: x[1], reverse=True)
 
         # 유사도 기준 설정
-        threshold = 0.75
+        threshold = 0.78
         top_indices = [index for index, similarity in similarities if similarity >= threshold]
         
         results = artworks_df.iloc[top_indices] if top_indices else pd.DataFrame(columns=artworks_df.columns)

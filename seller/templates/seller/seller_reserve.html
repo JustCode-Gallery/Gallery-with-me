@@ -178,7 +178,7 @@
     <h1 class="reserve-header">판매자 예약 조회</h1>
     <div class="content-header">
         <h3>📆 예약 정보</h3>
-    </div>                    
+    </div>    
     <div class="content">
         
         {% for artwork_info in artworks_with_images %}
@@ -192,11 +192,11 @@
                     <p>이미지가 없습니다.</p>
                 {% endif %}
             </div>
+            {% for reservation in reservations %}
             <div class="content-item-details-right">
                 <div class="status-info">
                     <div>
                         <h3>예약번호 - 80230564890</h3>
-                        {% for i in reservation %}
                         {% if reservation.status %}
                         {{reservation.created_at|date:"y/m/d H:i"}}
                         {% else %}
@@ -238,8 +238,8 @@
                     </div>
                 </div>
                 {% endif %}
-                {% endfor %}
             </div>
+            {% endfor %}
         </div>
         {% endfor %}
     </div>

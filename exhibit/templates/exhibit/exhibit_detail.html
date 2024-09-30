@@ -222,46 +222,26 @@
 </body>
 
 <script>
-    // 로컬 스토리지 확인하여 북마크 상태 업데이트하는 함수
-    function updateBookmarkStatus() {
-        const button = document.querySelector('.bookmark-btn');
-        const exhibitId = button.getAttribute('data-exhibit-id');
-        const bookmarkStatus = localStorage.getItem(`bookmark_status_${exhibitId}`);
-        if (bookmarkStatus !== null) {
-            const icon = button.querySelector('i');
-            if (bookmarkStatus === 'true') {
-                icon.className = 'bi bi-bookmark-star-fill';
-            } else {
-                icon.className = 'bi bi-bookmark';
-            }
-        }
-    }
-
-    // 북마크 상태 업데이트(로컬 스토리지 기반)
-    document.addEventListener('DOMContentLoaded', updateBookmarkStatus);
-
     // 북마크 버튼
     document.querySelector('.bookmark-btn').addEventListener('click', function() {
-        const exhibitId = this.getAttribute('data-exhibit-id');
-        fetch(`/exhibit/exhibit_bookmark/${exhibitId}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({})
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.is_bookmarked) {
-                this.innerHTML = '<i class="bi bi-bookmark-star-fill"></i>';
-            } else {
-                this.innerHTML = '<i class="bi bi-bookmark"></i>';
-            }
-            // 로컬 스토리지에 북마크 상태 저장
-            localStorage.setItem(`bookmark_status_${exhibitId}`, data.is_bookmarked);
+            const exhibitId = this.getAttribute('data-exhibit-id');
+            fetch(`/exhibit/exhibit_bookmark/${exhibitId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.is_bookmarked) {
+                    this.innerHTML = '<i class="bi bi-bookmark-star-fill"></i>';
+                } else {
+                    this.innerHTML = '<i class="bi bi-bookmark"></i>';
+                }
+            });
         });
-    });
     // });
 </script>
 {% endblock %}

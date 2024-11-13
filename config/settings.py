@@ -31,6 +31,8 @@ ALLOWED_HOSTS = [
     '54.172.199.193',
     'localhost',
     '127.0.0.1',    
+    'gwm.cf2gysseqq0q.ap-northeast-2.rds.amazonaws.com',
+    '43.201.111.17'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -121,6 +123,7 @@ DATABASES = {
         'PORT': os.getenv("DB_PORT"),
     }
 }
+
 
 # sqlite3설정 ▼
 # DATABASES = {

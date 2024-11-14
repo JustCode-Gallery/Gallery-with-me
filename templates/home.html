@@ -13,9 +13,10 @@
 <!-- style-start -->
 <style>	
 	.img-container{
-		padding-top: 80px;
+		padding-top: 160px;
 		padding-inline: 10rem;
 		display: flex;
+		justify-content: center;
 		width: 100%;
 	}
 	.clsf-header {
@@ -39,6 +40,12 @@
 
 	}
 	.dropzone {
+		position: relative;
+		display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
         margin: 0 20px;
         width: 100%;
 		max-width: 600px;
@@ -47,10 +54,6 @@
         /* border-radius: 5px; */
         -webkit-transition: .2s;
         transition: .2s;
-    }
-
-    .dropzone.dz-drag-hover {
-        border: 2px solid #3498db !important;
     }
 
 	.dz-message.needsclick{
@@ -70,8 +73,51 @@
     opacity: .6;
     margin-bottom: 15px;
     }
+	/* X 버튼 스타일 */
+	.delete-btn {
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		width: 25px;
+		height: 25px;
+		background: #373634;
+		color: white;
+		border: none;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		cursor: pointer;
+		z-index: 10;
+		opacity: 0.8;
+	}
+
+	.delete-btn:hover {
+		background-color: rgb(90, 129, 151);
+	}
+
+	.img-preview {
+		position: relative; /* 부모 요소에 relative 추가 */
+		max-width: 150px; /* 이미지 크기를 50%로 설정 */
+		max-height: 200px;
+		margin: 10px;
+		display: flex;
+    	justify-content: center; /* 이미지 중앙 정렬 */
+    	align-items: center; /* 이미지 중앙 정렬 */
+		margin: 10px;
+	}
+
+	.img-preview img {
+		width: 100%; /* 이미지 크기를 부모 컨테이너 크기에 맞게 조정 */
+		height: auto;
+		border-radius: 5px;
+	}
 
 	.upload-container{
+		display: flex;
+    	justify-content: center; /* 수평 중앙 정렬 */
+    	flex-direction: column;
+    	align-items: center;
 		margin: 0 10rem;
 		text-align: center;
 	}
@@ -173,7 +219,7 @@
 
     <div class="upload-container">
 		<div id="dropzone">
-			<form action="{% url 'board:temp_upload' %}" id="upload-form" class="dropzone needsclick" >
+			<form action="http://localhost:8900/predict/" id="upload-form" class="dropzone needsclick" >
 				{% csrf_token%}
 				<div class="dz-message needsclick">
 					<i class="fa-regular fa-image"></i>
@@ -249,45 +295,114 @@
 {% endif %}
 <!-- 이미지 분류기 API연결 -->
 <script>
-	const form = document.getElementById('upload-form');
-	const fileInput = document.getElementById('file-input');
-	const resultContainer = document.getElementById('result-container');
-	const previewImage = document.getElementById('preview-image');
+	document.addEventListener("DOMContentLoaded", function () {
+		const dropzone = document.getElementById("dropzone");
+		const form = document.getElementById("upload-form");
+		const resultContainer = document.getElementById("result-container");
+		const maxFileSize = 10 * 1024 * 1024; // 10MB (최대 파일 크기)
+		let uploadedFile = null;
 
-	form.addEventListener('submit', async (e) => {
-		e.preventDefault();
-		const formData = new FormData();
-		formData.append('file', fileInput.files[0]);
-
-		try {
-			// const response = await fetch('/predict/', {
-			const response = await fetch('http://localhost:8900/predict/', {
-				method: 'POST',
-				body: formData,
-				mode: 'cors'
+		// 드래그 앤 드롭 기능
+		["dragover", "dragleave", "drop"].forEach(event => {
+			dropzone.addEventListener(event, (e) => {
+				e.preventDefault();
+				dropzone.classList.toggle("drag-over", event === "dragover");
+				if (event === "drop" && e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
 			});
-			// 로깅
-			console.log(response);
-			const data = await response.json();
+		});
 
+		// 클릭하여 파일 업로드 기능
+		dropzone.addEventListener("click", () => {
+			// 클릭 시 form에서 이미지를 업로드했으면, 클릭 이벤트를 무시
+			if (uploadedFile) return;
+
+			const fileInput = document.createElement("input");
+			fileInput.type = "file";
+			fileInput.accept = "image/*";
+			fileInput.onchange = (e) => handleFile(e.target.files[0]);
+			fileInput.click();
+		});
+
+		// 파일 처리
+		function handleFile(file) {
+			if (!file.type.startsWith("image/")) return alert("이미지 파일만 업로드 가능합니다.");
+			if (file.size > maxFileSize) return alert("파일 용량은 10MB 이하여야 합니다.");
+
+			uploadedFile = file; // 업로드된 파일 저장
+
+			// 기존 안내문구와 아이콘을 썸네일 이미지로 교체
+			updateDropzoneContent(file);
+		}
+
+		// Dropzone 내 안내문구와 아이콘을 썸네일로 업데이트
+		function updateDropzoneContent(file) {
+			const imgPreview = document.createElement("div");
+			imgPreview.classList.add("img-preview");
+
+			const imgElement = document.createElement("img");
+			imgElement.src = URL.createObjectURL(file);
+			imgPreview.appendChild(imgElement);
+
+			const deleteBtn = document.createElement("button");
+			deleteBtn.classList.add("delete-btn");
+			deleteBtn.innerHTML = "&times;";
+			deleteBtn.onclick = removeFile;
+			imgPreview.appendChild(deleteBtn);
+
+			// 기존의 dz-message를 썸네일로 교체
+			const messageElement = dropzone.querySelector(".dz-message");
+			messageElement.innerHTML = ""; // 기존 아이콘과 텍스트 제거
+			messageElement.appendChild(imgPreview);
+		}
+
+		// 파일 제거 함수 (썸네일을 원래 안내문구와 아이콘으로 되돌림)
+		function removeFile() {
+			uploadedFile = null;
+			const messageElement = dropzone.querySelector(".dz-message");
+			messageElement.innerHTML = `
+				<i class="fa-regular fa-image"></i>
+				<div class="text">
+					<span>👉&nbsp;&nbsp;</span>
+					<span>여기에 파일을 끌어다 놓거나<br>클릭하여 업로드하세요.</span>
+					<span>&nbsp;&nbsp;👈</span>
+				</div>
+			`;
+		}
+
+		// 폼 제출 시 이미지 전송 및 결과 표시
+		form.addEventListener("submit", async (e) => {
+			e.preventDefault();
+			if (!uploadedFile) return alert("이미지를 업로드해 주세요.");
+
+			const formData = new FormData();
+			formData.append("file", uploadedFile);
+
+			try {
+				const response = await fetch('http://localhost:8900/predict/', {
+					method: 'POST',
+					body: formData,
+					mode: 'cors'
+				});
+				const data = await response.json();
+
+				// 결과를 화면에 표시
+				displayResults(data);
+			} catch (error) {
+				console.error("Error:", error);
+				alert("이미지 분석 중 오류가 발생했습니다. 다시 시도해주세요.");
+			}
+		});
+
+		// 결과 표시 함수
+		function displayResults(data) {
 			document.getElementById('artist-result').textContent = Object.entries(data.artist)[0].join(': ');
 			document.getElementById('style-result').textContent = Object.entries(data.style)[0].join(': ');
 			document.getElementById('genre-result').textContent = Object.entries(data.genre)[0].join(': ');
 			document.getElementById('period-result').textContent = Object.entries(data.period)[0].join(': ');
-
 			resultContainer.style.display = 'block';
-
-			// 이미지 미리보기
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				previewImage.src = e.target.result;
-			};
-			reader.readAsDataURL(fileInput.files[0]);
-		} catch (error) {
-			console.error('Error:', error);
-			alert('분석 중 오류가 발생했습니다. 다시 시도해주세요.');
 		}
 	});
+
 </script>
 
 {% endblock %}

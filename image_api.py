@@ -1,14 +1,16 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import torch
 from torchvision import transforms
 from PIL import Image
 import io
 import json
-from typing import Dict
-  
+from typing import Dict, Optional
 import os
 import django
+from pathlib import Path
+
 
 # Django 설정 로드
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
